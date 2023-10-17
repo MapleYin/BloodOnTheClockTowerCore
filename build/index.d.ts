@@ -1,7 +1,6 @@
-export * from "./book";
-export * from "./character";
-export * from "./game";
-export * from "./operation";
-export * from "./player";
-export * from "./skill";
-export * from "./timeline";
+export declare const Books: {
+    readonly key: string;
+    readonly characters: import("./character").ICharacter[];
+    readonly skills: import("./skill").ISkill[];
+    readonly name: string;
+}[];
