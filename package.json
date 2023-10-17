@@ -1,0 +1,16 @@
+{
+  "name": "blood_on_the_clock_tower_core",
+  "version": "1.0.0",
+  "description": "a story teller tools for wx",
+  "main": "build/index.js",
+  "repository": "git@github.com:MapleYin/BloodOnTheClockTowerCore.git",
+  "author": "Yin Heng <maple1058@hotmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
+}

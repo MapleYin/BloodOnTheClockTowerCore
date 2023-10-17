@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "target": "ESNext",
+        "module": "CommonJS",
+        "allowJs": true,
+        "moduleResolution": "node",
+        "strictNullChecks": true,
+        "resolveJsonModule": true,
+        "declaration": true,
+        "lib": [
+            "es6"
+        ],
+        "esModuleInterop": true,
+        "outDir": "build",
+        "skipLibCheck": true,
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}
