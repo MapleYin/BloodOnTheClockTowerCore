@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateOperation = void 0;
-const CreateOperation = (name) => {
+var CreateOperation = function (name) {
     return {
-        name
+        name: name
     };
 };
 exports.CreateOperation = CreateOperation;

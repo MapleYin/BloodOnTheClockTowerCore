@@ -1,24 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Player = void 0;
-class Player {
-    avatar;
-    character;
-    seat;
-    get alive() {
-        return this.isKilled || this.isExecuted || this.isSlew;
+var Player = /** @class */ (function () {
+    function Player() {
     }
-    forbiddenVote;
-    isDrunk;
-    isPoisoned;
-    isEnemy;
-    isKilled;
-    isExecuted;
-    isOnGallows;
-    isMaster;
-    isSlew;
-    isGuarded;
-    nominatable;
-    canBeNominated;
-}
+    Object.defineProperty(Player.prototype, "alive", {
+        get: function () {
+            return this.isKilled || this.isExecuted || this.isSlew;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Player;
+}());
 exports.Player = Player;

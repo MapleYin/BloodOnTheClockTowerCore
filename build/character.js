@@ -25,24 +25,30 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Snakecharmer = exports.Dreamer = exports.Clockmaker = exports.Po = exports.Shabaloth = exports.Pukka = exports.Zombuul = exports.Mastermind = exports.Assassin = exports.Devilsadvocate = exports.Godfather = exports.Lunatic = exports.Goon = exports.Moonchild = exports.Tinker = exports.Fool = exports.Pacifist = exports.Tealady = exports.Minstrel = exports.Professor = exports.Courtier = exports.Gossip = exports.Gambler = exports.Innkeeper = exports.Exorcist = exports.Chambermaid = exports.Sailor = exports.Grandmother = exports.Imp = exports.Baron = exports.ScarletWoman = exports.Spy = exports.Poisoner = exports.Saint = exports.Recluse = exports.Drunk = exports.Butler = exports.Mayor = exports.Soldier = exports.Slayer = exports.Virgin = exports.Ravenkeeper = exports.Monk = exports.Undertaker = exports.FortuneTeller = exports.Empath = exports.Chef = exports.Investigator = exports.Librarian = exports.Washerwoman = void 0;
 exports.Vortox = exports.Nodashii = exports.Vigormortis = exports.Fanggu = exports.Pithag = exports.Cerenovus = exports.Witch = exports.Eviltwin = exports.Klutz = exports.Barber = exports.Sweetheart = exports.Mutant = exports.Sage = exports.Juggler = exports.Artist = exports.Philosopher = exports.Seamstress = exports.Savant = exports.Oracle = exports.Towncrier = exports.Flowergirl = exports.Mathematician = void 0;
-const Source = __importStar(require("./source/icon"));
-const character_1 = require("./locals/character");
-class Character {
-    key;
-    kind;
-    icon;
-    get name() {
-        return character_1.zh[this.key].name;
-    }
-    get skill() {
-        return character_1.zh[this.key].skill;
-    }
-    constructor(key, kind, icon) {
+var Source = __importStar(require("./source/icon"));
+var character_1 = require("./locals/character");
+var Character = /** @class */ (function () {
+    function Character(key, kind, icon) {
         this.key = key;
         this.kind = kind;
         this.icon = icon;
     }
-}
+    Object.defineProperty(Character.prototype, "name", {
+        get: function () {
+            return character_1.zh[this.key].name;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Character.prototype, "skill", {
+        get: function () {
+            return character_1.zh[this.key].skill;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Character;
+}());
 /// 洗衣妇
 exports.Washerwoman = new Character("Washerwoman", "Townsfolk" /* EKind.townsfolk */, Source.Washerwoman);
 /// 图书管理员

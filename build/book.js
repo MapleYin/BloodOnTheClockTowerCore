@@ -1,22 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BadMoonRising = exports.SectsViolets = exports.TroubleBrewing = void 0;
-const character_1 = require("./character");
-const skill_1 = require("./skill");
-const book_1 = require("./locals/book");
-class Book {
-    key;
-    characters;
-    skills;
-    get name() {
-        return book_1.zh[this.key];
-    }
-    constructor(key, characters, skills) {
+var character_1 = require("./character");
+var skill_1 = require("./skill");
+var book_1 = require("./locals/book");
+var Book = /** @class */ (function () {
+    function Book(key, characters, skills) {
         this.key = key;
         this.characters = characters;
         this.skills = skills;
     }
-}
+    Object.defineProperty(Book.prototype, "name", {
+        get: function () {
+            return book_1.zh[this.key];
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Book;
+}());
 exports.TroubleBrewing = new Book("TroubleBrewing", [
     character_1.Washerwoman, character_1.Librarian, character_1.Investigator, character_1.Chef, character_1.Empath, character_1.FortuneTeller, character_1.Undertaker, character_1.Monk, character_1.Ravenkeeper, character_1.Virgin, character_1.Slayer, character_1.Soldier, character_1.Mayor,
     character_1.Butler, character_1.Drunk, character_1.Recluse, character_1.Saint,
