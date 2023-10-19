@@ -3,11 +3,11 @@ export interface IPlayer {
     /**
      * display character
      */
-    readonly avatar: ICharacter;
+    readonly avatar?: ICharacter;
     /**
      * real character
      */
-    readonly character: ICharacter;
+    readonly character?: ICharacter;
     /**
      * is alive
      */

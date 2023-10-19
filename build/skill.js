@@ -29,7 +29,7 @@ exports.Kill = new Skill("Kill", function (context) {
 exports.BecomeImp = new Skill("BecomeImp", function (context) {
     return AliveAtNight(context) &&
         context.numberOfAlivePlayer >= 4 && /// 人数大于4人
-        context.players.findIndex(function (p) { return p.alive && p.character.kind == "Demons" /* EKind.demons */; }) == -1;
+        context.players.findIndex(function (p) { var _a; return p.alive && ((_a = p.character) === null || _a === void 0 ? void 0 : _a.kind) == "Demons" /* EKind.demons */; }) == -1;
 } /// 没有存活的恶魔
 );
 /// 可以观看魔典

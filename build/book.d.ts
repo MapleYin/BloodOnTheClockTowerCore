@@ -16,4 +16,9 @@ declare class Book implements IBook {
 export declare const TroubleBrewing: Book;
 export declare const SectsViolets: Book;
 export declare const BadMoonRising: Book;
+export declare const Rules: {
+    [key: number]: {
+        [key: string]: number;
+    };
+};
 export {};
