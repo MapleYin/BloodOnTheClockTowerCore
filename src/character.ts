@@ -1,7 +1,7 @@
 import * as Source from "./source/icon"
 import { zh as characterLocals } from "./locals/character"
 
-export const enum EKind {
+export enum EKind {
     townsfolk = "Townsfolk",
     outsiders = "Outsiders",
     minions = "Minions",

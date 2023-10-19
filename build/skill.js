@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.KeepAlive = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
+var character_1 = require("./character");
 var AliveAtNight = function (context) { return context.player.alive && context.time == "night"; };
 var Skill = /** @class */ (function () {
     function Skill(key, validHandler) {
@@ -29,7 +30,7 @@ exports.Kill = new Skill("Kill", function (context) {
 exports.BecomeImp = new Skill("BecomeImp", function (context) {
     return AliveAtNight(context) &&
         context.numberOfAlivePlayer >= 4 && /// 人数大于4人
-        context.players.findIndex(function (p) { var _a; return p.alive && ((_a = p.character) === null || _a === void 0 ? void 0 : _a.kind) == "Demons" /* EKind.demons */; }) == -1;
+        context.players.findIndex(function (p) { var _a; return p.alive && ((_a = p.character) === null || _a === void 0 ? void 0 : _a.kind) == character_1.EKind.demons; }) == -1;
 } /// 没有存活的恶魔
 );
 /// 可以观看魔典

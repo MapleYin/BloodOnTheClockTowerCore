@@ -1,4 +1,4 @@
-export declare const enum EKind {
+export declare enum EKind {
     townsfolk = "Townsfolk",
     outsiders = "Outsiders",
     minions = "Minions",

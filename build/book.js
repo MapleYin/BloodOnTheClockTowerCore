@@ -44,15 +44,15 @@ exports.BadMoonRising = new Book("BadMoonRising", [
     character_1.Zombuul, character_1.Pukka, character_1.Shabaloth, character_1.Po
 ], []);
 exports.Rules = {
-    5: (_a = {}, _a["Townsfolk" /* EKind.townsfolk */] = 3, _a["Outsiders" /* EKind.outsiders */] = 0, _a["Minions" /* EKind.minions */] = 1, _a["Demons" /* EKind.demons */] = 1, _a),
-    6: (_b = {}, _b["Townsfolk" /* EKind.townsfolk */] = 3, _b["Outsiders" /* EKind.outsiders */] = 1, _b["Minions" /* EKind.minions */] = 1, _b["Demons" /* EKind.demons */] = 1, _b),
-    7: (_c = {}, _c["Townsfolk" /* EKind.townsfolk */] = 5, _c["Outsiders" /* EKind.outsiders */] = 0, _c["Minions" /* EKind.minions */] = 1, _c["Demons" /* EKind.demons */] = 1, _c),
-    8: (_d = {}, _d["Townsfolk" /* EKind.townsfolk */] = 5, _d["Outsiders" /* EKind.outsiders */] = 1, _d["Minions" /* EKind.minions */] = 1, _d["Demons" /* EKind.demons */] = 1, _d),
-    9: (_e = {}, _e["Townsfolk" /* EKind.townsfolk */] = 5, _e["Outsiders" /* EKind.outsiders */] = 2, _e["Minions" /* EKind.minions */] = 1, _e["Demons" /* EKind.demons */] = 1, _e),
-    10: (_f = {}, _f["Townsfolk" /* EKind.townsfolk */] = 7, _f["Outsiders" /* EKind.outsiders */] = 0, _f["Minions" /* EKind.minions */] = 2, _f["Demons" /* EKind.demons */] = 1, _f),
-    11: (_g = {}, _g["Townsfolk" /* EKind.townsfolk */] = 7, _g["Outsiders" /* EKind.outsiders */] = 1, _g["Minions" /* EKind.minions */] = 2, _g["Demons" /* EKind.demons */] = 1, _g),
-    12: (_h = {}, _h["Townsfolk" /* EKind.townsfolk */] = 7, _h["Outsiders" /* EKind.outsiders */] = 2, _h["Minions" /* EKind.minions */] = 2, _h["Demons" /* EKind.demons */] = 1, _h),
-    13: (_j = {}, _j["Townsfolk" /* EKind.townsfolk */] = 9, _j["Outsiders" /* EKind.outsiders */] = 0, _j["Minions" /* EKind.minions */] = 3, _j["Demons" /* EKind.demons */] = 1, _j),
-    14: (_k = {}, _k["Townsfolk" /* EKind.townsfolk */] = 9, _k["Outsiders" /* EKind.outsiders */] = 1, _k["Minions" /* EKind.minions */] = 3, _k["Demons" /* EKind.demons */] = 1, _k),
-    15: (_l = {}, _l["Townsfolk" /* EKind.townsfolk */] = 9, _l["Outsiders" /* EKind.outsiders */] = 2, _l["Minions" /* EKind.minions */] = 3, _l["Demons" /* EKind.demons */] = 1, _l),
+    5: (_a = {}, _a[character_1.EKind.townsfolk] = 3, _a[character_1.EKind.outsiders] = 0, _a[character_1.EKind.minions] = 1, _a[character_1.EKind.demons] = 1, _a),
+    6: (_b = {}, _b[character_1.EKind.townsfolk] = 3, _b[character_1.EKind.outsiders] = 1, _b[character_1.EKind.minions] = 1, _b[character_1.EKind.demons] = 1, _b),
+    7: (_c = {}, _c[character_1.EKind.townsfolk] = 5, _c[character_1.EKind.outsiders] = 0, _c[character_1.EKind.minions] = 1, _c[character_1.EKind.demons] = 1, _c),
+    8: (_d = {}, _d[character_1.EKind.townsfolk] = 5, _d[character_1.EKind.outsiders] = 1, _d[character_1.EKind.minions] = 1, _d[character_1.EKind.demons] = 1, _d),
+    9: (_e = {}, _e[character_1.EKind.townsfolk] = 5, _e[character_1.EKind.outsiders] = 2, _e[character_1.EKind.minions] = 1, _e[character_1.EKind.demons] = 1, _e),
+    10: (_f = {}, _f[character_1.EKind.townsfolk] = 7, _f[character_1.EKind.outsiders] = 0, _f[character_1.EKind.minions] = 2, _f[character_1.EKind.demons] = 1, _f),
+    11: (_g = {}, _g[character_1.EKind.townsfolk] = 7, _g[character_1.EKind.outsiders] = 1, _g[character_1.EKind.minions] = 2, _g[character_1.EKind.demons] = 1, _g),
+    12: (_h = {}, _h[character_1.EKind.townsfolk] = 7, _h[character_1.EKind.outsiders] = 2, _h[character_1.EKind.minions] = 2, _h[character_1.EKind.demons] = 1, _h),
+    13: (_j = {}, _j[character_1.EKind.townsfolk] = 9, _j[character_1.EKind.outsiders] = 0, _j[character_1.EKind.minions] = 3, _j[character_1.EKind.demons] = 1, _j),
+    14: (_k = {}, _k[character_1.EKind.townsfolk] = 9, _k[character_1.EKind.outsiders] = 1, _k[character_1.EKind.minions] = 3, _k[character_1.EKind.demons] = 1, _k),
+    15: (_l = {}, _l[character_1.EKind.townsfolk] = 9, _l[character_1.EKind.outsiders] = 2, _l[character_1.EKind.minions] = 3, _l[character_1.EKind.demons] = 1, _l),
 };
