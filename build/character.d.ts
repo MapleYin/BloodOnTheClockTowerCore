@@ -1,9 +1,4 @@
-export declare enum EKind {
-    townsfolk = "Townsfolk",
-    outsiders = "Outsiders",
-    minions = "Minions",
-    demons = "Demons"
-}
+export type EKind = "Townsfolk" | "Outsiders" | "Minions" | "Demons";
 export interface ICharacter {
     readonly key: string;
     readonly name: string;

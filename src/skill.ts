@@ -57,7 +57,7 @@ export const Kill = new Skill("Kill", context =>
 export const BecomeImp = new Skill("BecomeImp", context =>
     AliveAtNight(context) &&
     context.numberOfAlivePlayer >= 4 && /// 人数大于4人
-    context.players.findIndex(p => p.alive && p.character?.kind == EKind.demons) == -1 /// 没有存活的恶魔
+    context.players.findIndex(p => p.alive && p.character?.kind == "Demons") == -1 /// 没有存活的恶魔
 )
 
 /// 可以观看魔典

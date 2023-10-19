@@ -52,16 +52,24 @@ export const BadMoonRising = new Book("BadMoonRising", [
     Zombuul, Pukka, Shabaloth, Po
 ], [])
 
-export const Rules: { [key: number]: { [key: string]: number } } = {
-    5: { [EKind.townsfolk]: 3, [EKind.outsiders]: 0, [EKind.minions]: 1, [EKind.demons]: 1 },
-    6: { [EKind.townsfolk]: 3, [EKind.outsiders]: 1, [EKind.minions]: 1, [EKind.demons]: 1 },
-    7: { [EKind.townsfolk]: 5, [EKind.outsiders]: 0, [EKind.minions]: 1, [EKind.demons]: 1 },
-    8: { [EKind.townsfolk]: 5, [EKind.outsiders]: 1, [EKind.minions]: 1, [EKind.demons]: 1 },
-    9: { [EKind.townsfolk]: 5, [EKind.outsiders]: 2, [EKind.minions]: 1, [EKind.demons]: 1 },
-    10: { [EKind.townsfolk]: 7, [EKind.outsiders]: 0, [EKind.minions]: 2, [EKind.demons]: 1 },
-    11: { [EKind.townsfolk]: 7, [EKind.outsiders]: 1, [EKind.minions]: 2, [EKind.demons]: 1 },
-    12: { [EKind.townsfolk]: 7, [EKind.outsiders]: 2, [EKind.minions]: 2, [EKind.demons]: 1 },
-    13: { [EKind.townsfolk]: 9, [EKind.outsiders]: 0, [EKind.minions]: 3, [EKind.demons]: 1 },
-    14: { [EKind.townsfolk]: 9, [EKind.outsiders]: 1, [EKind.minions]: 3, [EKind.demons]: 1 },
-    15: { [EKind.townsfolk]: 9, [EKind.outsiders]: 2, [EKind.minions]: 3, [EKind.demons]: 1 },
+type RouteNumberOption = 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15
+
+type TRules = {
+    [key in RouteNumberOption]: {
+        [key in EKind]: number
+    }
+}
+
+export const Rules: TRules = {
+    5: { "Townsfolk": 3, "Outsiders": 0, "Minions": 1, "Demons": 1 },
+    6: { "Townsfolk": 3, "Outsiders": 1, "Minions": 1, "Demons": 1 },
+    7: { "Townsfolk": 5, "Outsiders": 0, "Minions": 1, "Demons": 1 },
+    8: { "Townsfolk": 5, "Outsiders": 1, "Minions": 1, "Demons": 1 },
+    9: { "Townsfolk": 5, "Outsiders": 2, "Minions": 1, "Demons": 1 },
+    10: { "Townsfolk": 7, "Outsiders": 0, "Minions": 2, "Demons": 1 },
+    11: { "Townsfolk": 7, "Outsiders": 1, "Minions": 2, "Demons": 1 },
+    12: { "Townsfolk": 7, "Outsiders": 2, "Minions": 2, "Demons": 1 },
+    13: { "Townsfolk": 9, "Outsiders": 0, "Minions": 3, "Demons": 1 },
+    14: { "Townsfolk": 9, "Outsiders": 1, "Minions": 3, "Demons": 1 },
+    15: { "Townsfolk": 9, "Outsiders": 2, "Minions": 3, "Demons": 1 },
 }
