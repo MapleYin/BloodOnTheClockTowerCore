@@ -1,4 +1,4 @@
-import { Artist, Assassin, Barber, Baron, Butler, Cerenovus, Chambermaid, Chef, Clockmaker, Courtier, Devilsadvocate, Dreamer, Drunk, Empath, Eviltwin, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, ICharacter, Imp, Innkeeper, Investigator, Juggler, Klutz, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Oracle, Pacifist, Philosopher, Pithag, Po, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, ScarletWoman, Seamstress, Shabaloth, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Undertaker, Vigormortis, Virgin, Vortox, Washerwoman, Witch, Zombuul } from "./character"
+import { Artist, Assassin, Barber, Baron, Butler, Cerenovus, Chambermaid, Chef, Clockmaker, Courtier, Devilsadvocate, Dreamer, Drunk, EKind, Empath, Eviltwin, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, ICharacter, Imp, Innkeeper, Investigator, Juggler, Klutz, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Oracle, Pacifist, Philosopher, Pithag, Po, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, ScarletWoman, Seamstress, Shabaloth, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Undertaker, Vigormortis, Virgin, Vortox, Washerwoman, Witch, Zombuul } from "./character"
 import { BecomeImp, CheckImp, ChooseMaster, DigKnowCharacter, Guard, ISkill, Kill, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Peep, Poison, Scapegoat, Tramsform, WakenKnowCharacter } from "./skill"
 import { zh as BookLocals } from "./locals/book"
 export interface IBook {
@@ -13,11 +13,11 @@ class Book implements IBook {
     readonly characters: ICharacter[]
     readonly skills: ISkill[]
 
-    
-    public get name() : string {
+
+    public get name(): string {
         return BookLocals[this.key]
     }
-    
+
 
     constructor(key: string, characters: ICharacter[], skills: ISkill[]) {
         this.key = key
@@ -51,3 +51,17 @@ export const BadMoonRising = new Book("BadMoonRising", [
     Godfather, Devilsadvocate, Assassin, Mastermind,
     Zombuul, Pukka, Shabaloth, Po
 ], [])
+
+export const Rules: { [key: number]: { [key: string]: number } } = {
+    5: { [EKind.townsfolk]: 3, [EKind.outsiders]: 0, [EKind.minions]: 1, [EKind.demons]: 1 },
+    6: { [EKind.townsfolk]: 3, [EKind.outsiders]: 1, [EKind.minions]: 1, [EKind.demons]: 1 },
+    7: { [EKind.townsfolk]: 5, [EKind.outsiders]: 0, [EKind.minions]: 1, [EKind.demons]: 1 },
+    8: { [EKind.townsfolk]: 5, [EKind.outsiders]: 1, [EKind.minions]: 1, [EKind.demons]: 1 },
+    9: { [EKind.townsfolk]: 5, [EKind.outsiders]: 2, [EKind.minions]: 1, [EKind.demons]: 1 },
+    10: { [EKind.townsfolk]: 7, [EKind.outsiders]: 0, [EKind.minions]: 2, [EKind.demons]: 1 },
+    11: { [EKind.townsfolk]: 7, [EKind.outsiders]: 1, [EKind.minions]: 2, [EKind.demons]: 1 },
+    12: { [EKind.townsfolk]: 7, [EKind.outsiders]: 2, [EKind.minions]: 2, [EKind.demons]: 1 },
+    13: { [EKind.townsfolk]: 9, [EKind.outsiders]: 0, [EKind.minions]: 3, [EKind.demons]: 1 },
+    14: { [EKind.townsfolk]: 9, [EKind.outsiders]: 1, [EKind.minions]: 3, [EKind.demons]: 1 },
+    15: { [EKind.townsfolk]: 9, [EKind.outsiders]: 2, [EKind.minions]: 3, [EKind.demons]: 1 },
+}
