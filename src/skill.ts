@@ -1,4 +1,4 @@
-import { EKind } from "./character";
+import { OperationName } from "./operation";
 import { IPlayer } from "./player";
 
 interface IContext {
@@ -17,7 +17,7 @@ interface IContext {
 }
 
 export interface ISkill {
-    readonly key: string
+    readonly key: OperationName
 
     valid(context: IContext): boolean
 }
@@ -26,10 +26,10 @@ const AliveAtNight = (context: IContext) => context.player.alive && context.time
 
 class Skill implements ISkill {
 
-    readonly key: string;
+    readonly key: OperationName;
     readonly valid: (context: IContext) => boolean
 
-    constructor(key: string, validHandler: (context: IContext) => boolean) {
+    constructor(key: OperationName, validHandler: (context: IContext) => boolean) {
         this.key = key
         this.valid = validHandler
     }
@@ -71,12 +71,6 @@ export const ChooseMaster = new Skill("ChooseMaster", AliveAtNight)
 
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
 export const Scapegoat = new Skill("Scapegoat", AliveAtNight)
-
-/// 恶魔技能对你无效
-export const KeepAlive = new Skill("KeepAlive", context =>
-    AliveAtNight(context) &&
-    context.killTarget?.seat == context.player.seat
-)
 
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 export const WakenKnowCharacter = new Skill("WakenKnowCharacter", context =>
