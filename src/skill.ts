@@ -165,5 +165,3 @@ export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
 export const Nomination = new Skill("Nomination", "NM")
 export const Slay = new Skill("Slay", "P_R")
 export const Excute = new Skill("Excute", "P")
-
-

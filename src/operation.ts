@@ -1,13 +1,16 @@
 import { IPlayer } from "./player"
 import { ISkill, PayloadDefind } from "./skill"
 
-export type IOperation<T extends ISkill> = {
+type DistributeOperation<T extends ISkill["payloadKey"]> = T extends any ? {
     player: IPlayer
-    skill: T
-    payload?: PayloadDefind[T["payloadKey"]]
-}
+    skill: ISkill
+    payload?: PayloadDefind[T]
+} : never
 
-export function CreateOperation<T extends ISkill>(player: IPlayer, skill: T): IOperation<T> {
+export type IOperation = DistributeOperation<ISkill["payloadKey"]>
+
+
+export function CreateOperation(player: IPlayer, skill: ISkill): IOperation {
     return {
         player,
         skill

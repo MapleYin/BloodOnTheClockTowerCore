@@ -6,14 +6,14 @@ export interface ITimeline {
     readonly players: IPlayer[]
     readonly turn: number
     readonly time: "day" | "night"
-    readonly opertions: IOperation<any>[]
+    readonly opertions: IOperation[]
 }
 
 export class Timeline implements ITimeline {
     turn: number;
     time: "day" | "night";
     players: IPlayer[];
-    opertions: IOperation<any>[];
+    opertions: IOperation[];
 
     constructor(book: IBook, players: IPlayer[], lastTimeline?: ITimeline) {
         const { time, turn } = lastTimeline || { time: 'day', turn: 1 }
