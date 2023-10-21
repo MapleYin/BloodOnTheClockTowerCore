@@ -1,5 +1,6 @@
 import { ICharacter } from "./character";
 import { IPlayer } from "./player";
+import { ISkill } from "./skill";
 declare namespace Payload {
     interface Player {
         player: IPlayer;
@@ -62,8 +63,9 @@ type Operations = {
 export type OperationName = keyof Operations;
 type DistributeOperation<T extends OperationName> = T extends any ? {
     name: T;
+    skill: ISkill;
     payload?: PayloadDefind[Operations[T]];
 } : never;
 export type IOperation = DistributeOperation<OperationName>;
-export declare const CreateOperation: (name: OperationName) => IOperation;
+export declare const CreateOperation: (skill: ISkill) => IOperation;
 export {};

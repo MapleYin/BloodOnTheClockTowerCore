@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.KeepAlive = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
+exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
 var AliveAtNight = function (context) { return context.player.alive && context.time == "night"; };
 var Skill = /** @class */ (function () {
     function Skill(key, validHandler) {
@@ -40,12 +40,6 @@ exports.Poison = new Skill("Poison", AliveAtNight);
 exports.ChooseMaster = new Skill("ChooseMaster", AliveAtNight);
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
 exports.Scapegoat = new Skill("Scapegoat", AliveAtNight);
-/// 恶魔技能对你无效
-exports.KeepAlive = new Skill("KeepAlive", function (context) {
-    var _a;
-    return AliveAtNight(context) &&
-        ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat;
-});
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 exports.WakenKnowCharacter = new Skill("WakenKnowCharacter", function (context) {
     var _a;

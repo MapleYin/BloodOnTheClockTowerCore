@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateOperation = void 0;
-var CreateOperation = function (name) {
+var CreateOperation = function (skill) {
     return {
-        name: name
+        name: skill.key,
+        skill: skill
     };
 };
 exports.CreateOperation = CreateOperation;

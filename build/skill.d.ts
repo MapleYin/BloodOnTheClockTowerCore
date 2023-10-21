@@ -1,3 +1,4 @@
+import { OperationName } from "./operation";
 import { IPlayer } from "./player";
 interface IContext {
     turn: number;
@@ -10,13 +11,13 @@ interface IContext {
     players: IPlayer[];
 }
 export interface ISkill {
-    readonly key: string;
+    readonly key: OperationName;
     valid(context: IContext): boolean;
 }
 declare class Skill implements ISkill {
-    readonly key: string;
+    readonly key: OperationName;
     readonly valid: (context: IContext) => boolean;
-    constructor(key: string, validHandler: (context: IContext) => boolean);
+    constructor(key: OperationName, validHandler: (context: IContext) => boolean);
 }
 export declare const KnowAbsent: Skill;
 export declare const Tramsform: Skill;
@@ -26,7 +27,6 @@ export declare const Peep: Skill;
 export declare const Poison: Skill;
 export declare const ChooseMaster: Skill;
 export declare const Scapegoat: Skill;
-export declare const KeepAlive: Skill;
 export declare const WakenKnowCharacter: Skill;
 export declare const Guard: Skill;
 export declare const DigKnowCharacter: Skill;
