@@ -8,10 +8,7 @@ export interface IPlayer {
      * real character
      */
     readonly character?: ICharacter;
-    /**
-     * is alive
-     */
-    readonly alive: boolean;
+    readonly dead: boolean;
     readonly seat: number;
     forbiddenVote: boolean;
     isDrunk: boolean;
@@ -30,7 +27,7 @@ export declare class Player implements IPlayer {
     avatar: ICharacter;
     character: ICharacter;
     seat: number;
-    get alive(): boolean;
+    get dead(): boolean;
     forbiddenVote: boolean;
     isDrunk: boolean;
     isPoisoned: boolean;

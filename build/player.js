@@ -4,7 +4,7 @@ exports.Player = void 0;
 var Player = /** @class */ (function () {
     function Player() {
     }
-    Object.defineProperty(Player.prototype, "alive", {
+    Object.defineProperty(Player.prototype, "dead", {
         get: function () {
             return this.isKilled || this.isExecuted || this.isSlew;
         },

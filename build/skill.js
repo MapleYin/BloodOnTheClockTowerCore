@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Excute = exports.Slay = exports.Nomination = exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
-var AliveAtNight = function (context) { return context.player.alive && context.time == "night"; };
+var AliveAtNight = function (context) { return !context.player.dead && context.time == "night"; };
 var Skill = /** @class */ (function () {
     function Skill(key, payloadKey, validHandler) {
         this.key = key;
@@ -18,7 +18,7 @@ exports.KnowAbsent = new Skill("KnowAbsent", "CS", function (context) {
 /// 如果自杀，另外一个爪牙变成恶魔
 exports.Tramsform = new Skill("Tramsform", "P", function (context) {
     var _a;
-    return !context.player.alive &&
+    return context.player.dead &&
         ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat;
 });
 /// 选择一个目标，他死亡
@@ -30,7 +30,7 @@ exports.Kill = new Skill("Kill", "P_R", function (context) {
 exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
     return AliveAtNight(context) &&
         context.numberOfAlivePlayer >= 4 && /// 人数大于4人
-        context.players.findIndex(function (p) { var _a; return p.alive && ((_a = p.character) === null || _a === void 0 ? void 0 : _a.kind) == "Demons"; }) == -1;
+        context.players.findIndex(function (p) { var _a; return !p.dead && ((_a = p.character) === null || _a === void 0 ? void 0 : _a.kind) == "Demons"; }) == -1;
 } /// 没有存活的恶魔
 );
 /// 可以观看魔典
@@ -44,7 +44,7 @@ exports.Scapegoat = new Skill("Scapegoat", "P", AliveAtNight);
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 exports.WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", function (context) {
     var _a;
-    return !context.player.alive &&
+    return context.player.dead &&
         ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat &&
         context.time === "night";
 });

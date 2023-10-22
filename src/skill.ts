@@ -73,7 +73,7 @@ export interface ISkill {
     valid(context: IContext): boolean
 }
 
-const AliveAtNight = (context: IContext) => context.player.alive && context.time == "night"
+const AliveAtNight = (context: IContext) => !context.player.dead && context.time == "night"
 
 class Skill implements ISkill {
 
@@ -96,7 +96,7 @@ export const KnowAbsent = new Skill("KnowAbsent", "CS", context =>
 
 /// 如果自杀，另外一个爪牙变成恶魔
 export const Tramsform = new Skill("Tramsform", "P", context =>
-    !context.player.alive &&
+    context.player.dead &&
     context.killTarget?.seat == context.player.seat
 )
 
@@ -110,7 +110,7 @@ export const Kill = new Skill("Kill", "P_R", context =>
 export const BecomeImp = new Skill("BecomeImp", "C", context =>
     AliveAtNight(context) &&
     context.numberOfAlivePlayer >= 4 && /// 人数大于4人
-    context.players.findIndex(p => p.alive && p.character?.kind == "Demons") == -1 /// 没有存活的恶魔
+    context.players.findIndex(p => !p.dead && p.character?.kind == "Demons") == -1 /// 没有存活的恶魔
 )
 
 /// 可以观看魔典
@@ -127,7 +127,7 @@ export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight)
 
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context =>
-    !context.player.alive &&
+    context.player.dead &&
     context.killTarget?.seat == context.player.seat &&
     context.time === "night"
 )

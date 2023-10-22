@@ -10,10 +10,7 @@ export interface IPlayer {
      */
     readonly character?: ICharacter
 
-    /**
-     * is alive
-     */
-    readonly alive: boolean
+    readonly dead: boolean
 
     readonly seat: number
 
@@ -37,7 +34,7 @@ export class Player implements IPlayer {
 
     seat: number;
     
-    public get alive() : boolean {
+    public get dead() : boolean {
         return this.isKilled || this.isExecuted || this.isSlew
     }
 
