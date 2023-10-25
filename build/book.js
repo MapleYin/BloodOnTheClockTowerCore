@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Rules = exports.BadMoonRising = exports.SectsViolets = exports.TroubleBrewing = void 0;
+exports.Rules = exports.BookForName = exports.BadMoonRising = exports.SectsViolets = exports.TroubleBrewing = void 0;
 var character_1 = require("./character");
 var skill_1 = require("./skill");
 var book_1 = require("./locals/book");
@@ -42,6 +42,10 @@ exports.BadMoonRising = new Book("BadMoonRising", [
     character_1.Godfather, character_1.Devilsadvocate, character_1.Assassin, character_1.Mastermind,
     character_1.Zombuul, character_1.Pukka, character_1.Shabaloth, character_1.Po
 ], []);
+var BookForName = function (name) {
+    return [exports.TroubleBrewing, exports.SectsViolets, exports.BadMoonRising].find(function (book) { return book.key === name; });
+};
+exports.BookForName = BookForName;
 exports.Rules = {
     5: { "Townsfolk": 3, "Outsiders": 0, "Minions": 1, "Demons": 1 },
     6: { "Townsfolk": 3, "Outsiders": 1, "Minions": 1, "Demons": 1 },

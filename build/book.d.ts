@@ -16,6 +16,7 @@ declare class Book implements IBook {
 export declare const TroubleBrewing: Book;
 export declare const SectsViolets: Book;
 export declare const BadMoonRising: Book;
+export declare const BookForName: (name: string) => Book | undefined;
 type RouteNumberOption = 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15;
 type TRules = {
     [key in RouteNumberOption]: {

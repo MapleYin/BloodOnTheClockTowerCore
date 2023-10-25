@@ -52,6 +52,10 @@ export const BadMoonRising = new Book("BadMoonRising", [
     Zombuul, Pukka, Shabaloth, Po
 ], [])
 
+export const BookForName = (name: string) => {
+    return [TroubleBrewing, SectsViolets, BadMoonRising].find(book => book.key === name)
+}
+
 type RouteNumberOption = 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15
 
 type TRules = {
