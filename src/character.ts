@@ -32,18 +32,10 @@ class Character implements ICharacter {
         this.kind = kind
         this.icon = icon
     }
-
-    toJSON() {
-        return {
-            key: this.key,
-            name: this.name,
-            kind: this.kind,
-            icon: this.icon,
-            skill: this.skill,
-        }
-    }
 }
 
+Object.defineProperty(Character.prototype, 'name', {enumerable: true});
+Object.defineProperty(Character.prototype, 'skill', {enumerable: true});
 
 /// 洗衣妇
 export const Washerwoman = new Character("Washerwoman", "Townsfolk", Source.Washerwoman)

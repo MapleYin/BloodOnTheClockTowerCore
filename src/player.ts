@@ -51,3 +51,5 @@ export class Player implements IPlayer {
     nominatable: boolean
     canBeNominated: boolean
 }
+
+Object.defineProperty(Player.prototype, 'dead', {enumerable: true});

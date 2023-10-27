@@ -13,13 +13,6 @@ declare class Character implements ICharacter {
     get name(): string;
     get skill(): string;
     constructor(key: string, kind: EKind, icon: string);
-    toJSON(): {
-        key: string;
-        name: string;
-        kind: EKind;
-        icon: string;
-        skill: string;
-    };
 }
 export declare const Washerwoman: Character;
 export declare const Librarian: Character;

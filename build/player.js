@@ -14,3 +14,4 @@ var Player = /** @class */ (function () {
     return Player;
 }());
 exports.Player = Player;
+Object.defineProperty(Player.prototype, 'dead', { enumerable: true });

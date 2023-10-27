@@ -24,14 +24,6 @@ class Book implements IBook {
         this.characters = characters
         this.skills = skills
     }
-    toJSON() {
-        return {
-            key: this.key,
-            name: this.name,
-            characters: this.characters,
-            skills: this.skills,
-        }
-    }
 }
 
 export const TroubleBrewing = new Book("TroubleBrewing", [

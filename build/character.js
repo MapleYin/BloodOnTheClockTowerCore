@@ -47,17 +47,10 @@ var Character = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Character.prototype.toJSON = function () {
-        return {
-            key: this.key,
-            name: this.name,
-            kind: this.kind,
-            icon: this.icon,
-            skill: this.skill,
-        };
-    };
     return Character;
 }());
+Object.defineProperty(Character.prototype, 'name', { enumerable: true });
+Object.defineProperty(Character.prototype, 'skill', { enumerable: true });
 /// 洗衣妇
 exports.Washerwoman = new Character("Washerwoman", "Townsfolk", Source.Washerwoman);
 /// 图书管理员
