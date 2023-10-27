@@ -10,19 +10,15 @@ export interface IBook {
 
 class Book implements IBook {
     readonly key: string
+    readonly name: string
     readonly characters: ICharacter[]
     readonly skills: ISkill[]
-
-
-    public get name(): string {
-        return BookLocals[this.key]
-    }
-
 
     constructor(key: string, characters: ICharacter[], skills: ISkill[]) {
         this.key = key
         this.characters = characters
         this.skills = skills
+        this.name = BookLocals[this.key]
     }
 }
 

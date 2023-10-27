@@ -32,25 +32,11 @@ var Character = /** @class */ (function () {
         this.key = key;
         this.kind = kind;
         this.icon = icon;
+        this.name = character_1.zh[this.key].name;
+        this.skill = character_1.zh[this.key].skill;
     }
-    Object.defineProperty(Character.prototype, "name", {
-        get: function () {
-            return character_1.zh[this.key].name;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Character.prototype, "skill", {
-        get: function () {
-            return character_1.zh[this.key].skill;
-        },
-        enumerable: false,
-        configurable: true
-    });
     return Character;
 }());
-Object.defineProperty(Character.prototype, 'name', { enumerable: true });
-Object.defineProperty(Character.prototype, 'skill', { enumerable: true });
 /// 洗衣妇
 exports.Washerwoman = new Character("Washerwoman", "Townsfolk", Source.Washerwoman);
 /// 图书管理员

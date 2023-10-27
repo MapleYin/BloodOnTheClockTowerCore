@@ -8,9 +8,9 @@ export interface IBook {
 }
 declare class Book implements IBook {
     readonly key: string;
+    readonly name: string;
     readonly characters: ICharacter[];
     readonly skills: ISkill[];
-    get name(): string;
     constructor(key: string, characters: ICharacter[], skills: ISkill[]);
 }
 export declare const TroubleBrewing: Book;

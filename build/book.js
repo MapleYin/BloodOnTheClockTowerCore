@@ -9,14 +9,8 @@ var Book = /** @class */ (function () {
         this.key = key;
         this.characters = characters;
         this.skills = skills;
+        this.name = book_1.zh[this.key];
     }
-    Object.defineProperty(Book.prototype, "name", {
-        get: function () {
-            return book_1.zh[this.key];
-        },
-        enumerable: false,
-        configurable: true
-    });
     return Book;
 }());
 exports.TroubleBrewing = new Book("TroubleBrewing", [

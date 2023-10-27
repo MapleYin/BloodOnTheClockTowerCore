@@ -2,7 +2,7 @@ import * as Source from "./source/icon"
 import { zh as characterLocals } from "./locals/character"
 
 export type EKind = "Townsfolk" | "Outsiders" | "Minions" | "Demons"
- 
+
 export interface ICharacter {
     readonly key: string
     readonly name: string
@@ -16,26 +16,17 @@ class Character implements ICharacter {
     readonly key: string
     readonly kind: EKind
     readonly icon: string
-
-    
-    public get name() : string {
-        return characterLocals[this.key].name
-    }
-
-    public get skill() : string {
-        return characterLocals[this.key].skill
-    }
-    
+    readonly name: string
+    readonly skill: string
 
     constructor(key: string, kind: EKind, icon: string) {
         this.key = key
         this.kind = kind
         this.icon = icon
+        this.name = characterLocals[this.key].name
+        this.skill = characterLocals[this.key].skill
     }
 }
-
-Object.defineProperty(Character.prototype, 'name', {enumerable: true});
-Object.defineProperty(Character.prototype, 'skill', {enumerable: true});
 
 /// 洗衣妇
 export const Washerwoman = new Character("Washerwoman", "Townsfolk", Source.Washerwoman)

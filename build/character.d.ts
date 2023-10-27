@@ -10,8 +10,8 @@ declare class Character implements ICharacter {
     readonly key: string;
     readonly kind: EKind;
     readonly icon: string;
-    get name(): string;
-    get skill(): string;
+    readonly name: string;
+    readonly skill: string;
     constructor(key: string, kind: EKind, icon: string);
 }
 export declare const Washerwoman: Character;
