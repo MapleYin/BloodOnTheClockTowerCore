@@ -21,3 +21,4 @@ __exportStar(require("./operation"), exports);
 __exportStar(require("./player"), exports);
 __exportStar(require("./skill"), exports);
 __exportStar(require("./timeline"), exports);
+__exportStar(require("./tools"), exports);
