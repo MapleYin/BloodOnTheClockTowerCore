@@ -14,6 +14,7 @@ declare class Character implements ICharacter {
     readonly skill: string;
     constructor(key: string, kind: EKind, icon: string);
 }
+export declare const KindName: Record<EKind, string>;
 export declare const Washerwoman: Character;
 export declare const Librarian: Character;
 export declare const Investigator: Character;

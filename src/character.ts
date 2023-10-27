@@ -28,6 +28,13 @@ class Character implements ICharacter {
     }
 }
 
+export const KindName: Record<EKind, string> = {
+    Townsfolk: "村民",
+    Outsiders: "外来者",
+    Minions: "爪牙",
+    Demons: "恶魔"
+}
+
 /// 洗衣妇
 export const Washerwoman = new Character("Washerwoman", "Townsfolk", Source.Washerwoman)
 /// 图书管理员
