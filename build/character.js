@@ -47,6 +47,15 @@ var Character = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Character.prototype.toJSON = function () {
+        return {
+            key: this.key,
+            name: this.name,
+            kind: this.kind,
+            icon: this.icon,
+            skill: this.skill,
+        };
+    };
     return Character;
 }());
 /// 洗衣妇

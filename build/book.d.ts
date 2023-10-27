@@ -12,6 +12,12 @@ declare class Book implements IBook {
     readonly skills: ISkill[];
     get name(): string;
     constructor(key: string, characters: ICharacter[], skills: ISkill[]);
+    toJSON(): {
+        key: string;
+        name: string;
+        characters: ICharacter[];
+        skills: ISkill[];
+    };
 }
 export declare const TroubleBrewing: Book;
 export declare const SectsViolets: Book;

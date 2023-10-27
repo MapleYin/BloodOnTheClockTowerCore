@@ -17,6 +17,14 @@ var Book = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Book.prototype.toJSON = function () {
+        return {
+            key: this.key,
+            name: this.name,
+            characters: this.characters,
+            skills: this.skills,
+        };
+    };
     return Book;
 }());
 exports.TroubleBrewing = new Book("TroubleBrewing", [

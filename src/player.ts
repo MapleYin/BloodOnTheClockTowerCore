@@ -49,5 +49,5 @@ export class Player implements IPlayer {
     isSlew: boolean
     isGuarded: boolean
     nominatable: boolean
-    canBeNominated: boolean   
+    canBeNominated: boolean
 }

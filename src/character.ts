@@ -32,6 +32,16 @@ class Character implements ICharacter {
         this.kind = kind
         this.icon = icon
     }
+
+    toJSON() {
+        return {
+            key: this.key,
+            name: this.name,
+            kind: this.kind,
+            icon: this.icon,
+            skill: this.skill,
+        }
+    }
 }
 
 
