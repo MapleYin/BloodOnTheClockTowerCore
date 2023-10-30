@@ -1,3 +1,4 @@
+import { ISkill } from "./skill";
 export type EKind = "Townsfolk" | "Outsiders" | "Minions" | "Demons";
 export interface ICharacter {
     readonly key: string;
@@ -5,6 +6,7 @@ export interface ICharacter {
     readonly icon: string;
     readonly skill: string;
     readonly kind: EKind;
+    readonly abilities: ISkill[];
 }
 declare class Character implements ICharacter {
     readonly key: string;
@@ -12,7 +14,8 @@ declare class Character implements ICharacter {
     readonly icon: string;
     readonly name: string;
     readonly skill: string;
-    constructor(key: string, kind: EKind, icon: string);
+    readonly abilities: ISkill[];
+    constructor(key: string, kind: EKind, icon: string, abilities?: ISkill[]);
 }
 export declare const KindName: Record<EKind, string>;
 export declare const Washerwoman: Character;

@@ -1,5 +1,6 @@
 import * as Source from "./source/icon"
 import { zh as characterLocals } from "./locals/character"
+import { BecomeImp, CheckImp, ChooseMaster, DigKnowCharacter, Guard, ISkill, Kill, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Peep, Poison, Scapegoat, Tramsform, WakenKnowCharacter } from "./skill"
 
 export type EKind = "Townsfolk" | "Outsiders" | "Minions" | "Demons"
 
@@ -9,6 +10,7 @@ export interface ICharacter {
     readonly icon: string
     readonly skill: string
     readonly kind: EKind
+    readonly abilities: ISkill[]
 }
 
 class Character implements ICharacter {
@@ -18,13 +20,15 @@ class Character implements ICharacter {
     readonly icon: string
     readonly name: string
     readonly skill: string
+    readonly abilities: ISkill[]
 
-    constructor(key: string, kind: EKind, icon: string) {
+    constructor(key: string, kind: EKind, icon: string, abilities: ISkill[] = []) {
         this.key = key
         this.kind = kind
         this.icon = icon
         this.name = characterLocals[this.key].name
         this.skill = characterLocals[this.key].skill
+        this.abilities = abilities;
     }
 }
 
@@ -36,23 +40,23 @@ export const KindName: Record<EKind, string> = {
 }
 
 /// 洗衣妇
-export const Washerwoman = new Character("Washerwoman", "Townsfolk", Source.Washerwoman)
+export const Washerwoman = new Character("Washerwoman", "Townsfolk", Source.Washerwoman, [KnowTownsfolk])
 /// 图书管理员
-export const Librarian = new Character("Librarian", "Townsfolk", Source.Librarian)
+export const Librarian = new Character("Librarian", "Townsfolk", Source.Librarian, [KnowOutsiders])
 /// 调查员
-export const Investigator = new Character("Investigator", "Townsfolk", Source.Investigator)
+export const Investigator = new Character("Investigator", "Townsfolk", Source.Investigator, [KnowMinions])
 /// 厨师
-export const Chef = new Character("Chef", "Townsfolk", Source.Chef)
+export const Chef = new Character("Chef", "Townsfolk", Source.Chef, [KnowSeat])
 /// 共情者
-export const Empath = new Character("Empath", "Townsfolk", Source.Empath)
+export const Empath = new Character("Empath", "Townsfolk", Source.Empath, [KnowEvilAround])
 /// 占卜师
-export const FortuneTeller = new Character("Fortuneteller", "Townsfolk", Source.Fortuneteller)
+export const FortuneTeller = new Character("Fortuneteller", "Townsfolk", Source.Fortuneteller, [CheckImp])
 /// 掘墓人
-export const Undertaker = new Character("Undertaker", "Townsfolk", Source.Undertaker)
+export const Undertaker = new Character("Undertaker", "Townsfolk", Source.Undertaker, [DigKnowCharacter])
 /// 僧侣
-export const Monk = new Character("Monk", "Townsfolk", Source.Monk)
+export const Monk = new Character("Monk", "Townsfolk", Source.Monk, [Guard])
 /// 守鸦人
-export const Ravenkeeper = new Character("Ravenkeeper", "Townsfolk", Source.Ravenkeeper)
+export const Ravenkeeper = new Character("Ravenkeeper", "Townsfolk", Source.Ravenkeeper, [WakenKnowCharacter])
 /// 圣女
 export const Virgin = new Character("Virgin", "Townsfolk", Source.Virgin)
 /// 杀手
@@ -60,9 +64,9 @@ export const Slayer = new Character("Slayer", "Townsfolk", Source.Slayer)
 /// 士兵
 export const Soldier = new Character("Soldier", "Townsfolk", Source.Soldier)
 /// 市长
-export const Mayor = new Character("Mayor", "Townsfolk", Source.Mayor)
+export const Mayor = new Character("Mayor", "Townsfolk", Source.Mayor, [Scapegoat])
 /// 管家
-export const Butler = new Character("Butler", "Outsiders", Source.Butler)
+export const Butler = new Character("Butler", "Outsiders", Source.Butler, [ChooseMaster])
 /// 酒鬼
 export const Drunk = new Character("Drunk", "Outsiders", Source.Drunk)
 /// 隐士
@@ -70,15 +74,15 @@ export const Recluse = new Character("Recluse", "Outsiders", Source.Recluse)
 /// 圣徒
 export const Saint = new Character("Saint", "Outsiders", Source.Saint)
 /// 下毒者
-export const Poisoner = new Character("Poisoner", "Minions", Source.Poisoner)
+export const Poisoner = new Character("Poisoner", "Minions", Source.Poisoner, [Poison])
 /// 间谍
-export const Spy = new Character("Spy", "Minions", Source.Spy)
+export const Spy = new Character("Spy", "Minions", Source.Spy, [Peep])
 /// 猩红女巫
-export const ScarletWoman = new Character("Scarletwoman", "Minions", Source.Scarletwoman)
+export const ScarletWoman = new Character("Scarletwoman", "Minions", Source.Scarletwoman, [BecomeImp])
 /// 男爵
 export const Baron = new Character("Baron", "Minions", Source.Baron)
 /// 小恶魔
-export const Imp = new Character("Imp", "Demons", Source.Imp)
+export const Imp = new Character("Imp", "Demons", Source.Imp, [Kill, Tramsform, KnowAbsent])
 
 /// 祖母
 export const Grandmother = new Character("Grandmother", "Townsfolk", Source.Grandmother)

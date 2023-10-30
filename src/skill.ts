@@ -51,7 +51,7 @@ export type PayloadKey = keyof PayloadDefind
 
 export type PayloadType = PayloadDefind[PayloadKey]
 
-interface IContext {
+export interface IContext {
     /// timeline
     turn: number
     time: "day" | "night"
@@ -67,24 +67,28 @@ interface IContext {
 }
 
 export interface ISkill {
+
     readonly key: string
     readonly payloadKey: PayloadKey
 
     valid(context: IContext): boolean
+    effect(effector: IPlayer, payload: PayloadDefind[PayloadKey]): void
 }
 
 const AliveAtNight = (context: IContext) => !context.player.dead && context.time == "night"
 
-class Skill implements ISkill {
+class Skill<Key extends PayloadKey> implements ISkill {
 
     readonly key: string;
-    readonly payloadKey: PayloadKey;
+    readonly payloadKey: Key;
     readonly valid: (context: IContext) => boolean
+    readonly effect: (effector: IPlayer, payload: PayloadDefind[Key]) => void
 
-    constructor(key: string, payloadKey: PayloadKey, validHandler?: (context: IContext) => boolean) {
+    constructor(key: string, payloadKey: Key, validHandler?: (context: IContext) => boolean, effect?: (effector: IPlayer, payload: PayloadDefind[Key]) => void) {
         this.key = key
         this.payloadKey = payloadKey
         this.valid = validHandler || (() => true)
+        this.effect = effect || (() => {})
     }
 }
 
@@ -104,26 +108,38 @@ export const Tramsform = new Skill("Tramsform", "P", context =>
 export const Kill = new Skill("Kill", "P_R", context =>
     AliveAtNight(context) &&
     context.turn != 1
-)
+    , (_, payload) => {
+        if (payload.result) {
+            payload.player.isKilled = true
+        }
+    })
 
 /// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
 export const BecomeImp = new Skill("BecomeImp", "C", context =>
     AliveAtNight(context) &&
     context.numberOfAlivePlayer >= 4 && /// 人数大于4人
     context.players.findIndex(p => !p.dead && p.character?.kind == "Demons") == -1 /// 没有存活的恶魔
-)
+    , (player, payload) => {
+        player.avatar = payload.character
+    })
 
 /// 可以观看魔典
 export const Peep = new Skill("Peep", "T", AliveAtNight)
 
 /// 选择一个目标，他中毒
-export const Poison = new Skill("Poison", "P", AliveAtNight)
+export const Poison = new Skill("Poison", "P", AliveAtNight, (_, payload) => {
+    payload.player.isPoisoned = true
+})
 
 /// 选择一个目标，第二天投票他投票你的票才生效
-export const ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight)
+export const ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, (_, payload) => {
+    payload.player.isMaster = true
+})
 
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
-export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight)
+export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, (_, payload) => {
+    payload.player.isScapegoat = true
+})
 
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context =>
@@ -135,7 +151,9 @@ export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context
 export const Guard = new Skill("Guard", "P", context =>
     AliveAtNight(context) &&
     context.turn != 1
-)
+    , (_, payload) => {
+        payload.player.isGuarded = true
+    })
 
 export const DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", context =>
     AliveAtNight(context) &&
@@ -162,6 +180,16 @@ export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
     context.turn === 1
 )
 
-export const Nomination = new Skill("Nomination", "NM")
-export const Slay = new Skill("Slay", "P_R")
-export const Excute = new Skill("Excute", "P")
+export const Nomination = new Skill("Nomination", "NM", undefined, (nominator, payload) => {
+    nominator.nominatable = false
+    payload.player.canBeNominated = false
+    payload.player.isOnGallows = payload.result
+})
+
+export const Slay = new Skill("Slay", "P_R", undefined, (_, payload) => {
+    payload.player.isSlew = payload.result
+})
+
+export const Excute = new Skill("Excute", "P", undefined, (_, payload) => {
+    payload.player.isExecuted = true
+})

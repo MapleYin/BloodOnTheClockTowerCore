@@ -27,13 +27,16 @@ exports.Dreamer = exports.Clockmaker = exports.Po = exports.Shabaloth = exports.
 exports.Vortox = exports.Nodashii = exports.Vigormortis = exports.Fanggu = exports.Pithag = exports.Cerenovus = exports.Witch = exports.Eviltwin = exports.Klutz = exports.Barber = exports.Sweetheart = exports.Mutant = exports.Sage = exports.Juggler = exports.Artist = exports.Philosopher = exports.Seamstress = exports.Savant = exports.Oracle = exports.Towncrier = exports.Flowergirl = exports.Mathematician = exports.Snakecharmer = void 0;
 var Source = __importStar(require("./source/icon"));
 var character_1 = require("./locals/character");
+var skill_1 = require("./skill");
 var Character = /** @class */ (function () {
-    function Character(key, kind, icon) {
+    function Character(key, kind, icon, abilities) {
+        if (abilities === void 0) { abilities = []; }
         this.key = key;
         this.kind = kind;
         this.icon = icon;
         this.name = character_1.zh[this.key].name;
         this.skill = character_1.zh[this.key].skill;
+        this.abilities = abilities;
     }
     return Character;
 }());
@@ -44,23 +47,23 @@ exports.KindName = {
     Demons: "恶魔"
 };
 /// 洗衣妇
-exports.Washerwoman = new Character("Washerwoman", "Townsfolk", Source.Washerwoman);
+exports.Washerwoman = new Character("Washerwoman", "Townsfolk", Source.Washerwoman, [skill_1.KnowTownsfolk]);
 /// 图书管理员
-exports.Librarian = new Character("Librarian", "Townsfolk", Source.Librarian);
+exports.Librarian = new Character("Librarian", "Townsfolk", Source.Librarian, [skill_1.KnowOutsiders]);
 /// 调查员
-exports.Investigator = new Character("Investigator", "Townsfolk", Source.Investigator);
+exports.Investigator = new Character("Investigator", "Townsfolk", Source.Investigator, [skill_1.KnowMinions]);
 /// 厨师
-exports.Chef = new Character("Chef", "Townsfolk", Source.Chef);
+exports.Chef = new Character("Chef", "Townsfolk", Source.Chef, [skill_1.KnowSeat]);
 /// 共情者
-exports.Empath = new Character("Empath", "Townsfolk", Source.Empath);
+exports.Empath = new Character("Empath", "Townsfolk", Source.Empath, [skill_1.KnowEvilAround]);
 /// 占卜师
-exports.FortuneTeller = new Character("Fortuneteller", "Townsfolk", Source.Fortuneteller);
+exports.FortuneTeller = new Character("Fortuneteller", "Townsfolk", Source.Fortuneteller, [skill_1.CheckImp]);
 /// 掘墓人
-exports.Undertaker = new Character("Undertaker", "Townsfolk", Source.Undertaker);
+exports.Undertaker = new Character("Undertaker", "Townsfolk", Source.Undertaker, [skill_1.DigKnowCharacter]);
 /// 僧侣
-exports.Monk = new Character("Monk", "Townsfolk", Source.Monk);
+exports.Monk = new Character("Monk", "Townsfolk", Source.Monk, [skill_1.Guard]);
 /// 守鸦人
-exports.Ravenkeeper = new Character("Ravenkeeper", "Townsfolk", Source.Ravenkeeper);
+exports.Ravenkeeper = new Character("Ravenkeeper", "Townsfolk", Source.Ravenkeeper, [skill_1.WakenKnowCharacter]);
 /// 圣女
 exports.Virgin = new Character("Virgin", "Townsfolk", Source.Virgin);
 /// 杀手
@@ -68,9 +71,9 @@ exports.Slayer = new Character("Slayer", "Townsfolk", Source.Slayer);
 /// 士兵
 exports.Soldier = new Character("Soldier", "Townsfolk", Source.Soldier);
 /// 市长
-exports.Mayor = new Character("Mayor", "Townsfolk", Source.Mayor);
+exports.Mayor = new Character("Mayor", "Townsfolk", Source.Mayor, [skill_1.Scapegoat]);
 /// 管家
-exports.Butler = new Character("Butler", "Outsiders", Source.Butler);
+exports.Butler = new Character("Butler", "Outsiders", Source.Butler, [skill_1.ChooseMaster]);
 /// 酒鬼
 exports.Drunk = new Character("Drunk", "Outsiders", Source.Drunk);
 /// 隐士
@@ -78,15 +81,15 @@ exports.Recluse = new Character("Recluse", "Outsiders", Source.Recluse);
 /// 圣徒
 exports.Saint = new Character("Saint", "Outsiders", Source.Saint);
 /// 下毒者
-exports.Poisoner = new Character("Poisoner", "Minions", Source.Poisoner);
+exports.Poisoner = new Character("Poisoner", "Minions", Source.Poisoner, [skill_1.Poison]);
 /// 间谍
-exports.Spy = new Character("Spy", "Minions", Source.Spy);
+exports.Spy = new Character("Spy", "Minions", Source.Spy, [skill_1.Peep]);
 /// 猩红女巫
-exports.ScarletWoman = new Character("Scarletwoman", "Minions", Source.Scarletwoman);
+exports.ScarletWoman = new Character("Scarletwoman", "Minions", Source.Scarletwoman, [skill_1.BecomeImp]);
 /// 男爵
 exports.Baron = new Character("Baron", "Minions", Source.Baron);
 /// 小恶魔
-exports.Imp = new Character("Imp", "Demons", Source.Imp);
+exports.Imp = new Character("Imp", "Demons", Source.Imp, [skill_1.Kill, skill_1.Tramsform, skill_1.KnowAbsent]);
 /// 祖母
 exports.Grandmother = new Character("Grandmother", "Townsfolk", Source.Grandmother);
 /// 水手

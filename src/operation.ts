@@ -10,7 +10,6 @@ type DistributeOperation<T extends ISkill["payloadKey"]> = T extends any ? {
 
 export type IOperation = DistributeOperation<ISkill["payloadKey"]>
 
-
 export function CreateOperation(player: IPlayer, skill: ISkill): IOperation {
     return {
         player,

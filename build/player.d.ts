@@ -3,11 +3,11 @@ export interface IPlayer {
     /**
      * display character
      */
-    readonly avatar?: ICharacter;
+    avatar: ICharacter;
     /**
      * real character
      */
-    readonly character?: ICharacter;
+    readonly character: ICharacter;
     readonly dead: boolean;
     readonly seat: number;
     forbiddenVote: boolean;
@@ -15,6 +15,7 @@ export interface IPlayer {
     isPoisoned: boolean;
     isEnemy: boolean;
     isKilled: boolean;
+    isScapegoat: boolean;
     isExecuted: boolean;
     isOnGallows: boolean;
     isMaster: boolean;
@@ -23,11 +24,30 @@ export interface IPlayer {
     nominatable: boolean;
     canBeNominated: boolean;
 }
+interface Props {
+    avatar?: ICharacter;
+    character: ICharacter;
+    seat?: number;
+    forbiddenVote?: boolean;
+    isDrunk?: boolean;
+    isPoisoned?: boolean;
+    isEnemy?: boolean;
+    isKilled?: boolean;
+    isExecuted?: boolean;
+    isOnGallows?: boolean;
+    isMaster?: boolean;
+    isSlew?: boolean;
+    isGuarded?: boolean;
+    nominatable?: boolean;
+    canBeNominated?: boolean;
+    isScapegoat?: boolean;
+}
 export declare class Player implements IPlayer {
     avatar: ICharacter;
     character: ICharacter;
-    seat: number;
+    readonly seat: number;
     get dead(): boolean;
+    constructor(obj: Props);
     forbiddenVote: boolean;
     isDrunk: boolean;
     isPoisoned: boolean;
@@ -40,4 +60,6 @@ export declare class Player implements IPlayer {
     isGuarded: boolean;
     nominatable: boolean;
     canBeNominated: boolean;
+    isScapegoat: boolean;
 }
+export {};

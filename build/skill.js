@@ -3,10 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Excute = exports.Slay = exports.Nomination = exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
 var AliveAtNight = function (context) { return !context.player.dead && context.time == "night"; };
 var Skill = /** @class */ (function () {
-    function Skill(key, payloadKey, validHandler) {
+    function Skill(key, payloadKey, validHandler, effect) {
         this.key = key;
         this.payloadKey = payloadKey;
         this.valid = validHandler || (function () { return true; });
+        this.effect = effect || (function () { });
     }
     return Skill;
 }());
@@ -25,6 +26,10 @@ exports.Tramsform = new Skill("Tramsform", "P", function (context) {
 exports.Kill = new Skill("Kill", "P_R", function (context) {
     return AliveAtNight(context) &&
         context.turn != 1;
+}, function (_, payload) {
+    if (payload.result) {
+        payload.player.isKilled = true;
+    }
 });
 /// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
 exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
@@ -32,15 +37,23 @@ exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
         context.numberOfAlivePlayer >= 4 && /// 人数大于4人
         context.players.findIndex(function (p) { var _a; return !p.dead && ((_a = p.character) === null || _a === void 0 ? void 0 : _a.kind) == "Demons"; }) == -1;
 } /// 没有存活的恶魔
-);
+, function (player, payload) {
+    player.avatar = payload.character;
+});
 /// 可以观看魔典
 exports.Peep = new Skill("Peep", "T", AliveAtNight);
 /// 选择一个目标，他中毒
-exports.Poison = new Skill("Poison", "P", AliveAtNight);
+exports.Poison = new Skill("Poison", "P", AliveAtNight, function (_, payload) {
+    payload.player.isPoisoned = true;
+});
 /// 选择一个目标，第二天投票他投票你的票才生效
-exports.ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight);
+exports.ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, function (_, payload) {
+    payload.player.isMaster = true;
+});
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
-exports.Scapegoat = new Skill("Scapegoat", "P", AliveAtNight);
+exports.Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, function (_, payload) {
+    payload.player.isScapegoat = true;
+});
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 exports.WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", function (context) {
     var _a;
@@ -51,6 +64,8 @@ exports.WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", function (co
 exports.Guard = new Skill("Guard", "P", function (context) {
     return AliveAtNight(context) &&
         context.turn != 1;
+}, function (_, payload) {
+    payload.player.isGuarded = true;
 });
 exports.DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", function (context) {
     return AliveAtNight(context) &&
@@ -74,6 +89,14 @@ exports.KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", function (context) {
     return AliveAtNight(context) &&
         context.turn === 1;
 });
-exports.Nomination = new Skill("Nomination", "NM");
-exports.Slay = new Skill("Slay", "P_R");
-exports.Excute = new Skill("Excute", "P");
+exports.Nomination = new Skill("Nomination", "NM", undefined, function (nominator, payload) {
+    nominator.nominatable = false;
+    payload.player.canBeNominated = false;
+    payload.player.isOnGallows = payload.result;
+});
+exports.Slay = new Skill("Slay", "P_R", undefined, function (_, payload) {
+    payload.player.isSlew = payload.result;
+});
+exports.Excute = new Skill("Excute", "P", undefined, function (_, payload) {
+    payload.player.isExecuted = true;
+});
