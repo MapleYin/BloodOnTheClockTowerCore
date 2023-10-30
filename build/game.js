@@ -23,19 +23,21 @@ var Game = /** @class */ (function () {
         applyTimelines.forEach(function (item) {
             var timeline = _this.createTimeline();
             timeline === null || timeline === void 0 ? void 0 : timeline.operations.forEach(function (op) {
-                if ("players" in item.payload) {
-                    item.payload.players = item.payload.players.map(function (player) {
-                        return new player_1.Player(__assign(__assign({}, player), { avatar: book.characters.find(function (c) { return c.key === player.avatar.key; }), character: book.characters.find(function (c) { return c.key === player.character.key; }) }));
-                    });
-                }
-                if ("player" in item.payload) {
-                    item.payload.player = new player_1.Player(__assign(__assign({}, item.payload.player), { avatar: book.characters.find(function (c) { return c.key === item.payload.player.avatar.key; }), character: book.characters.find(function (c) { return c.key === item.payload.player.character.key; }) }));
-                }
-                if ("character" in item.payload) {
-                    item.payload.character = book.characters.find(function (c) { return c.key === item.payload.character.key; });
-                }
-                if ("characters" in item.payload) {
-                    item.payload.characters = book.characters.filter(function (c) { return item.payload.characters.findIndex(function (char) { return char.key === c.key; }) != -1; });
+                if (item.payload) {
+                    if ("players" in item.payload) {
+                        item.payload.players = item.payload.players.map(function (player) {
+                            return new player_1.Player(__assign(__assign({}, player), { avatar: book.characters.find(function (c) { return c.key === player.avatar.key; }), character: book.characters.find(function (c) { return c.key === player.character.key; }) }));
+                        });
+                    }
+                    if ("player" in item.payload) {
+                        item.payload.player = new player_1.Player(__assign(__assign({}, item.payload.player), { avatar: book.characters.find(function (c) { return c.key === item.payload.player.avatar.key; }), character: book.characters.find(function (c) { return c.key === item.payload.player.character.key; }) }));
+                    }
+                    if ("character" in item.payload) {
+                        item.payload.character = book.characters.find(function (c) { return c.key === item.payload.character.key; });
+                    }
+                    if ("characters" in item.payload) {
+                        item.payload.characters = book.characters.filter(function (c) { return item.payload.characters.findIndex(function (char) { return char.key === c.key; }) != -1; });
+                    }
                 }
                 op.payload = item.payload;
             });

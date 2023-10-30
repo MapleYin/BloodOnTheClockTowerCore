@@ -12,27 +12,29 @@ export class Game {
         applyTimelines.forEach((item) => {
             const timeline = this.createTimeline()
             timeline?.operations.forEach(op => {
-                if ("players" in item.payload) {
-                    item.payload.players = item.payload.players.map(player => {
-                        return new Player({
-                            ...player,
-                            avatar: book.characters.find(c => c.key === player.avatar.key),
-                            character: book.characters.find(c => c.key === player.character.key)
+                if (item.payload) {
+                    if ("players" in item.payload) {
+                        item.payload.players = item.payload.players.map(player => {
+                            return new Player({
+                                ...player,
+                                avatar: book.characters.find(c => c.key === player.avatar.key),
+                                character: book.characters.find(c => c.key === player.character.key)
+                            })
                         })
-                    })
-                }
-                if ("player" in item.payload) {
-                    item.payload.player = new Player({
-                        ...item.payload.player,
-                        avatar: book.characters.find(c => c.key === item.payload.player.avatar.key),
-                        character: book.characters.find(c => c.key === item.payload.player.character.key)
-                    })
-                }
-                if ("character" in item.payload) {
-                    item.payload.character = book.characters.find(c => c.key === item.payload.character.key)
-                }
-                if ("characters" in item.payload) {
-                    item.payload.characters = book.characters.filter(c => item.payload.characters.findIndex(char => char.key === c.key) != -1)
+                    }
+                    if ("player" in item.payload) {
+                        item.payload.player = new Player({
+                            ...item.payload.player,
+                            avatar: book.characters.find(c => c.key === item.payload.player.avatar.key),
+                            character: book.characters.find(c => c.key === item.payload.player.character.key)
+                        })
+                    }
+                    if ("character" in item.payload) {
+                        item.payload.character = book.characters.find(c => c.key === item.payload.character.key)
+                    }
+                    if ("characters" in item.payload) {
+                        item.payload.characters = book.characters.filter(c => item.payload.characters.findIndex(char => char.key === c.key) != -1)
+                    }
                 }
                 op.payload = item.payload
             })
