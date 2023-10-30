@@ -9,7 +9,7 @@ var Game = /** @class */ (function () {
         this.players = players;
     }
     Game.prototype.createTimeline = function () {
-        var laseTimeline = this.timelines.length > 1 ? this.timelines[this.timelines.length - 1] : undefined;
+        var laseTimeline = this.timelines.length > 0 ? this.timelines[this.timelines.length - 1] : undefined;
         if (laseTimeline && !laseTimeline.fulfilled()) {
             return;
         }

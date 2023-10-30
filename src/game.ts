@@ -12,7 +12,7 @@ export class Game {
     }
 
     createTimeline(): ITimeline | undefined {
-        const laseTimeline = this.timelines.length > 1 ? this.timelines[this.timelines.length - 1] : undefined
+        const laseTimeline = this.timelines.length > 0 ? this.timelines[this.timelines.length - 1] : undefined
         if (laseTimeline && !laseTimeline.fulfilled()) {
             return
         }
