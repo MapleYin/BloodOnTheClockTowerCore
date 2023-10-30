@@ -1,13 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Excute = exports.Slay = exports.Nomination = exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
+var character_1 = require("./character");
 var AliveAtNight = function (context) { return !context.player.dead && context.time == "night"; };
 var Skill = /** @class */ (function () {
-    function Skill(key, payloadKey, validHandler, effect) {
+    function Skill(key, payloadKey, validHandler, effect, payloadOptions) {
         this.key = key;
         this.payloadKey = payloadKey;
         this.valid = validHandler || (function () { return true; });
         this.effect = effect || (function () { });
+        this.payloadOptions = payloadOptions || {};
     }
     return Skill;
 }());
@@ -15,17 +17,22 @@ var Skill = /** @class */ (function () {
 exports.KnowAbsent = new Skill("KnowAbsent", "CS", function (context) {
     return context.turn == 1 &&
         context.time == "night";
+}, undefined, {
+    kinds: ["Townsfolk", "Outsiders"],
+    exist: "notInGame"
 });
 /// 如果自杀，另外一个爪牙变成恶魔
 exports.Tramsform = new Skill("Tramsform", "P", function (context) {
     var _a;
     return context.player.dead &&
         ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat;
+}, undefined, {
+    kinds: ["Minions"],
+    exist: "inGame"
 });
 /// 选择一个目标，他死亡
 exports.Kill = new Skill("Kill", "P_R", function (context) {
-    return AliveAtNight(context) &&
-        context.turn != 1;
+    return AliveAtNight(context) && context.turn != 1;
 }, function (_, payload) {
     if (payload.result) {
         payload.player.isKilled = true;
@@ -39,6 +46,8 @@ exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
 } /// 没有存活的恶魔
 , function (player, payload) {
     player.avatar = payload.character;
+}, {
+    static: character_1.Imp
 });
 /// 可以观看魔典
 exports.Peep = new Skill("Peep", "T", AliveAtNight);
@@ -74,20 +83,26 @@ exports.DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", function (contex
 exports.CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight);
 exports.KnowEvilAround = new Skill("KnowEvilAround", "N", AliveAtNight);
 exports.KnowSeat = new Skill("KnowSeat", "N", function (context) {
-    return AliveAtNight(context) &&
-        context.turn === 1;
+    return AliveAtNight(context) && context.turn === 1;
+}, undefined, {
+    min: 0,
+    max: 2
 });
 exports.KnowMinions = new Skill("KnowMinions", "PS_C", function (context) {
     return AliveAtNight(context) &&
         context.turn === 1;
+}, undefined, {
+    kinds: ["Minions"]
 });
 exports.KnowOutsiders = new Skill("KnowOutsiders", "PS_C", function (context) {
-    return AliveAtNight(context) &&
-        context.turn === 1;
+    return AliveAtNight(context) && context.turn === 1;
+}, undefined, {
+    kinds: ["Outsiders"]
 });
 exports.KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", function (context) {
-    return AliveAtNight(context) &&
-        context.turn === 1;
+    return AliveAtNight(context) && context.turn === 1;
+}, undefined, {
+    kinds: ["Townsfolk"]
 });
 exports.Nomination = new Skill("Nomination", "NM", undefined, function (nominator, payload) {
     nominator.nominatable = false;

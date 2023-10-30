@@ -1,4 +1,4 @@
-import { ICharacter } from "./character";
+import { EKind, ICharacter, Imp } from "./character";
 import { IPlayer } from "./player";
 
 declare namespace Payload {
@@ -29,6 +29,18 @@ declare namespace Payload {
     interface TimeLine {
         timeline: true
     }
+
+    namespace Options {
+        interface Character {
+            static?: ICharacter
+            kinds?: EKind[]
+            exist?: "inGame" | "notInGame" | "all"
+        }
+        interface Number {
+            min?: number;
+            max?: number
+        }
+    }
 }
 
 export type PayloadDefind = {
@@ -47,9 +59,27 @@ export type PayloadDefind = {
     "NM": Payload.Player & Payload.Players & Payload.Result
 }
 
+export type PayloadOptionDefind = {
+    "C": Payload.Options.Character,
+    "N": Payload.Options.Number,
+    "P": Payload.Options.Character,
+    "PS": Payload.Options.Character & Payload.Options.Number,
+    "CS": Payload.Options.Character & Payload.Options.Number,
+    "P_C": Payload.Options.Character,
+    "P_N": Payload.Options.Character,
+    "P_CS": Payload.Options.Character & Payload.Options.Number,
+    "P_R": Payload.Options.Character,
+    "PS_R": Payload.Options.Number,
+    "PS_C": Payload.Options.Character & Payload.Options.Number,
+    "T": {},
+    "NM": {}
+}
+
 export type PayloadKey = keyof PayloadDefind
 
 export type PayloadType = PayloadDefind[PayloadKey]
+
+export type PayloadOptions = PayloadOptionDefind[PayloadKey]
 
 export interface IContext {
     /// timeline
@@ -70,6 +100,7 @@ export interface ISkill {
 
     readonly key: string
     readonly payloadKey: PayloadKey
+    readonly payloadOptions: PayloadOptions
 
     valid(context: IContext): boolean
     effect(effector: IPlayer, payload: PayloadDefind[PayloadKey]): void
@@ -81,14 +112,16 @@ class Skill<Key extends PayloadKey> implements ISkill {
 
     readonly key: string;
     readonly payloadKey: Key;
+    readonly payloadOptions: PayloadOptionDefind[Key];
     readonly valid: (context: IContext) => boolean
     readonly effect: (effector: IPlayer, payload: PayloadDefind[Key]) => void
 
-    constructor(key: string, payloadKey: Key, validHandler?: (context: IContext) => boolean, effect?: (effector: IPlayer, payload: PayloadDefind[Key]) => void) {
+    constructor(key: string, payloadKey: Key, validHandler?: (context: IContext) => boolean, effect?: (effector: IPlayer, payload: PayloadDefind[Key]) => void, payloadOptions?: PayloadOptionDefind[Key]) {
         this.key = key
         this.payloadKey = payloadKey
         this.valid = validHandler || (() => true)
-        this.effect = effect || (() => {})
+        this.effect = effect || (() => { })
+        this.payloadOptions = payloadOptions || {}
     }
 }
 
@@ -96,19 +129,24 @@ class Skill<Key extends PayloadKey> implements ISkill {
 export const KnowAbsent = new Skill("KnowAbsent", "CS", context =>
     context.turn == 1 &&
     context.time == "night"
-)
+    , undefined, {
+    kinds: ["Townsfolk", "Outsiders"],
+    exist: "notInGame"
+})
 
 /// 如果自杀，另外一个爪牙变成恶魔
 export const Tramsform = new Skill("Tramsform", "P", context =>
     context.player.dead &&
     context.killTarget?.seat == context.player.seat
-)
+    , undefined, {
+    kinds: ["Minions"],
+    exist: "inGame"
+})
 
 /// 选择一个目标，他死亡
 export const Kill = new Skill("Kill", "P_R", context =>
-    AliveAtNight(context) &&
-    context.turn != 1
-    , (_, payload) => {
+    AliveAtNight(context) && context.turn != 1,
+    (_, payload) => {
         if (payload.result) {
             payload.player.isKilled = true
         }
@@ -121,7 +159,9 @@ export const BecomeImp = new Skill("BecomeImp", "C", context =>
     context.players.findIndex(p => !p.dead && p.character?.kind == "Demons") == -1 /// 没有存活的恶魔
     , (player, payload) => {
         player.avatar = payload.character
-    })
+    }, {
+    static: Imp
+})
 
 /// 可以观看魔典
 export const Peep = new Skill("Peep", "T", AliveAtNight)
@@ -164,21 +204,27 @@ export const CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight)
 export const KnowEvilAround = new Skill("KnowEvilAround", "N", AliveAtNight)
 
 export const KnowSeat = new Skill("KnowSeat", "N", context =>
-    AliveAtNight(context) &&
-    context.turn === 1
-)
+    AliveAtNight(context) && context.turn === 1
+    , undefined, {
+    min: 0,
+    max: 2
+})
 export const KnowMinions = new Skill("KnowMinions", "PS_C", context =>
     AliveAtNight(context) &&
     context.turn === 1
-)
+    , undefined, {
+    kinds: ["Minions"]
+})
 export const KnowOutsiders = new Skill("KnowOutsiders", "PS_C", context =>
-    AliveAtNight(context) &&
-    context.turn === 1
-)
+    AliveAtNight(context) && context.turn === 1
+    , undefined, {
+    kinds: ["Outsiders"]
+})
 export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
-    AliveAtNight(context) &&
-    context.turn === 1
-)
+    AliveAtNight(context) && context.turn === 1
+    , undefined, {
+    kinds: ["Townsfolk"]
+})
 
 export const Nomination = new Skill("Nomination", "NM", undefined, (nominator, payload) => {
     nominator.nominatable = false
