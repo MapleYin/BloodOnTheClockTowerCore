@@ -19,6 +19,14 @@ export class Timeline implements ITimeline {
     players: IPlayer[];
     operations: IOperation[];
 
+    static from(book: IBook, obj: Record<string, any>): Timeline {
+        const timeline = new Timeline(book, obj.players)
+        timeline.turn = obj.turn
+        timeline.time = obj.time
+        timeline.operations = obj.operations
+        return timeline
+    }
+
     constructor(book: IBook, players: IPlayer[], lastTimeline?: ITimeline) {
 
         const { time, turn } = lastTimeline || { time: 'day', turn: 1 }
