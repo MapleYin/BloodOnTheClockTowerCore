@@ -131,7 +131,9 @@ export const KnowAbsent = new Skill("KnowAbsent", "CS", context =>
     context.time == "night"
     , undefined, {
     kinds: ["Townsfolk", "Outsiders"],
-    exist: "notInGame"
+    exist: "notInGame",
+    min: 3,
+    max: 3
 })
 
 /// 如果自杀，另外一个爪牙变成恶魔
@@ -200,8 +202,14 @@ export const DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", context =>
     !!context.excuteInDay
 )
 
-export const CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight)
-export const KnowEvilAround = new Skill("KnowEvilAround", "N", AliveAtNight)
+export const CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight, undefined, {
+    max: 2,
+    min: 2
+})
+export const KnowEvilAround = new Skill("KnowEvilAround", "N", AliveAtNight, undefined, {
+    min: 0,
+    max: 2
+})
 
 export const KnowSeat = new Skill("KnowSeat", "N", context =>
     AliveAtNight(context) && context.turn === 1
@@ -213,17 +221,23 @@ export const KnowMinions = new Skill("KnowMinions", "PS_C", context =>
     AliveAtNight(context) &&
     context.turn === 1
     , undefined, {
-    kinds: ["Minions"]
+    kinds: ["Minions"],
+    min: 2,
+    max: 2
 })
 export const KnowOutsiders = new Skill("KnowOutsiders", "PS_C", context =>
     AliveAtNight(context) && context.turn === 1
     , undefined, {
-    kinds: ["Outsiders"]
+    kinds: ["Outsiders"],
+    min: 2,
+    max: 2
 })
 export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
     AliveAtNight(context) && context.turn === 1
     , undefined, {
-    kinds: ["Townsfolk"]
+    kinds: ["Townsfolk"],
+    min: 2,
+    max: 2
 })
 
 export const Nomination = new Skill("Nomination", "NM", undefined, (nominator, payload) => {
