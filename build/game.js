@@ -7,6 +7,7 @@ var Game = /** @class */ (function () {
         this.timelines = [];
         this.book = book;
         this.players = players;
+        this.timelines = timelines || [];
     }
     Game.prototype.createTimeline = function () {
         var laseTimeline = this.timelines.length > 0 ? this.timelines[this.timelines.length - 1] : undefined;

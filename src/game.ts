@@ -9,6 +9,7 @@ export class Game {
     constructor(book: IBook, players: IPlayer[], timelines?: ITimeline[]) {
         this.book = book
         this.players = players
+        this.timelines = timelines || []
     }
 
     createTimeline(): ITimeline | undefined {
