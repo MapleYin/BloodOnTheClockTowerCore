@@ -1,6 +1,6 @@
 import { IBook } from "./book";
 import { CreateOperation, IOperation } from "./operation";
-import { IPlayer } from "./player";
+import { IPlayer, Player } from "./player";
 import { IContext, PayloadType } from "./skill";
 
 export interface ITimeline {
@@ -18,14 +18,6 @@ export class Timeline implements ITimeline {
     time: "day" | "night";
     players: IPlayer[];
     operations: IOperation[];
-
-    static from(book: IBook, obj: Record<string, any>): Timeline {
-        const timeline = new Timeline(book, obj.players)
-        timeline.turn = obj.turn
-        timeline.time = obj.time
-        timeline.operations = obj.operations
-        return timeline
-    }
 
     constructor(book: IBook, players: IPlayer[], lastTimeline?: ITimeline) {
 

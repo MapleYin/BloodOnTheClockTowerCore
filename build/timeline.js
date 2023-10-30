@@ -34,13 +34,6 @@ var Timeline = /** @class */ (function () {
             return (0, operation_1.CreateOperation)(ability.player, ability.skill);
         });
     }
-    Timeline.from = function (book, obj) {
-        var timeline = new Timeline(book, obj.players);
-        timeline.turn = obj.turn;
-        timeline.time = obj.time;
-        timeline.operations = obj.operations;
-        return timeline;
-    };
     Timeline.prototype.fulfilled = function () {
         return !this.operations.some(function (op) {
             return !op.payload;

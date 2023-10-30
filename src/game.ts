@@ -1,15 +1,42 @@
 import { IBook } from "./book";
-import { IPlayer } from "./player";
+import { IPlayer, Player } from "./player";
 import { ITimeline, Timeline } from "./timeline";
 
 export class Game {
     book: IBook;
     players: IPlayer[];
     timelines: ITimeline[] = []
-    constructor(book: IBook, players: IPlayer[], timelines?: ITimeline[]) {
+    constructor(book: IBook, players: IPlayer[], applyTimelines: Record<string, any>[]) {
         this.book = book
         this.players = players
-        this.timelines = timelines || []
+        applyTimelines.forEach((item) => {
+            const timeline = this.createTimeline()
+            timeline?.operations.forEach(op => {
+                if ("players" in item.payload) {
+                    item.payload.players = item.payload.players.map(player => {
+                        return new Player({
+                            ...player,
+                            avatar: book.characters.find(c => c.key === player.avatar.key),
+                            character: book.characters.find(c => c.key === player.character.key)
+                        })
+                    })
+                }
+                if ("player" in item.payload) {
+                    item.payload.player = new Player({
+                        ...item.payload.player,
+                        avatar: book.characters.find(c => c.key === item.payload.player.avatar.key),
+                        character: book.characters.find(c => c.key === item.payload.player.character.key)
+                    })
+                }
+                if ("character" in item.payload) {
+                    item.payload.character = book.characters.find(c => c.key === item.payload.character.key)
+                }
+                if ("characters" in item.payload) {
+                    item.payload.characters = book.characters.filter(c => item.payload.characters.findIndex(char => char.key === c.key) != -1)
+                }
+                op.payload = item.payload
+            })
+        })
     }
 
     createTimeline(): ITimeline | undefined {
