@@ -63,6 +63,7 @@ var Timeline = /** @class */ (function () {
                 payload: op.payload
             };
         });
+        return timeline;
     };
     Timeline.prototype.fulfilled = function () {
         return !this.operations.some(function (op) {

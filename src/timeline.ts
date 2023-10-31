@@ -46,6 +46,7 @@ export class Timeline implements ITimeline {
                 payload: op.payload
             }
         })
+        return timeline
     }
 
     constructor(book: IBook, players: IPlayer[], lastTimeline?: ITimeline) {
