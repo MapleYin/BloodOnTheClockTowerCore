@@ -90,4 +90,5 @@ export declare const Fanggu: Character;
 export declare const Vigormortis: Character;
 export declare const Nodashii: Character;
 export declare const Vortox: Character;
+export declare const CharacterForKey: (key: string) => ICharacter | undefined;
 export {};

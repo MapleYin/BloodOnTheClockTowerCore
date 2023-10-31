@@ -185,3 +185,9 @@ export const Vigormortis = new Character("Vigormortis", "Demons", Source.Vigormo
 export const Nodashii = new Character("Nodashii", "Demons", Source.Nodashii)
 /// 涡流
 export const Vortox = new Character("Vortox", "Demons", Source.Vortox)
+
+const All = [Washerwoman, Librarian, Investigator, Chef, Empath, FortuneTeller, Undertaker, Monk, Ravenkeeper, Virgin, Slayer, Soldier, Mayor, Butler, Drunk, Recluse, Saint, Poisoner, Spy, ScarletWoman, Baron, Imp
+    , Grandmother, Sailor, Chambermaid, Exorcist, Innkeeper, Gambler, Gossip, Courtier, Professor, Minstrel, Tealady, Pacifist, Fool, Tinker, Moonchild, Goon, Lunatic, Godfather, Devilsadvocate, Assassin, Mastermind, Zombuul, Pukka, Shabaloth, Po
+    , Clockmaker, Dreamer, Snakecharmer, Mathematician, Flowergirl, Towncrier, Oracle, Savant, Seamstress, Philosopher, Artist, Juggler, Sage, Mutant, Sweetheart, Barber, Klutz, Eviltwin, Witch, Cerenovus, Pithag, Fanggu, Vigormortis, Nodashii, Vortox];
+
+export const CharacterForKey = (key: string): ICharacter | undefined => All.find(c => c.key === key)

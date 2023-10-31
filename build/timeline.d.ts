@@ -14,7 +14,8 @@ export declare class Timeline implements ITimeline {
     time: "day" | "night";
     players: IPlayer[];
     operations: IOperation[];
+    static from(book: IBook, obj: Record<string, any>): void;
     constructor(book: IBook, players: IPlayer[], lastTimeline?: ITimeline);
     fulfilled(): boolean;
-    effected(): IPlayer[];
+    effected(at?: number): IPlayer[];
 }

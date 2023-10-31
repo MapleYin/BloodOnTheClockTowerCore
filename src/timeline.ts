@@ -1,7 +1,7 @@
 import { IBook } from "./book";
 import { CreateOperation, IOperation } from "./operation";
 import { IPlayer, Player } from "./player";
-import { IContext, PayloadType } from "./skill";
+import { IContext } from "./skill";
 
 export interface ITimeline {
     readonly players: IPlayer[]
@@ -18,6 +18,12 @@ export class Timeline implements ITimeline {
     time: "day" | "night";
     players: IPlayer[];
     operations: IOperation[];
+
+    static from(book: IBook, obj: Record<string, any>) {
+        const timeline = new Timeline(book, [])
+        timeline.turn = obj.turn
+        timeline.time = obj.time
+    }
 
     constructor(book: IBook, players: IPlayer[], lastTimeline?: ITimeline) {
 
@@ -59,12 +65,14 @@ export class Timeline implements ITimeline {
         })
     }
 
-    effected(): IPlayer[] {
-        if (!this.fulfilled()) {
-            throw "timeline must fulfilled"
+    effected(at?: number): IPlayer[] {
+        const progress = at || this.operations.length
+        const fulfilled = !this.operations.filter((_, idx) => idx < progress).some(op => !op.payload)
+        if (!fulfilled) {
+            throw `Operations before ${progress} are not fulfilled`
         }
-        const players = this.players;
-        this.operations.forEach((op) => {
+        const players = this.players.map(p => { return new Player(p) });
+        this.operations.filter((_, idx) => idx < progress).forEach((op) => {
             const payload = op.payload!
             if ("player" in payload) {
                 payload.player = players.find(p => p.seat == payload.player.seat) || payload.player;
@@ -73,6 +81,7 @@ export class Timeline implements ITimeline {
                 payload.players = payload.players.map(p => players.find(_p => _p.seat === p.seat) || p)
             }
             const player = players.find(p => p.seat == op.player.seat) || op.player;
+            op.player = player
             op.skill.effect(player, payload)
         })
 
