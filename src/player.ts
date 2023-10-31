@@ -1,4 +1,4 @@
-import { ICharacter } from "./character";
+import { CharacterForKey, ICharacter } from "./character";
 
 export interface IPlayer {
     /**
@@ -59,8 +59,8 @@ export class Player implements IPlayer {
     }
 
     constructor(obj: Props) {
-        this.avatar = obj.avatar || obj.character
-        this.character = obj.character
+        this.avatar = CharacterForKey(obj.avatar?.key || obj.character.key) || obj.character
+        this.character = CharacterForKey(obj.character.key) || obj.character
         this.seat = obj.seat || 0
         this.forbiddenVote = obj.forbiddenVote || false
         this.isDrunk = obj.isDrunk || false

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Timeline = void 0;
 var operation_1 = require("./operation");
 var player_1 = require("./player");
+var skill_1 = require("./skill");
 var Timeline = /** @class */ (function () {
     function Timeline(book, players, lastTimeline) {
         var _this = this;
@@ -39,6 +40,29 @@ var Timeline = /** @class */ (function () {
         var timeline = new Timeline(book, []);
         timeline.turn = obj.turn;
         timeline.time = obj.time;
+        timeline.players = obj.players.map(function (p) { return new player_1.Player(p); });
+        timeline.operations = obj.operations.map(function (op) {
+            if (op.payload) {
+                if ("players" in op.payload) {
+                    op.payload.players = op.payload.players.map(function (player) { return new player_1.Player(player); });
+                }
+                if ("player" in op.payload) {
+                    op.payload.player = new player_1.Player(op.payload.player);
+                }
+                if ("character" in op.payload) {
+                    op.payload.character = book.characters.find(function (c) { return c.key === op.payload.character.key; });
+                }
+                if ("characters" in op.payload) {
+                    op.payload.characters = book.characters.filter(function (c) { return op.payload.characters.findIndex(function (char) { return char.key === c.key; }) != -1; });
+                }
+            }
+            return {
+                player: new player_1.Player(op.player),
+                skill: (0, skill_1.SkillForKey)(op.skill.key),
+                payloadKey: op.payloadKey,
+                payload: op.payload
+            };
+        });
     };
     Timeline.prototype.fulfilled = function () {
         return !this.operations.some(function (op) {

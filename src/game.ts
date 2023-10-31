@@ -14,20 +14,10 @@ export class Game {
             timeline?.operations.forEach(op => {
                 if (item.payload) {
                     if ("players" in item.payload) {
-                        item.payload.players = item.payload.players.map(player => {
-                            return new Player({
-                                ...player,
-                                avatar: book.characters.find(c => c.key === player.avatar.key),
-                                character: book.characters.find(c => c.key === player.character.key)
-                            })
-                        })
+                        item.payload.players = item.payload.players.map(player => new Player(player))
                     }
                     if ("player" in item.payload) {
-                        item.payload.player = new Player({
-                            ...item.payload.player,
-                            avatar: book.characters.find(c => c.key === item.payload.player.avatar.key),
-                            character: book.characters.find(c => c.key === item.payload.player.character.key)
-                        })
+                        item.payload.player = new Player(item.payload.player)
                     }
                     if ("character" in item.payload) {
                         item.payload.character = book.characters.find(c => c.key === item.payload.character.key)

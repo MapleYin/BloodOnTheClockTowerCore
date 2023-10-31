@@ -1,7 +1,7 @@
 import { IBook } from "./book";
 import { CreateOperation, IOperation } from "./operation";
 import { IPlayer, Player } from "./player";
-import { IContext } from "./skill";
+import { IContext, SkillForKey } from "./skill";
 
 export interface ITimeline {
     readonly players: IPlayer[]
@@ -23,6 +23,29 @@ export class Timeline implements ITimeline {
         const timeline = new Timeline(book, [])
         timeline.turn = obj.turn
         timeline.time = obj.time
+        timeline.players = obj.players.map(p => new Player(p))
+        timeline.operations = obj.operations.map(op => {
+            if (op.payload) {
+                if ("players" in op.payload) {
+                    op.payload.players = op.payload.players.map(player => new Player(player))
+                }
+                if ("player" in op.payload) {
+                    op.payload.player = new Player(op.payload.player)
+                }
+                if ("character" in op.payload) {
+                    op.payload.character = book.characters.find(c => c.key === op.payload.character.key)
+                }
+                if ("characters" in op.payload) {
+                    op.payload.characters = book.characters.filter(c => op.payload.characters.findIndex(char => char.key === c.key) != -1)
+                }
+            }
+            return {
+                player: new Player(op.player),
+                skill: SkillForKey(op.skill.key),
+                payloadKey: op.payloadKey,
+                payload: op.payload
+            }
+        })
     }
 
     constructor(book: IBook, players: IPlayer[], lastTimeline?: ITimeline) {

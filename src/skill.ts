@@ -253,3 +253,7 @@ export const Slay = new Skill("Slay", "P_R", undefined, (_, payload) => {
 export const Excute = new Skill("Excute", "P", undefined, (_, payload) => {
     payload.player.isExecuted = true
 })
+
+const All = [KnowAbsent,Tramsform,Kill,BecomeImp,Peep,Poison,ChooseMaster,Scapegoat,WakenKnowCharacter,Guard,DigKnowCharacter,CheckImp,KnowEvilAround,KnowSeat,KnowMinions,KnowOutsiders,KnowTownsfolk,Nomination,Slay,Excute]
+
+export const SkillForKey = (key: string) => All.find(sk => sk.key === key)

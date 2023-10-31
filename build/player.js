@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Player = void 0;
+var character_1 = require("./character");
 var Player = /** @class */ (function () {
     function Player(obj) {
-        this.avatar = obj.avatar || obj.character;
-        this.character = obj.character;
+        var _a;
+        this.avatar = (0, character_1.CharacterForKey)(((_a = obj.avatar) === null || _a === void 0 ? void 0 : _a.key) || obj.character.key) || obj.character;
+        this.character = (0, character_1.CharacterForKey)(obj.character.key) || obj.character;
         this.seat = obj.seat || 0;
         this.forbiddenVote = obj.forbiddenVote || false;
         this.isDrunk = obj.isDrunk || false;
