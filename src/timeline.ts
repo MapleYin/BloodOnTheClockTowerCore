@@ -71,7 +71,7 @@ export class Timeline implements ITimeline {
     }
 
     effected(at?: number): IPlayer[] {
-        const progress = at || this.operations.length
+        const progress = typeof at === "number" ? at : this.operations.length
         const fulfilled = !this.operations.filter((_, idx) => idx < progress).some(op => !op.payload)
         if (!fulfilled) {
             throw `Operations before ${progress} are not fulfilled`

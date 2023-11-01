@@ -66,7 +66,7 @@ var Timeline = /** @class */ (function () {
         });
     };
     Timeline.prototype.effected = function (at) {
-        var progress = at || this.operations.length;
+        var progress = typeof at === "number" ? at : this.operations.length;
         var fulfilled = !this.operations.filter(function (_, idx) { return idx < progress; }).some(function (op) { return !op.payload; });
         if (!fulfilled) {
             throw "Operations before ".concat(progress, " are not fulfilled");
