@@ -38,7 +38,7 @@ exports.Kill = new Skill("Kill", "P_R", function (context) {
     return AliveAtNight(context) && context.turn != 1;
 }, function (_, payload, players) {
     if (payload.result) {
-        players[payload.seat].isKilled = true;
+        players[payload.seat - 1].isKilled = true;
     }
 });
 /// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
@@ -56,15 +56,15 @@ exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
 exports.Peep = new Skill("Peep", "T", AliveAtNight);
 /// 选择一个目标，他中毒
 exports.Poison = new Skill("Poison", "P", AliveAtNight, function (_, payload, players) {
-    players[payload.seat].isPoisoned = true;
+    players[payload.seat - 1].isPoisoned = true;
 });
 /// 选择一个目标，第二天投票他投票你的票才生效
 exports.ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, function (_, payload, players) {
-    players[payload.seat].isMaster = true;
+    players[payload.seat - 1].isMaster = true;
 });
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
 exports.Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, function (_, payload, players) {
-    players[payload.seat].isScapegoat = true;
+    players[payload.seat - 1].isScapegoat = true;
 });
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 exports.WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", function (context) {
@@ -77,7 +77,7 @@ exports.Guard = new Skill("Guard", "P", function (context) {
     return AliveAtNight(context) &&
         context.turn != 1;
 }, function (_, payload, players) {
-    players[payload.seat].isGuarded = true;
+    players[payload.seat - 1].isGuarded = true;
 });
 exports.DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", function (context) {
     return AliveAtNight(context) &&
@@ -121,14 +121,14 @@ exports.KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", function (context) {
 });
 exports.Nomination = new Skill("Nomination", "NM", undefined, function (nominatorSeat, payload, players) {
     players[nominatorSeat].nominatable = false;
-    players[payload.seat].canBeNominated = false;
-    players[payload.seat].isOnGallows = payload.result;
+    players[payload.seat - 1].canBeNominated = false;
+    players[payload.seat - 1].isOnGallows = payload.result;
 });
 exports.Slay = new Skill("Slay", "P_R", undefined, function (_, payload, players) {
-    players[payload.seat].isSlew = payload.result;
+    players[payload.seat - 1].isSlew = payload.result;
 });
 exports.Excute = new Skill("Excute", "P", undefined, function (_, payload, players) {
-    players[payload.seat].isExecuted = true;
+    players[payload.seat - 1].isExecuted = true;
 });
 var All = [exports.KnowAbsent, exports.Tramsform, exports.Kill, exports.BecomeImp, exports.Peep, exports.Poison, exports.ChooseMaster, exports.Scapegoat, exports.WakenKnowCharacter, exports.Guard, exports.DigKnowCharacter, exports.CheckImp, exports.KnowEvilAround, exports.KnowSeat, exports.KnowMinions, exports.KnowOutsiders, exports.KnowTownsfolk, exports.Nomination, exports.Slay, exports.Excute];
 var SkillForKey = function (key) { return All.find(function (sk) { return sk.key === key; }); };

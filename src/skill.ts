@@ -150,7 +150,7 @@ export const Kill = new Skill("Kill", "P_R", context =>
     AliveAtNight(context) && context.turn != 1,
     (_, payload, players) => {
         if (payload.result) {
-            players[payload.seat].isKilled = true
+            players[payload.seat - 1].isKilled = true
         }
     })
 
@@ -170,17 +170,17 @@ export const Peep = new Skill("Peep", "T", AliveAtNight)
 
 /// 选择一个目标，他中毒
 export const Poison = new Skill("Poison", "P", AliveAtNight, (_, payload, players) => {
-    players[payload.seat].isPoisoned = true
+    players[payload.seat - 1].isPoisoned = true
 })
 
 /// 选择一个目标，第二天投票他投票你的票才生效
 export const ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, (_, payload, players) => {
-    players[payload.seat].isMaster = true
+    players[payload.seat - 1].isMaster = true
 })
 
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
 export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, (_, payload, players) => {
-    players[payload.seat].isScapegoat = true
+    players[payload.seat - 1].isScapegoat = true
 })
 
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
@@ -194,7 +194,7 @@ export const Guard = new Skill("Guard", "P", context =>
     AliveAtNight(context) &&
     context.turn != 1
     , (_, payload, players) => {
-        players[payload.seat].isGuarded = true
+        players[payload.seat - 1].isGuarded = true
     })
 
 export const DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", context =>
@@ -242,16 +242,16 @@ export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
 
 export const Nomination = new Skill("Nomination", "NM", undefined, (nominatorSeat, payload, players) => {
     players[nominatorSeat].nominatable = false
-    players[payload.seat].canBeNominated = false
-    players[payload.seat].isOnGallows = payload.result
+    players[payload.seat - 1].canBeNominated = false
+    players[payload.seat - 1].isOnGallows = payload.result
 })
 
 export const Slay = new Skill("Slay", "P_R", undefined, (_, payload, players) => {
-    players[payload.seat].isSlew = payload.result
+    players[payload.seat - 1].isSlew = payload.result
 })
 
 export const Excute = new Skill("Excute", "P", undefined, (_, payload, players) => {
-    players[payload.seat].isExecuted = true
+    players[payload.seat - 1].isExecuted = true
 })
 
 const All = [KnowAbsent, Tramsform, Kill, BecomeImp, Peep, Poison, ChooseMaster, Scapegoat, WakenKnowCharacter, Guard, DigKnowCharacter, CheckImp, KnowEvilAround, KnowSeat, KnowMinions, KnowOutsiders, KnowTownsfolk, Nomination, Slay, Excute]
