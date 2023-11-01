@@ -1,34 +1,64 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Player = void 0;
-var character_1 = require("./character");
-var Player = /** @class */ (function () {
-    function Player(obj) {
-        var _a;
-        this.avatar = (0, character_1.CharacterForKey)(((_a = obj.avatar) === null || _a === void 0 ? void 0 : _a.key) || obj.character.key) || obj.character;
-        this.character = (0, character_1.CharacterForKey)(obj.character.key) || obj.character;
-        this.seat = obj.seat || 0;
-        this.forbiddenVote = obj.forbiddenVote || false;
-        this.isDrunk = obj.isDrunk || false;
-        this.isPoisoned = obj.isPoisoned || false;
-        this.isEnemy = obj.isEnemy || false;
-        this.isKilled = obj.isKilled || false;
-        this.isExecuted = obj.isExecuted || false;
-        this.isOnGallows = obj.isOnGallows || false;
-        this.isMaster = obj.isMaster || false;
-        this.isSlew = obj.isSlew || false;
-        this.isGuarded = obj.isGuarded || false;
-        this.nominatable = obj.nominatable || true;
-        this.canBeNominated = obj.canBeNominated || true;
-        this.isScapegoat = obj.isScapegoat || false;
-    }
-    Object.defineProperty(Player.prototype, "dead", {
-        get: function () {
-            return this.isKilled || this.isExecuted || this.isSlew;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    return Player;
-}());
-exports.Player = Player;
+exports.isDeadPlayer = void 0;
+var isDeadPlayer = function (player) {
+    return player.isKilled || player.isSlew || player.isExecuted;
+};
+exports.isDeadPlayer = isDeadPlayer;
+// interface Props {
+//     avatar?: string
+//     character: string
+//     seat?: number
+//     forbiddenVote?: boolean
+//     isDrunk?: boolean
+//     isPoisoned?: boolean
+//     isEnemy?: boolean
+//     isKilled?: boolean
+//     isExecuted?: boolean
+//     isOnGallows?: boolean
+//     isMaster?: boolean
+//     isSlew?: boolean
+//     isGuarded?: boolean
+//     nominatable?: boolean
+//     canBeNominated?: boolean
+//     isScapegoat?: boolean
+// }
+// export class Player implements IPlayer {
+//     avatar: string;
+//     character: string;
+//     readonly seat: number;
+//     public get dead(): boolean {
+//         return this.isKilled || this.isExecuted || this.isSlew
+//     }
+//     constructor(obj: Props) {
+//         this.avatar = obj.avatar ||
+//         this.character = CharacterForKey(obj.character.key) || obj.character
+//         this.seat = obj.seat || 0
+//         this.forbiddenVote = obj.forbiddenVote || false
+//         this.isDrunk = obj.isDrunk || false
+//         this.isPoisoned = obj.isPoisoned || false
+//         this.isEnemy = obj.isEnemy || false
+//         this.isKilled = obj.isKilled || false
+//         this.isExecuted = obj.isExecuted || false
+//         this.isOnGallows = obj.isOnGallows || false
+//         this.isMaster = obj.isMaster || false
+//         this.isSlew = obj.isSlew || false
+//         this.isGuarded = obj.isGuarded || false
+//         this.nominatable = obj.nominatable || true
+//         this.canBeNominated = obj.canBeNominated || true
+//         this.isScapegoat = obj.isScapegoat || false
+//     }
+//     forbiddenVote: boolean
+//     isDrunk: boolean
+//     isPoisoned: boolean
+//     isEnemy: boolean
+//     isKilled: boolean
+//     isExecuted: boolean
+//     isOnGallows: boolean
+//     isMaster: boolean
+//     isSlew: boolean
+//     isGuarded: boolean
+//     nominatable: boolean
+//     canBeNominated: boolean
+//     isScapegoat: boolean
+// }

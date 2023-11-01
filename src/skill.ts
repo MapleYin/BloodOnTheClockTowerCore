@@ -1,14 +1,14 @@
-import { EKind, ICharacter, Imp } from "./character";
-import { IPlayer } from "./player";
+import { CharacterForKey, EKind, ICharacter, Imp } from "./character";
+import { IPlayer, isDeadPlayer } from "./player";
 
 declare namespace Payload {
     /// player
     interface Player {
-        player: IPlayer
+        seat: number
     }
     /// players
     interface Players {
-        players: IPlayer[]
+        seats: number[]
     }
     /// number
     interface Number {
@@ -16,11 +16,11 @@ declare namespace Payload {
     }
     /// character 
     interface Character {
-        character: ICharacter
+        character: string
     }
     /// characters
     interface Characters {
-        characters: ICharacter[]
+        characters: string[]
     }
     /// result
     interface Result {
@@ -32,7 +32,7 @@ declare namespace Payload {
 
     namespace Options {
         interface Character {
-            static?: ICharacter
+            static?: string
             kinds?: EKind[]
             exist?: "inGame" | "notInGame" | "all"
         }
@@ -103,10 +103,10 @@ export interface ISkill {
     readonly payloadOptions: PayloadOptions
 
     valid(context: IContext): boolean
-    effect(effector: IPlayer, payload: PayloadDefind[PayloadKey]): void
+    effect(effector: number, payload: PayloadDefind[PayloadKey], players: IPlayer[]): void
 }
 
-const AliveAtNight = (context: IContext) => !context.player.dead && context.time == "night"
+const AliveAtNight = (context: IContext) => !isDeadPlayer(context.player) && context.time == "night"
 
 class Skill<Key extends PayloadKey> implements ISkill {
 
@@ -114,9 +114,9 @@ class Skill<Key extends PayloadKey> implements ISkill {
     readonly payloadKey: Key;
     readonly payloadOptions: PayloadOptionDefind[Key];
     readonly valid: (context: IContext) => boolean
-    readonly effect: (effector: IPlayer, payload: PayloadDefind[Key]) => void
+    readonly effect: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void
 
-    constructor(key: string, payloadKey: Key, validHandler?: (context: IContext) => boolean, effect?: (effector: IPlayer, payload: PayloadDefind[Key]) => void, payloadOptions?: PayloadOptionDefind[Key]) {
+    constructor(key: string, payloadKey: Key, validHandler?: (context: IContext) => boolean, effect?: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void, payloadOptions?: PayloadOptionDefind[Key]) {
         this.key = key
         this.payloadKey = payloadKey
         this.valid = validHandler || (() => true)
@@ -138,7 +138,7 @@ export const KnowAbsent = new Skill("KnowAbsent", "CS", context =>
 
 /// 如果自杀，另外一个爪牙变成恶魔
 export const Tramsform = new Skill("Tramsform", "P", context =>
-    context.player.dead &&
+    isDeadPlayer(context.player) &&
     context.killTarget?.seat == context.player.seat
     , undefined, {
     kinds: ["Minions"],
@@ -148,9 +148,9 @@ export const Tramsform = new Skill("Tramsform", "P", context =>
 /// 选择一个目标，他死亡
 export const Kill = new Skill("Kill", "P_R", context =>
     AliveAtNight(context) && context.turn != 1,
-    (_, payload) => {
+    (_, payload, players) => {
         if (payload.result) {
-            payload.player.isKilled = true
+            players[payload.seat].isKilled = true
         }
     })
 
@@ -158,34 +158,34 @@ export const Kill = new Skill("Kill", "P_R", context =>
 export const BecomeImp = new Skill("BecomeImp", "C", context =>
     AliveAtNight(context) &&
     context.numberOfAlivePlayer >= 4 && /// 人数大于4人
-    context.players.findIndex(p => !p.dead && p.character?.kind == "Demons") == -1 /// 没有存活的恶魔
-    , (player, payload) => {
-        player.avatar = payload.character
+    context.players.findIndex(p => !isDeadPlayer(p) && CharacterForKey(p.character)?.kind == "Demons") == -1 /// 没有存活的恶魔
+    , (seat, payload, players) => {
+        players[seat].avatar = payload.character
     }, {
-    static: Imp
+    static: Imp.key
 })
 
 /// 可以观看魔典
 export const Peep = new Skill("Peep", "T", AliveAtNight)
 
 /// 选择一个目标，他中毒
-export const Poison = new Skill("Poison", "P", AliveAtNight, (_, payload) => {
-    payload.player.isPoisoned = true
+export const Poison = new Skill("Poison", "P", AliveAtNight, (_, payload, players) => {
+    players[payload.seat].isPoisoned = true
 })
 
 /// 选择一个目标，第二天投票他投票你的票才生效
-export const ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, (_, payload) => {
-    payload.player.isMaster = true
+export const ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, (_, payload, players) => {
+    players[payload.seat].isMaster = true
 })
 
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
-export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, (_, payload) => {
-    payload.player.isScapegoat = true
+export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, (_, payload, players) => {
+    players[payload.seat].isScapegoat = true
 })
 
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context =>
-    context.player.dead &&
+    isDeadPlayer(context.player) &&
     context.killTarget?.seat == context.player.seat &&
     context.time === "night"
 )
@@ -193,8 +193,8 @@ export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context
 export const Guard = new Skill("Guard", "P", context =>
     AliveAtNight(context) &&
     context.turn != 1
-    , (_, payload) => {
-        payload.player.isGuarded = true
+    , (_, payload, players) => {
+        players[payload.seat].isGuarded = true
     })
 
 export const DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", context =>
@@ -240,20 +240,20 @@ export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
     max: 2
 })
 
-export const Nomination = new Skill("Nomination", "NM", undefined, (nominator, payload) => {
-    nominator.nominatable = false
-    payload.player.canBeNominated = false
-    payload.player.isOnGallows = payload.result
+export const Nomination = new Skill("Nomination", "NM", undefined, (nominatorSeat, payload, players) => {
+    players[nominatorSeat].nominatable = false
+    players[payload.seat].canBeNominated = false
+    players[payload.seat].isOnGallows = payload.result
 })
 
-export const Slay = new Skill("Slay", "P_R", undefined, (_, payload) => {
-    payload.player.isSlew = payload.result
+export const Slay = new Skill("Slay", "P_R", undefined, (_, payload, players) => {
+    players[payload.seat].isSlew = payload.result
 })
 
-export const Excute = new Skill("Excute", "P", undefined, (_, payload) => {
-    payload.player.isExecuted = true
+export const Excute = new Skill("Excute", "P", undefined, (_, payload, players) => {
+    players[payload.seat].isExecuted = true
 })
 
-const All = [KnowAbsent,Tramsform,Kill,BecomeImp,Peep,Poison,ChooseMaster,Scapegoat,WakenKnowCharacter,Guard,DigKnowCharacter,CheckImp,KnowEvilAround,KnowSeat,KnowMinions,KnowOutsiders,KnowTownsfolk,Nomination,Slay,Excute]
+const All = [KnowAbsent, Tramsform, Kill, BecomeImp, Peep, Poison, ChooseMaster, Scapegoat, WakenKnowCharacter, Guard, DigKnowCharacter, CheckImp, KnowEvilAround, KnowSeat, KnowMinions, KnowOutsiders, KnowTownsfolk, Nomination, Slay, Excute]
 
 export const SkillForKey = (key: string) => All.find(sk => sk.key === key)

@@ -1,20 +1,20 @@
-import { EKind, ICharacter } from "./character";
+import { EKind } from "./character";
 import { IPlayer } from "./player";
 declare namespace Payload {
     interface Player {
-        player: IPlayer;
+        seat: number;
     }
     interface Players {
-        players: IPlayer[];
+        seats: number[];
     }
     interface Number {
         number: number;
     }
     interface Character {
-        character: ICharacter;
+        character: string;
     }
     interface Characters {
-        characters: ICharacter[];
+        characters: string[];
     }
     interface Result {
         result: boolean;
@@ -24,7 +24,7 @@ declare namespace Payload {
     }
     namespace Options {
         interface Character {
-            static?: ICharacter;
+            static?: string;
             kinds?: EKind[];
             exist?: "inGame" | "notInGame" | "all";
         }
@@ -82,15 +82,15 @@ export interface ISkill {
     readonly payloadKey: PayloadKey;
     readonly payloadOptions: PayloadOptions;
     valid(context: IContext): boolean;
-    effect(effector: IPlayer, payload: PayloadDefind[PayloadKey]): void;
+    effect(effector: number, payload: PayloadDefind[PayloadKey], players: IPlayer[]): void;
 }
 declare class Skill<Key extends PayloadKey> implements ISkill {
     readonly key: string;
     readonly payloadKey: Key;
     readonly payloadOptions: PayloadOptionDefind[Key];
     readonly valid: (context: IContext) => boolean;
-    readonly effect: (effector: IPlayer, payload: PayloadDefind[Key]) => void;
-    constructor(key: string, payloadKey: Key, validHandler?: (context: IContext) => boolean, effect?: (effector: IPlayer, payload: PayloadDefind[Key]) => void, payloadOptions?: PayloadOptionDefind[Key]);
+    readonly effect: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void;
+    constructor(key: string, payloadKey: Key, validHandler?: (context: IContext) => boolean, effect?: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void, payloadOptions?: PayloadOptionDefind[Key]);
 }
 export declare const KnowAbsent: Skill<"CS">;
 export declare const Tramsform: Skill<"P">;

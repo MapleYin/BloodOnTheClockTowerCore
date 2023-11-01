@@ -6,8 +6,6 @@ export interface ITimeline {
     readonly turn: number;
     readonly time: "day" | "night";
     readonly operations: IOperation[];
-    fulfilled(): boolean;
-    effected(): IPlayer[];
 }
 export declare class Timeline implements ITimeline {
     turn: number;
@@ -15,7 +13,7 @@ export declare class Timeline implements ITimeline {
     players: IPlayer[];
     operations: IOperation[];
     static from(book: IBook, obj: Record<string, any>): Timeline;
-    constructor(book: IBook, players: IPlayer[], lastTimeline?: ITimeline);
+    constructor(book: IBook, players: IPlayer[], lastTimeline?: Timeline);
     fulfilled(): boolean;
     effected(at?: number): IPlayer[];
 }

@@ -1,10 +1,10 @@
 import { IBook } from "./book";
 import { IPlayer } from "./player";
-import { ITimeline } from "./timeline";
+import { Timeline } from "./timeline";
 export declare class Game {
     book: IBook;
     players: IPlayer[];
-    timelines: ITimeline[];
+    timelines: Timeline[];
     constructor(book: IBook, players: IPlayer[], applyTimelines: Record<string, any>[]);
-    createTimeline(): ITimeline | undefined;
+    createTimeline(): Timeline | undefined;
 }

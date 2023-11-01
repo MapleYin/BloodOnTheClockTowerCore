@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateOperation = void 0;
-function CreateOperation(player, skill) {
+function CreateOperation(seat, skill) {
     return {
-        player: player,
+        seat: seat,
         payloadKey: skill.payloadKey,
         skill: skill
     };
