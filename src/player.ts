@@ -10,23 +10,23 @@ export interface IPlayer {
 
     readonly seat: number
 
-    forbiddenVote: boolean
-    isDrunk: boolean
-    isPoisoned: boolean
-    isEnemy: boolean
-    isKilled: boolean
-    isScapegoat: boolean
-    isExecuted: boolean
-    isOnGallows: boolean
-    isMaster: boolean
-    isSlew: boolean
-    isGuarded: boolean
-    nominatable: boolean
-    canBeNominated: boolean
+    forbiddenVote?: boolean
+    isDrunk?: boolean
+    isPoisoned?: boolean
+    isEnemy?: boolean
+    isKilled?: boolean
+    isScapegoat?: boolean
+    isExecuted?: boolean
+    isOnGallows?: boolean
+    isMaster?: boolean
+    isSlew?: boolean
+    isGuarded?: boolean
+    nominatable?: boolean
+    canBeNominated?: boolean
 }
 
 export const isDeadPlayer = (player: IPlayer) => {
-    return player.isKilled || player.isSlew || player.isExecuted
+    return player.isKilled || player.isSlew || player.isExecuted || false
 }
 
 // interface Props {

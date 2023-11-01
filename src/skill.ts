@@ -162,7 +162,7 @@ export const BecomeImp = new Skill("BecomeImp", "C", context =>
     , (seat, payload, players) => {
         players[seat].avatar = payload.character
     }, {
-    static: Imp.key
+    static: "Imp"
 })
 
 /// 可以观看魔典

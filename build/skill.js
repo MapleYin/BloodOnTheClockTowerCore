@@ -50,7 +50,7 @@ exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
 , function (seat, payload, players) {
     players[seat].avatar = payload.character;
 }, {
-    static: character_1.Imp.key
+    static: "Imp"
 });
 /// 可以观看魔典
 exports.Peep = new Skill("Peep", "T", AliveAtNight);

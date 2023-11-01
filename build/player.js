@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isDeadPlayer = void 0;
 var isDeadPlayer = function (player) {
-    return player.isKilled || player.isSlew || player.isExecuted;
+    return player.isKilled || player.isSlew || player.isExecuted || false;
 };
 exports.isDeadPlayer = isDeadPlayer;
 // interface Props {

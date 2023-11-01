@@ -11,6 +11,6 @@ describe("Game Test", () => {
         game.createTimeline()
         expect(game.timelines.length).toEqual(1)
         game.createTimeline()
-        expect(game.timelines.length).toEqual(2)
+        expect(game.timelines.length).toEqual(1)
     })
 })

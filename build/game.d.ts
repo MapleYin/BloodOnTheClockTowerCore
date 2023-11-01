@@ -5,6 +5,6 @@ export declare class Game {
     book: IBook;
     players: IPlayer[];
     timelines: Timeline[];
-    constructor(book: IBook, players: IPlayer[], applyTimelines: Record<string, any>[]);
+    constructor(book: IBook, players: IPlayer[], applyTimelines?: Record<string, any>[]);
     createTimeline(): Timeline | undefined;
 }

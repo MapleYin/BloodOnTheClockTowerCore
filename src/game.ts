@@ -6,10 +6,10 @@ export class Game {
     book: IBook;
     players: IPlayer[];
     timelines: Timeline[] = []
-    constructor(book: IBook, players: IPlayer[], applyTimelines: Record<string, any>[]) {
+    constructor(book: IBook, players: IPlayer[], applyTimelines?: Record<string, any>[]) {
         this.book = book
         this.players = players
-        this.timelines = applyTimelines.map(t => Timeline.from(book, t))
+        this.timelines = applyTimelines?.map(t => Timeline.from(book, t)) || []
     }
 
     createTimeline(): Timeline | undefined {

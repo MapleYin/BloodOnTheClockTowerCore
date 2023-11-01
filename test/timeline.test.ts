@@ -5,6 +5,7 @@ import { Timeline } from '../src/timeline';
 import { KnowAbsent, KnowEvilAround, KnowTownsfolk, Nomination, Poison, Slay } from '../src/skill';
 import { Empath } from '../src/character';
 import { CreateOperation } from '../src/operation';
+import { isDeadPlayer } from '../src/player';
 
 describe("Timeline creation perperty", () => {
 
@@ -38,11 +39,11 @@ describe("Timeline creation perperty", () => {
             characters: []
         }
         timeline.operations[1].payload = {
-            player: PlayerCase1[0]
+            seat: PlayerCase1[0].seat
         }
         timeline.operations[2].payload = {
-            players: [PlayerCase1[0], PlayerCase1[1]],
-            character: Empath
+            seats: [PlayerCase1[0].seat, PlayerCase1[1].seat],
+            character: Empath.key
         }
         timeline.operations[3].payload = {
             number: 2
@@ -52,15 +53,15 @@ describe("Timeline creation perperty", () => {
 
         expect(timelineNext.operations.length).toEqual(0)
 
-        timelineNext.operations.push(CreateOperation(timelineNext.players[0], Slay))
+        timelineNext.operations.push(CreateOperation(timelineNext.players[0].seat, Slay))
 
         expect(timelineNext.operations[0].skill).toEqual(Slay)
 
         timelineNext.operations[0].payload = {
-            player: timelineNext.players[1],
+            seat: timelineNext.players[1].seat,
             result: true
         }
 
-        expect(timelineNext.effected()[1].dead).toBeTruthy()
+        expect(isDeadPlayer(timelineNext.effected()[1])).toBeTruthy()
     })
 })

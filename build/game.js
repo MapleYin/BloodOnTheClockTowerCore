@@ -7,7 +7,7 @@ var Game = /** @class */ (function () {
         this.timelines = [];
         this.book = book;
         this.players = players;
-        this.timelines = applyTimelines.map(function (t) { return timeline_1.Timeline.from(book, t); });
+        this.timelines = (applyTimelines === null || applyTimelines === void 0 ? void 0 : applyTimelines.map(function (t) { return timeline_1.Timeline.from(book, t); })) || [];
     }
     Game.prototype.createTimeline = function () {
         var laseTimeline = this.timelines.length > 0 ? this.timelines[this.timelines.length - 1] : undefined;
