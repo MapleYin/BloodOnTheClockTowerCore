@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import { TroubleBrewing } from '../src/book';
 import { PlayerCase1 } from './caseData';
 import { Timeline } from '../src/timeline';
-import { KnowAbsent, KnowEvilAround, KnowTownsfolk, Nomination, Poison, Slay } from '../src/skill';
+import { KnowAbsent, KnowEvilAround, KnowTownsfolk, Nomination, Poison, Slay, WakenKnowCharacter } from '../src/skill';
 import { Empath } from '../src/character';
 import { CreateOperation } from '../src/operation';
 import { isDeadPlayer } from '../src/player';
@@ -53,15 +53,19 @@ describe("Timeline creation perperty", () => {
 
         expect(timelineNext.operations.length).toEqual(0)
 
-        timelineNext.operations.push(CreateOperation(timelineNext.players[0].seat, Slay))
+        const timelineNextNext = new Timeline(TroubleBrewing, PlayerCase1, timelineNext)
 
-        expect(timelineNext.operations[0].skill).toEqual(Slay)
+        timelineNextNext.operations[0].payload = {
+            seat: PlayerCase1[4].seat,
+        }
 
-        timelineNext.operations[0].payload = {
-            seat: timelineNext.players[1].seat,
+        timelineNextNext.operations[1].payload = {
+            seat: PlayerCase1[4].seat,
             result: true
         }
 
-        expect(isDeadPlayer(timelineNext.effected()[1])).toBeTruthy()
+        const t = Timeline.from(TroubleBrewing, timelineNextNext)
+
+        expect(t.operations[2].skill.key).toEqual(WakenKnowCharacter.key)
     })
 })

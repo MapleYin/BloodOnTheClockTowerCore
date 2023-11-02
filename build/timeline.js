@@ -57,7 +57,6 @@ var Timeline = /** @class */ (function () {
         });
     }
     Timeline.from = function (book, obj) {
-        var _a, _b;
         var timeline = new Timeline(book, []);
         timeline.turn = obj.turn;
         timeline.time = obj.time;
@@ -65,7 +64,7 @@ var Timeline = /** @class */ (function () {
         timeline.operations = obj.operations;
         var idx = obj.operations.findIndex((function (op) { return !op.payload; }));
         var players = idx == 0 ? obj.players : timeline.effected(idx);
-        var killTarget = ((_b = (_a = obj.operations.find(function (op) { return op.skill.key === skill_1.Kill.key; })) === null || _a === void 0 ? void 0 : _a.payload) === null || _b === void 0 ? void 0 : _b.seat) || undefined;
+        var killTarget = players.find(function (p) { var _a, _b; return p.seat === ((_b = (_a = obj.operations.find(function (op) { return op.skill.key === skill_1.Kill.key; })) === null || _a === void 0 ? void 0 : _a.payload) === null || _b === void 0 ? void 0 : _b.seat); });
         var abilities = players.flatMap(function (p) {
             var chatacter = (0, character_1.CharacterForKey)(p.avatar);
             if (!chatacter) {

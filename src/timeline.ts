@@ -25,7 +25,7 @@ export class Timeline implements ITimeline {
         timeline.operations = obj.operations
         const idx = obj.operations.findIndex((op => !op.payload))
         const players = idx == 0 ? obj.players : timeline.effected(idx);
-        const killTarget = obj.operations.find(op => op.skill.key === Kill.key)?.payload?.seat || undefined
+        const killTarget = players.find(p => p.seat === obj.operations.find(op => op.skill.key === Kill.key)?.payload?.seat)
         const abilities = players.flatMap(p => {
             const chatacter = CharacterForKey(p.avatar)
             if (!chatacter) {

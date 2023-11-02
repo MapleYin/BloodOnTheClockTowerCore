@@ -184,11 +184,11 @@ export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, (_, payload, 
 })
 
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
-export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context =>
-    isDeadPlayer(context.player) &&
+export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context => {
+    return isDeadPlayer(context.player) &&
     context.killTarget?.seat == context.player.seat &&
     context.time === "night"
-)
+})
 
 export const Guard = new Skill("Guard", "P", context =>
     AliveAtNight(context) &&
