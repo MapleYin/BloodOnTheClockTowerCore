@@ -2,7 +2,7 @@ import { IBook } from "./book";
 import { CharacterForKey } from "./character";
 import { CreateOperation, IOperation } from "./operation";
 import { IPlayer, clearStatus, isDeadPlayer } from "./player";
-import { IContext, SkillForKey } from "./skill";
+import { IContext, Kill, SkillForKey } from "./skill";
 
 export interface ITimeline {
     readonly players: IPlayer[]
@@ -25,6 +25,7 @@ export class Timeline implements ITimeline {
         timeline.operations = obj.operations
         const idx = obj.operations.findIndex((op => !op.payload))
         const players = idx == 0 ? obj.players : timeline.effected(idx);
+        const killTarget = obj.operations.find(op => op.skill.key === Kill.key)?.payload?.seat || undefined
         const abilities = players.flatMap(p => {
             const chatacter = CharacterForKey(p.avatar)
             if (!chatacter) {
@@ -47,7 +48,8 @@ export class Timeline implements ITimeline {
                 numberOfPlayer: players.length,
                 numberOfAlivePlayer: players.filter(p => !isDeadPlayer(p)).length,
                 players: players,
-                player: ability.player
+                player: ability.player,
+                killTarget
             }
             return ability.skill.valid(context)
         }).map(ability => {
