@@ -55,7 +55,7 @@ export class Timeline implements ITimeline {
         })
         timeline.operations = operations.map(op => {
             const idx = obj.operations.findIndex(objOp => objOp.skill.key === op.skill.key)
-            return idx === -1 ? op : obj.operations(idx)
+            return idx === -1 ? op : obj.operations[idx]
         })
         return timeline
     }

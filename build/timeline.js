@@ -94,7 +94,7 @@ var Timeline = /** @class */ (function () {
         });
         timeline.operations = operations.map(function (op) {
             var idx = obj.operations.findIndex(function (objOp) { return objOp.skill.key === op.skill.key; });
-            return idx === -1 ? op : obj.operations(idx);
+            return idx === -1 ? op : obj.operations[idx];
         });
         return timeline;
     };
