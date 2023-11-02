@@ -160,7 +160,7 @@ export const BecomeImp = new Skill("BecomeImp", "C", context =>
     context.numberOfAlivePlayer >= 4 && /// 人数大于4人
     context.players.findIndex(p => !isDeadPlayer(p) && CharacterForKey(p.character)?.kind == "Demons") == -1 /// 没有存活的恶魔
     , (seat, payload, players) => {
-        players[seat].avatar = payload.character
+        players[seat - 1].avatar = payload.character
     }, {
     static: "Imp"
 })
@@ -241,7 +241,7 @@ export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
 })
 
 export const Nomination = new Skill("Nomination", "NM", undefined, (nominatorSeat, payload, players) => {
-    players[nominatorSeat].nominatable = false
+    players[nominatorSeat - 1].nominatable = false
     players[payload.seat - 1].canBeNominated = false
     players[payload.seat - 1].isOnGallows = payload.result
 })

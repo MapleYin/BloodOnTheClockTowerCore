@@ -48,7 +48,7 @@ exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
         context.players.findIndex(function (p) { var _a; return !(0, player_1.isDeadPlayer)(p) && ((_a = (0, character_1.CharacterForKey)(p.character)) === null || _a === void 0 ? void 0 : _a.kind) == "Demons"; }) == -1;
 } /// 没有存活的恶魔
 , function (seat, payload, players) {
-    players[seat].avatar = payload.character;
+    players[seat - 1].avatar = payload.character;
 }, {
     static: "Imp"
 });
@@ -120,7 +120,7 @@ exports.KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", function (context) {
     max: 2
 });
 exports.Nomination = new Skill("Nomination", "NM", undefined, function (nominatorSeat, payload, players) {
-    players[nominatorSeat].nominatable = false;
+    players[nominatorSeat - 1].nominatable = false;
     players[payload.seat - 1].canBeNominated = false;
     players[payload.seat - 1].isOnGallows = payload.result;
 });
