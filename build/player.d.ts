@@ -19,7 +19,8 @@ export interface IPlayer {
     isMaster?: boolean;
     isSlew?: boolean;
     isGuarded?: boolean;
-    nominatable?: boolean;
-    canBeNominated?: boolean;
+    nominationForbiden?: boolean;
+    canNotBeNominated?: boolean;
 }
 export declare const isDeadPlayer: (player: IPlayer) => boolean;
+export declare const clearStatus: (player: IPlayer) => IPlayer;

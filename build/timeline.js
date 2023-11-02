@@ -23,6 +23,10 @@ var Timeline = /** @class */ (function () {
         this.turn = time === "night" ? turn + 1 : turn;
         this.time = time === "night" ? "day" : "night";
         this.players = lastTimeline ? lastTimeline.effected() : players;
+        /// 进入黑夜需要清除一些状态
+        if (this.time === "night") {
+            this.players.forEach(player_1.clearStatus);
+        }
         var abilities = this.players.flatMap(function (p) {
             var chatacter = (0, character_1.CharacterForKey)(p.avatar);
             if (!chatacter) {

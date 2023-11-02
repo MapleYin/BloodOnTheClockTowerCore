@@ -1,7 +1,7 @@
 import { IBook } from "./book";
 import { CharacterForKey } from "./character";
 import { CreateOperation, IOperation } from "./operation";
-import { IPlayer, isDeadPlayer } from "./player";
+import { IPlayer, clearStatus, isDeadPlayer } from "./player";
 import { IContext, SkillForKey } from "./skill";
 
 export interface ITimeline {
@@ -32,6 +32,11 @@ export class Timeline implements ITimeline {
         this.turn = time === "night" ? turn + 1 : turn
         this.time = time === "night" ? "day" : "night"
         this.players = lastTimeline ? lastTimeline.effected() : players
+
+        /// 进入黑夜需要清除一些状态
+        if (this.time === "night") {
+            this.players.forEach(clearStatus)
+        }
 
         const abilities = this.players.flatMap(p => {
             const chatacter = CharacterForKey(p.avatar)

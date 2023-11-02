@@ -241,8 +241,8 @@ export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
 })
 
 export const Nomination = new Skill("Nomination", "NM", undefined, (nominatorSeat, payload, players) => {
-    players[nominatorSeat - 1].nominatable = false
-    players[payload.seat - 1].canBeNominated = false
+    players[nominatorSeat - 1].nominationForbiden = true
+    players[payload.seat - 1].canNotBeNominated = true
     players[payload.seat - 1].isOnGallows = payload.result
 })
 
