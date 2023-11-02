@@ -62,6 +62,40 @@ var Timeline = /** @class */ (function () {
         timeline.time = obj.time;
         timeline.players = obj.players;
         timeline.operations = obj.operations;
+        var idx = obj.operations.findIndex((function (op) { return !op.payload; }));
+        var players = idx == 0 ? obj.players : timeline.effected(idx);
+        var abilities = players.flatMap(function (p) {
+            var chatacter = (0, character_1.CharacterForKey)(p.avatar);
+            if (!chatacter) {
+                throw "unexpected character";
+            }
+            return chatacter.abilities.map(function (skill) {
+                return {
+                    player: p,
+                    skill: skill
+                };
+            });
+        });
+        abilities.sort(function (a, b) {
+            return book.skills.findIndex(function (skill) { return skill.key === a.skill.key; }) - book.skills.findIndex(function (skill) { return skill.key === b.skill.key; });
+        });
+        var operations = abilities.filter(function (ability) {
+            var context = {
+                turn: obj.turn,
+                time: obj.time,
+                numberOfPlayer: players.length,
+                numberOfAlivePlayer: players.filter(function (p) { return !(0, player_1.isDeadPlayer)(p); }).length,
+                players: players,
+                player: ability.player
+            };
+            return ability.skill.valid(context);
+        }).map(function (ability) {
+            return (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
+        });
+        timeline.operations = operations.map(function (op) {
+            var idx = obj.operations.findIndex(function (objOp) { return objOp.skill.key === op.skill.key; });
+            return idx === -1 ? op : obj.operations(idx);
+        });
         return timeline;
     };
     Timeline.prototype.fulfilled = function () {
