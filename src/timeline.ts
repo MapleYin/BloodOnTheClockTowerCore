@@ -23,42 +23,46 @@ export class Timeline implements ITimeline {
         timeline.time = obj.time
         timeline.players = obj.players
         timeline.operations = obj.operations
-        const idx = obj.operations.findIndex((op => !op.payload))
-        const players = idx == 0 ? obj.players : timeline.effected(idx);
-        const killTarget = players.find(p => p.seat === obj.operations.find(op => op.skill.key === Kill.key)?.payload?.seat)
-        const abilities = players.flatMap(p => {
-            const chatacter = CharacterForKey(p.avatar)
-            if (!chatacter) {
-                throw "unexpected character"
-            }
-            return chatacter.abilities.map((skill) => {
-                return {
-                    player: p,
-                    skill
+        if (timeline.time === "night") {
+            const idx = obj.operations.findIndex((op => !op.payload))
+            const players = idx == 0 ? obj.players : timeline.effected(idx);
+            const killTarget = players.find(p => p.seat === obj.operations.find(op => op.skill.key === Kill.key)?.payload?.seat)
+            const abilities = players.flatMap(p => {
+                const chatacter = CharacterForKey(p.avatar)
+                if (!chatacter) {
+                    throw "unexpected character"
                 }
+                return chatacter.abilities.map((skill) => {
+                    return {
+                        player: p,
+                        skill
+                    }
+                })
             })
-        })
-        abilities.sort((a, b) =>
-            book.skills.findIndex(skill => skill.key === a.skill.key) - book.skills.findIndex(skill => skill.key === b.skill.key)
-        )
-        const operations = abilities.filter(ability => {
-            let context: IContext = {
-                turn: obj.turn,
-                time: obj.time,
-                numberOfPlayer: players.length,
-                numberOfAlivePlayer: players.filter(p => !isDeadPlayer(p)).length,
-                players: players,
-                player: ability.player,
-                killTarget
-            }
-            return ability.skill.valid(context)
-        }).map(ability => {
-            return CreateOperation(ability.player.seat, ability.skill)
-        })
-        timeline.operations = operations.map(op => {
-            const idx = obj.operations.findIndex(objOp => objOp.skill.key === op.skill.key)
-            return idx === -1 ? op : obj.operations[idx]
-        })
+            abilities.sort((a, b) =>
+                book.skills.findIndex(skill => skill.key === a.skill.key) - book.skills.findIndex(skill => skill.key === b.skill.key)
+            )
+            const operations = abilities.filter(ability => {
+                let context: IContext = {
+                    turn: obj.turn,
+                    time: obj.time,
+                    numberOfPlayer: players.length,
+                    numberOfAlivePlayer: players.filter(p => !isDeadPlayer(p)).length,
+                    players: players,
+                    player: ability.player,
+                    killTarget
+                }
+                return ability.skill.valid(context)
+            }).map(ability => {
+                return CreateOperation(ability.player.seat, ability.skill)
+            })
+
+            timeline.operations = operations.map(op => {
+                const idx = obj.operations.findIndex(objOp => objOp.skill.key === op.skill.key)
+                return idx === -1 ? op : obj.operations[idx]
+            })
+        }
+
         return timeline
     }
 
