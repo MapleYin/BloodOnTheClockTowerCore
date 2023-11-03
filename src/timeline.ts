@@ -58,7 +58,7 @@ export class Timeline implements ITimeline {
             return p.seat === operation.payload.seat
         })
 
-        const abilities = this.players.flatMap(p => {
+        const abilities = players.flatMap(p => {
             const chatacter = CharacterForKey(p.avatar)
             if (!chatacter) {
                 throw "unexpected character"
@@ -109,7 +109,7 @@ export class Timeline implements ITimeline {
                 return;
             }
             const skill = SkillForKey(op.skill.key) as typeof op.skill
-            skill.effect(op.seat, op.payload!, players)
+            skill.effect(op.seat, op.payload, players)
         })
 
         return players

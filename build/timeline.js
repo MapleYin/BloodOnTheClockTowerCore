@@ -53,7 +53,7 @@ var Timeline = /** @class */ (function () {
             }
             return p.seat === operation.payload.seat;
         });
-        var abilities = this.players.flatMap(function (p) {
+        var abilities = players.flatMap(function (p) {
             var chatacter = (0, character_1.CharacterForKey)(p.avatar);
             if (!chatacter) {
                 throw "unexpected character";
