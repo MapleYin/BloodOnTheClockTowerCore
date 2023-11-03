@@ -45,6 +45,10 @@ export class Timeline implements ITimeline {
     }
 
     private updateOperations() {
+        /// 白天的时间线不存在因 operation 的变化而变化的 operation
+        if (this.time === "day") {
+            return;
+        }
         const players = this.effected()
         const killTarget = players.find(p => {
             const operation = this.operations.find(op => op.skill.key === Kill.key)

@@ -41,6 +41,10 @@ var Timeline = /** @class */ (function () {
     };
     Timeline.prototype.updateOperations = function () {
         var _this = this;
+        /// 白天的时间线不存在因 operation 的变化而变化的 operation
+        if (this.time === "day") {
+            return;
+        }
         var players = this.effected();
         var killTarget = players.find(function (p) {
             var operation = _this.operations.find(function (op) { return op.skill.key === skill_1.Kill.key; });
