@@ -17,7 +17,7 @@ export class Timeline implements ITimeline {
     time: "day" | "night";
     book: IBook
     players: IPlayer[];
-    operations: IOperation[];
+    operations: IOperation[] = [];
 
     static from(book: IBook, obj: Record<string, any>) {
         const timeline = new Timeline(book, [])

@@ -18,6 +18,7 @@ var player_1 = require("./player");
 var skill_1 = require("./skill");
 var Timeline = /** @class */ (function () {
     function Timeline(book, players, lastTimeline) {
+        this.operations = [];
         this.book = book;
         var _a = lastTimeline || { time: 'day', turn: 1 }, time = _a.time, turn = _a.turn;
         this.turn = time === "night" ? turn + 1 : turn;
