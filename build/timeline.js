@@ -18,7 +18,7 @@ var player_1 = require("./player");
 var skill_1 = require("./skill");
 var Timeline = /** @class */ (function () {
     function Timeline(book, players, lastTimeline) {
-        var _this = this;
+        this.book = book;
         var _a = lastTimeline || { time: 'day', turn: 1 }, time = _a.time, turn = _a.turn;
         this.turn = time === "night" ? turn + 1 : turn;
         this.time = time === "night" ? "day" : "night";
@@ -27,6 +27,27 @@ var Timeline = /** @class */ (function () {
         if (this.time === "night") {
             this.players.forEach(player_1.clearStatus);
         }
+        this.updateOperations();
+    }
+    Timeline.from = function (book, obj) {
+        var timeline = new Timeline(book, []);
+        timeline.turn = obj.turn;
+        timeline.time = obj.time;
+        timeline.players = obj.players;
+        timeline.operations = obj.operations;
+        timeline.updateOperations();
+        return timeline;
+    };
+    Timeline.prototype.updateOperations = function () {
+        var _this = this;
+        var players = this.effected();
+        var killTarget = players.find(function (p) {
+            var operation = _this.operations.find(function (op) { return op.skill.key === skill_1.Kill.key; });
+            if (!operation || operation.payloadKey != "P_R" || !operation.payload) {
+                return false;
+            }
+            return p.seat === operation.payload.seat;
+        });
         var abilities = this.players.flatMap(function (p) {
             var chatacter = (0, character_1.CharacterForKey)(p.avatar);
             if (!chatacter) {
@@ -40,7 +61,7 @@ var Timeline = /** @class */ (function () {
             });
         });
         abilities.sort(function (a, b) {
-            return book.skills.findIndex(function (skill) { return skill.key === a.skill.key; }) - book.skills.findIndex(function (skill) { return skill.key === b.skill.key; });
+            return _this.book.skills.findIndex(function (skill) { return skill.key === a.skill.key; }) - _this.book.skills.findIndex(function (skill) { return skill.key === b.skill.key; });
         });
         this.operations = abilities.filter(function (ability) {
             var context = {
@@ -49,58 +70,17 @@ var Timeline = /** @class */ (function () {
                 numberOfPlayer: players.length,
                 numberOfAlivePlayer: players.filter(function (p) { return !(0, player_1.isDeadPlayer)(p); }).length,
                 players: players,
-                player: ability.player
+                player: ability.player,
+                killTarget: killTarget
             };
             return ability.skill.valid(context);
         }).map(function (ability) {
             return (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
         });
-    }
-    Timeline.from = function (book, obj) {
-        var timeline = new Timeline(book, []);
-        timeline.turn = obj.turn;
-        timeline.time = obj.time;
-        timeline.players = obj.players;
-        timeline.operations = obj.operations;
-        if (timeline.time === "night") {
-            var idx = obj.operations.findIndex((function (op) { return !op.payload; }));
-            var players_1 = idx == 0 ? obj.players : timeline.effected(idx);
-            var killTarget_1 = players_1.find(function (p) { var _a, _b; return p.seat === ((_b = (_a = obj.operations.find(function (op) { return op.skill.key === skill_1.Kill.key; })) === null || _a === void 0 ? void 0 : _a.payload) === null || _b === void 0 ? void 0 : _b.seat); });
-            var abilities = players_1.flatMap(function (p) {
-                var chatacter = (0, character_1.CharacterForKey)(p.avatar);
-                if (!chatacter) {
-                    throw "unexpected character";
-                }
-                return chatacter.abilities.map(function (skill) {
-                    return {
-                        player: p,
-                        skill: skill
-                    };
-                });
-            });
-            abilities.sort(function (a, b) {
-                return book.skills.findIndex(function (skill) { return skill.key === a.skill.key; }) - book.skills.findIndex(function (skill) { return skill.key === b.skill.key; });
-            });
-            var operations = abilities.filter(function (ability) {
-                var context = {
-                    turn: obj.turn,
-                    time: obj.time,
-                    numberOfPlayer: players_1.length,
-                    numberOfAlivePlayer: players_1.filter(function (p) { return !(0, player_1.isDeadPlayer)(p); }).length,
-                    players: players_1,
-                    player: ability.player,
-                    killTarget: killTarget_1
-                };
-                return ability.skill.valid(context);
-            }).map(function (ability) {
-                return (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
-            });
-            timeline.operations = operations.map(function (op) {
-                var idx = obj.operations.findIndex(function (objOp) { return objOp.skill.key === op.skill.key; });
-                return idx === -1 ? op : obj.operations[idx];
-            });
-        }
-        return timeline;
+    };
+    Timeline.prototype.updatePayload = function (at, payload) {
+        this.operations[at].payload = payload;
+        this.updateOperations();
     };
     Timeline.prototype.fulfilled = function () {
         return !this.operations.some(function (op) {
@@ -109,12 +89,11 @@ var Timeline = /** @class */ (function () {
     };
     Timeline.prototype.effected = function (at) {
         var progress = typeof at === "number" ? at : this.operations.length;
-        var fulfilled = !this.operations.filter(function (_, idx) { return idx < progress; }).some(function (op) { return !op.payload; });
-        if (!fulfilled) {
-            throw "Operations before ".concat(progress, " are not fulfilled");
-        }
         var players = this.players.map(function (p) { return __assign({}, p); });
         this.operations.filter(function (_, idx) { return idx < progress; }).forEach(function (op) {
+            if (!op.payload) {
+                return;
+            }
             var skill = (0, skill_1.SkillForKey)(op.skill.key);
             skill.effect(op.seat, op.payload, players);
         });

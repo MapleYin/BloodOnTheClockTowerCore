@@ -9,11 +9,13 @@ export interface ITimeline {
     readonly turn: number
     readonly time: "day" | "night"
     readonly operations: IOperation[]
+    readonly book: IBook
 }
 
 export class Timeline implements ITimeline {
     turn: number;
     time: "day" | "night";
+    book: IBook
     players: IPlayer[];
     operations: IOperation[];
 
@@ -23,51 +25,12 @@ export class Timeline implements ITimeline {
         timeline.time = obj.time
         timeline.players = obj.players
         timeline.operations = obj.operations
-        if (timeline.time === "night") {
-            const idx = obj.operations.findIndex((op => !op.payload))
-            const players = idx == 0 ? obj.players : timeline.effected(idx);
-            const killTarget = players.find(p => p.seat === obj.operations.find(op => op.skill.key === Kill.key)?.payload?.seat)
-            const abilities = players.flatMap(p => {
-                const chatacter = CharacterForKey(p.avatar)
-                if (!chatacter) {
-                    throw "unexpected character"
-                }
-                return chatacter.abilities.map((skill) => {
-                    return {
-                        player: p,
-                        skill
-                    }
-                })
-            })
-            abilities.sort((a, b) =>
-                book.skills.findIndex(skill => skill.key === a.skill.key) - book.skills.findIndex(skill => skill.key === b.skill.key)
-            )
-            const operations = abilities.filter(ability => {
-                let context: IContext = {
-                    turn: obj.turn,
-                    time: obj.time,
-                    numberOfPlayer: players.length,
-                    numberOfAlivePlayer: players.filter(p => !isDeadPlayer(p)).length,
-                    players: players,
-                    player: ability.player,
-                    killTarget
-                }
-                return ability.skill.valid(context)
-            }).map(ability => {
-                return CreateOperation(ability.player.seat, ability.skill)
-            })
-
-            timeline.operations = operations.map(op => {
-                const idx = obj.operations.findIndex(objOp => objOp.skill.key === op.skill.key)
-                return idx === -1 ? op : obj.operations[idx]
-            })
-        }
-
+        timeline.updateOperations()
         return timeline
     }
 
     constructor(book: IBook, players: IPlayer[], lastTimeline?: Timeline) {
-
+        this.book = book
         const { time, turn } = lastTimeline || { time: 'day', turn: 1 }
         this.turn = time === "night" ? turn + 1 : turn
         this.time = time === "night" ? "day" : "night"
@@ -77,6 +40,20 @@ export class Timeline implements ITimeline {
         if (this.time === "night") {
             this.players.forEach(clearStatus)
         }
+
+        this.updateOperations();
+    }
+
+    private updateOperations() {
+
+        const players = this.effected()
+        const killTarget = players.find(p => {
+            const operation = this.operations.find(op => op.skill.key === Kill.key)
+            if (!operation || operation.payloadKey != "P_R" || !operation.payload) {
+                return false
+            }
+            return p.seat === operation.payload.seat
+        })
 
         const abilities = this.players.flatMap(p => {
             const chatacter = CharacterForKey(p.avatar)
@@ -91,7 +68,7 @@ export class Timeline implements ITimeline {
             })
         })
         abilities.sort((a, b) =>
-            book.skills.findIndex(skill => skill.key === a.skill.key) - book.skills.findIndex(skill => skill.key === b.skill.key)
+            this.book.skills.findIndex(skill => skill.key === a.skill.key) - this.book.skills.findIndex(skill => skill.key === b.skill.key)
         )
 
         this.operations = abilities.filter(ability => {
@@ -101,12 +78,18 @@ export class Timeline implements ITimeline {
                 numberOfPlayer: players.length,
                 numberOfAlivePlayer: players.filter(p => !isDeadPlayer(p)).length,
                 players: players,
-                player: ability.player
+                player: ability.player,
+                killTarget
             }
             return ability.skill.valid(context)
         }).map(ability => {
             return CreateOperation(ability.player.seat, ability.skill)
         })
+    }
+
+    updatePayload(at: number, payload: any) {
+        this.operations[at].payload = payload
+        this.updateOperations()
     }
 
     fulfilled(): boolean {
@@ -117,12 +100,11 @@ export class Timeline implements ITimeline {
 
     effected(at?: number): IPlayer[] {
         const progress = typeof at === "number" ? at : this.operations.length
-        const fulfilled = !this.operations.filter((_, idx) => idx < progress).some(op => !op.payload)
-        if (!fulfilled) {
-            throw `Operations before ${progress} are not fulfilled`
-        }
         const players = this.players.map(p => { return { ...p } });
         this.operations.filter((_, idx) => idx < progress).forEach((op) => {
+            if (!op.payload) {
+                return;
+            }
             const skill = SkillForKey(op.skill.key) as typeof op.skill
             skill.effect(op.seat, op.payload!, players)
         })
