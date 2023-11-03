@@ -76,7 +76,7 @@ var Timeline = /** @class */ (function () {
             };
             return ability.skill.valid(context);
         }).map(function (ability) {
-            return (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
+            return _this.operations.find(function (op) { return op.skill.key === ability.skill.key; }) || (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
         });
     };
     Timeline.prototype.updatePayload = function (at, payload) {

@@ -45,7 +45,6 @@ export class Timeline implements ITimeline {
     }
 
     private updateOperations() {
-
         const players = this.effected()
         const killTarget = players.find(p => {
             const operation = this.operations.find(op => op.skill.key === Kill.key)
@@ -83,7 +82,7 @@ export class Timeline implements ITimeline {
             }
             return ability.skill.valid(context)
         }).map(ability => {
-            return CreateOperation(ability.player.seat, ability.skill)
+            return this.operations.find(op => op.skill.key === ability.skill.key) || CreateOperation(ability.player.seat, ability.skill)
         })
     }
 
