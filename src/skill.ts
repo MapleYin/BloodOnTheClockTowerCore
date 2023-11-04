@@ -32,7 +32,7 @@ declare namespace Payload {
 
     namespace Options {
         interface Character {
-            character?: {
+            character: {
                 static?: string;
                 kinds?: EKind[];
                 exist?: "inGame" | "notInGame" | "all";
@@ -40,7 +40,7 @@ declare namespace Payload {
 
         }
         interface Player {
-            player?: {
+            player: {
                 dead?: boolean;
                 kinds?: EKind[];
             } & Options.Range
@@ -132,7 +132,7 @@ class Skill<Key extends PayloadKey> implements ISkill {
         this.payloadKey = payloadKey
         this.valid = validHandler || (() => true)
         this.effect = effect || (() => { })
-        this.payloadOptions = payloadOptions || {}
+        this.payloadOptions = payloadOptions || { player: {}, character: {} }
     }
 }
 
@@ -168,7 +168,9 @@ export const Kill = new Skill("Kill", "P_R", context =>
         if (payload.result) {
             players[payload.seat - 1].isKilled = true
         }
-    })
+    }, {
+    player: {}
+})
 
 /// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
 export const BecomeImp = new Skill("BecomeImp", "C", context =>
@@ -184,28 +186,37 @@ export const BecomeImp = new Skill("BecomeImp", "C", context =>
 })
 
 /// 可以观看魔典
-export const Peep = new Skill("Peep", "T", AliveAtNight)
+export const Peep = new Skill("Peep", "T", AliveAtNight, undefined, {})
 
 /// 选择一个目标，他中毒
 export const Poison = new Skill("Poison", "P", AliveAtNight, (_, payload, players) => {
     players[payload.seat - 1].isPoisoned = true
+}, {
+    player: {}
 })
 
 /// 选择一个目标，第二天投票他投票你的票才生效
 export const ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, (_, payload, players) => {
     players[payload.seat - 1].isMaster = true
+}, {
+    player: {}
 })
 
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
 export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, (_, payload, players) => {
     players[payload.seat - 1].isScapegoat = true
+}, {
+    player: {}
 })
 
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
-export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context => {
-    return isDeadPlayer(context.player) &&
-        context.killTarget?.seat == context.player.seat &&
-        context.time === "night"
+export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context =>
+    isDeadPlayer(context.player) &&
+    context.killTarget?.seat == context.player.seat &&
+    context.time === "night"
+    , undefined, {
+    player: {},
+    character: {}
 })
 
 export const Guard = new Skill("Guard", "P", context =>
@@ -213,12 +224,17 @@ export const Guard = new Skill("Guard", "P", context =>
     context.turn != 1
     , (_, payload, players) => {
         players[payload.seat - 1].isGuarded = true
-    })
+    }, {
+    player: {}
+})
 
 export const DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", context =>
     AliveAtNight(context) &&
     !!context.excuteInDay
-)
+    , undefined, {
+    player: {},
+    character: {}
+})
 
 export const CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight, undefined, {
     player: {
@@ -260,42 +276,46 @@ export const KnowMinions = new Skill("KnowMinions", "PS_C", context =>
 export const KnowOutsiders = new Skill("KnowOutsiders", "PS_C", context =>
     AliveAtNight(context) && context.turn === 1
     , undefined, {
-        player: {
-            range: {
-                min: 2,
-                max: 2
-            }
-        },
-        character: {
-            kinds: ["Outsiders"]
+    player: {
+        range: {
+            min: 2,
+            max: 2
         }
+    },
+    character: {
+        kinds: ["Outsiders"]
+    }
 })
 export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
     AliveAtNight(context) && context.turn === 1
     , undefined, {
-        player: {
-            range: {
-                min: 2,
-                max: 2
-            }
-        },
-        character: {
-            kinds: ["Townsfolk"]
+    player: {
+        range: {
+            min: 2,
+            max: 2
         }
+    },
+    character: {
+        kinds: ["Townsfolk"]
+    }
 })
 
 export const Nomination = new Skill("Nomination", "NM", undefined, (nominatorSeat, payload, players) => {
     players[nominatorSeat - 1].nominationForbiden = true
     players[payload.seat - 1].canNotBeNominated = true
     players[payload.seat - 1].isOnGallows = payload.result
-})
+}, {})
 
 export const Slay = new Skill("Slay", "P_R", undefined, (_, payload, players) => {
     players[payload.seat - 1].isSlew = payload.result
+}, {
+    player: {}
 })
 
 export const Excute = new Skill("Excute", "P", undefined, (_, payload, players) => {
     players[payload.seat - 1].isExecuted = true
+}, {
+    player: {}
 })
 
 const All = [KnowAbsent, Tramsform, Kill, BecomeImp, Peep, Poison, ChooseMaster, Scapegoat, WakenKnowCharacter, Guard, DigKnowCharacter, CheckImp, KnowEvilAround, KnowSeat, KnowMinions, KnowOutsiders, KnowTownsfolk, Nomination, Slay, Excute]

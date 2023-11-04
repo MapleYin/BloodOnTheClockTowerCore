@@ -24,14 +24,14 @@ declare namespace Payload {
     }
     namespace Options {
         interface Character {
-            character?: {
+            character: {
                 static?: string;
                 kinds?: EKind[];
                 exist?: "inGame" | "notInGame" | "all";
             } & Options.Range;
         }
         interface Player {
-            player?: {
+            player: {
                 dead?: boolean;
                 kinds?: EKind[];
             } & Options.Range;
