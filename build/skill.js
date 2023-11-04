@@ -19,10 +19,14 @@ exports.KnowAbsent = new Skill("KnowAbsent", "CS", function (context) {
     return context.turn == 1 &&
         context.time == "night";
 }, undefined, {
-    kinds: ["Townsfolk", "Outsiders"],
-    exist: "notInGame",
-    min: 3,
-    max: 3
+    character: {
+        kinds: ["Townsfolk", "Outsiders"],
+        exist: "notInGame",
+        range: {
+            min: 3,
+            max: 3
+        }
+    }
 });
 /// 如果自杀，另外一个爪牙变成恶魔
 exports.Tramsform = new Skill("Tramsform", "P", function (context) {
@@ -30,8 +34,9 @@ exports.Tramsform = new Skill("Tramsform", "P", function (context) {
     return (0, player_1.isDeadPlayer)(context.player) &&
         ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat;
 }, undefined, {
-    kinds: ["Minions"],
-    exist: "inGame"
+    player: {
+        kinds: ["Minions"]
+    }
 });
 /// 选择一个目标，他死亡
 exports.Kill = new Skill("Kill", "P_R", function (context) {
@@ -50,7 +55,9 @@ exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
 , function (seat, payload, players) {
     players[seat - 1].avatar = payload.character;
 }, {
-    static: "Imp"
+    character: {
+        static: "Imp"
+    }
 });
 /// 可以观看魔典
 exports.Peep = new Skill("Peep", "T", AliveAtNight);
@@ -84,40 +91,66 @@ exports.DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", function (contex
         !!context.excuteInDay;
 });
 exports.CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight, undefined, {
-    max: 2,
-    min: 2
+    player: {
+        range: {
+            max: 2,
+            min: 2
+        }
+    }
 });
 exports.KnowEvilAround = new Skill("KnowEvilAround", "N", AliveAtNight, undefined, {
-    min: 0,
-    max: 2
+    range: {
+        min: 0,
+        max: 2
+    }
 });
 exports.KnowSeat = new Skill("KnowSeat", "N", function (context) {
     return AliveAtNight(context) && context.turn === 1;
 }, undefined, {
-    min: 0,
-    max: 2
+    range: {
+        min: 0,
+        max: 2
+    }
 });
 exports.KnowMinions = new Skill("KnowMinions", "PS_C", function (context) {
     return AliveAtNight(context) &&
         context.turn === 1;
 }, undefined, {
-    kinds: ["Minions"],
-    min: 2,
-    max: 2
+    player: {
+        range: {
+            min: 2,
+            max: 2
+        }
+    },
+    character: {
+        kinds: ["Minions"]
+    }
 });
 exports.KnowOutsiders = new Skill("KnowOutsiders", "PS_C", function (context) {
     return AliveAtNight(context) && context.turn === 1;
 }, undefined, {
-    kinds: ["Outsiders"],
-    min: 2,
-    max: 2
+    player: {
+        range: {
+            min: 2,
+            max: 2
+        }
+    },
+    character: {
+        kinds: ["Outsiders"]
+    }
 });
 exports.KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", function (context) {
     return AliveAtNight(context) && context.turn === 1;
 }, undefined, {
-    kinds: ["Townsfolk"],
-    min: 2,
-    max: 2
+    player: {
+        range: {
+            min: 2,
+            max: 2
+        }
+    },
+    character: {
+        kinds: ["Townsfolk"]
+    }
 });
 exports.Nomination = new Skill("Nomination", "NM", undefined, function (nominatorSeat, payload, players) {
     players[nominatorSeat - 1].nominationForbiden = true;

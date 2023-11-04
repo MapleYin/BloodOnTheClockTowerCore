@@ -24,13 +24,23 @@ declare namespace Payload {
     }
     namespace Options {
         interface Character {
-            static?: string;
-            kinds?: EKind[];
-            exist?: "inGame" | "notInGame" | "all";
+            character?: {
+                static?: string;
+                kinds?: EKind[];
+                exist?: "inGame" | "notInGame" | "all";
+            } & Options.Range;
         }
-        interface Number {
-            min?: number;
-            max?: number;
+        interface Player {
+            player?: {
+                dead?: boolean;
+                kinds?: EKind[];
+            } & Options.Range;
+        }
+        interface Range<T = number> {
+            range?: {
+                min?: T;
+                max?: T;
+            };
         }
     }
 }
@@ -51,16 +61,16 @@ export type PayloadDefind = {
 };
 export type PayloadOptionDefind = {
     "C": Payload.Options.Character;
-    "N": Payload.Options.Number;
-    "P": Payload.Options.Character;
-    "PS": Payload.Options.Character & Payload.Options.Number;
-    "CS": Payload.Options.Character & Payload.Options.Number;
-    "P_C": Payload.Options.Character;
-    "P_N": Payload.Options.Character;
-    "P_CS": Payload.Options.Character & Payload.Options.Number;
-    "P_R": Payload.Options.Character;
-    "PS_R": Payload.Options.Number;
-    "PS_C": Payload.Options.Character & Payload.Options.Number;
+    "N": Payload.Options.Range;
+    "P": Payload.Options.Player;
+    "PS": Payload.Options.Player;
+    "CS": Payload.Options.Character;
+    "P_C": Payload.Options.Player & Payload.Options.Character;
+    "P_N": Payload.Options.Player & Payload.Options.Range;
+    "P_CS": Payload.Options.Character & Payload.Options.Player;
+    "P_R": Payload.Options.Player;
+    "PS_R": Payload.Options.Player;
+    "PS_C": Payload.Options.Character & Payload.Options.Player;
     "T": {};
     "NM": {};
 };

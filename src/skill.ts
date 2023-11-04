@@ -32,13 +32,24 @@ declare namespace Payload {
 
     namespace Options {
         interface Character {
-            static?: string
-            kinds?: EKind[]
-            exist?: "inGame" | "notInGame" | "all"
+            character?: {
+                static?: string;
+                kinds?: EKind[];
+                exist?: "inGame" | "notInGame" | "all";
+            } & Options.Range
+
         }
-        interface Number {
-            min?: number;
-            max?: number
+        interface Player {
+            player?: {
+                dead?: boolean;
+                kinds?: EKind[];
+            } & Options.Range
+        }
+        interface Range<T = number> {
+            range?: {
+                min?: T;
+                max?: T;
+            }
         }
     }
 }
@@ -60,19 +71,19 @@ export type PayloadDefind = {
 }
 
 export type PayloadOptionDefind = {
-    "C": Payload.Options.Character,
-    "N": Payload.Options.Number,
-    "P": Payload.Options.Character,
-    "PS": Payload.Options.Character & Payload.Options.Number,
-    "CS": Payload.Options.Character & Payload.Options.Number,
-    "P_C": Payload.Options.Character,
-    "P_N": Payload.Options.Character,
-    "P_CS": Payload.Options.Character & Payload.Options.Number,
-    "P_R": Payload.Options.Character,
-    "PS_R": Payload.Options.Number,
-    "PS_C": Payload.Options.Character & Payload.Options.Number,
-    "T": {},
-    "NM": {}
+    "C": Payload.Options.Character;
+    "N": Payload.Options.Range;
+    "P": Payload.Options.Player;
+    "PS": Payload.Options.Player;
+    "CS": Payload.Options.Character;
+    "P_C": Payload.Options.Player & Payload.Options.Character;
+    "P_N": Payload.Options.Player & Payload.Options.Range;
+    "P_CS": Payload.Options.Character & Payload.Options.Player;
+    "P_R": Payload.Options.Player;
+    "PS_R": Payload.Options.Player;
+    "PS_C": Payload.Options.Character & Payload.Options.Player;
+    "T": {};
+    "NM": {};
 }
 
 export type PayloadKey = keyof PayloadDefind
@@ -130,10 +141,14 @@ export const KnowAbsent = new Skill("KnowAbsent", "CS", context =>
     context.turn == 1 &&
     context.time == "night"
     , undefined, {
-    kinds: ["Townsfolk", "Outsiders"],
-    exist: "notInGame",
-    min: 3,
-    max: 3
+    character: {
+        kinds: ["Townsfolk", "Outsiders"],
+        exist: "notInGame",
+        range: {
+            min: 3,
+            max: 3
+        }
+    }
 })
 
 /// 如果自杀，另外一个爪牙变成恶魔
@@ -141,8 +156,9 @@ export const Tramsform = new Skill("Tramsform", "P", context =>
     isDeadPlayer(context.player) &&
     context.killTarget?.seat == context.player.seat
     , undefined, {
-    kinds: ["Minions"],
-    exist: "inGame"
+    player: {
+        kinds: ["Minions"]
+    }
 })
 
 /// 选择一个目标，他死亡
@@ -162,7 +178,9 @@ export const BecomeImp = new Skill("BecomeImp", "C", context =>
     , (seat, payload, players) => {
         players[seat - 1].avatar = payload.character
     }, {
-    static: "Imp"
+    character: {
+        static: "Imp"
+    }
 })
 
 /// 可以观看魔典
@@ -186,8 +204,8 @@ export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, (_, payload, 
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context => {
     return isDeadPlayer(context.player) &&
-    context.killTarget?.seat == context.player.seat &&
-    context.time === "night"
+        context.killTarget?.seat == context.player.seat &&
+        context.time === "night"
 })
 
 export const Guard = new Skill("Guard", "P", context =>
@@ -203,41 +221,67 @@ export const DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", context =>
 )
 
 export const CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight, undefined, {
-    max: 2,
-    min: 2
+    player: {
+        range: {
+            max: 2,
+            min: 2
+        }
+    }
 })
 export const KnowEvilAround = new Skill("KnowEvilAround", "N", AliveAtNight, undefined, {
-    min: 0,
-    max: 2
+    range: {
+        min: 0,
+        max: 2
+    }
 })
 
 export const KnowSeat = new Skill("KnowSeat", "N", context =>
     AliveAtNight(context) && context.turn === 1
     , undefined, {
-    min: 0,
-    max: 2
+    range: {
+        min: 0,
+        max: 2
+    }
 })
 export const KnowMinions = new Skill("KnowMinions", "PS_C", context =>
     AliveAtNight(context) &&
     context.turn === 1
     , undefined, {
-    kinds: ["Minions"],
-    min: 2,
-    max: 2
+    player: {
+        range: {
+            min: 2,
+            max: 2
+        }
+    },
+    character: {
+        kinds: ["Minions"]
+    }
 })
 export const KnowOutsiders = new Skill("KnowOutsiders", "PS_C", context =>
     AliveAtNight(context) && context.turn === 1
     , undefined, {
-    kinds: ["Outsiders"],
-    min: 2,
-    max: 2
+        player: {
+            range: {
+                min: 2,
+                max: 2
+            }
+        },
+        character: {
+            kinds: ["Outsiders"]
+        }
 })
 export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>
     AliveAtNight(context) && context.turn === 1
     , undefined, {
-    kinds: ["Townsfolk"],
-    min: 2,
-    max: 2
+        player: {
+            range: {
+                min: 2,
+                max: 2
+            }
+        },
+        character: {
+            kinds: ["Townsfolk"]
+        }
 })
 
 export const Nomination = new Skill("Nomination", "NM", undefined, (nominatorSeat, payload, players) => {
