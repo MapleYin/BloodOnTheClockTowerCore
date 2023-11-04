@@ -51,6 +51,9 @@ declare namespace Payload {
                 max?: T;
             }
         }
+        interface Result {
+            result: {}
+        }
     }
 }
 
@@ -79,8 +82,8 @@ export type PayloadOptionDefind = {
     "P_C": Payload.Options.Player & Payload.Options.Character;
     "P_N": Payload.Options.Player & Payload.Options.Range;
     "P_CS": Payload.Options.Character & Payload.Options.Player;
-    "P_R": Payload.Options.Player;
-    "PS_R": Payload.Options.Player;
+    "P_R": Payload.Options.Player & Payload.Options.Result;
+    "PS_R": Payload.Options.Player & Payload.Options.Result;
     "PS_C": Payload.Options.Character & Payload.Options.Player;
     "T": {};
     "NM": {};
@@ -132,7 +135,7 @@ class Skill<Key extends PayloadKey> implements ISkill {
         this.payloadKey = payloadKey
         this.valid = validHandler || (() => true)
         this.effect = effect || (() => { })
-        this.payloadOptions = payloadOptions || { player: {}, character: {} }
+        this.payloadOptions = payloadOptions || { player: {}, character: {}, result: {} }
     }
 }
 
@@ -169,7 +172,8 @@ export const Kill = new Skill("Kill", "P_R", context =>
             players[payload.seat - 1].isKilled = true
         }
     }, {
-    player: {}
+    player: {},
+    result: {}
 })
 
 /// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
@@ -241,8 +245,9 @@ export const CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight, undefined, {
         range: {
             max: 2,
             min: 2
-        }
-    }
+        },
+    },
+    result: {}
 })
 export const KnowEvilAround = new Skill("KnowEvilAround", "N", AliveAtNight, undefined, {
     range: {
@@ -309,7 +314,8 @@ export const Nomination = new Skill("Nomination", "NM", undefined, (nominatorSea
 export const Slay = new Skill("Slay", "P_R", undefined, (_, payload, players) => {
     players[payload.seat - 1].isSlew = payload.result
 }, {
-    player: {}
+    player: {},
+    result: {}
 })
 
 export const Excute = new Skill("Excute", "P", undefined, (_, payload, players) => {

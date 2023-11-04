@@ -42,6 +42,9 @@ declare namespace Payload {
                 max?: T;
             };
         }
+        interface Result {
+            result: {};
+        }
     }
 }
 export type PayloadDefind = {
@@ -68,8 +71,8 @@ export type PayloadOptionDefind = {
     "P_C": Payload.Options.Player & Payload.Options.Character;
     "P_N": Payload.Options.Player & Payload.Options.Range;
     "P_CS": Payload.Options.Character & Payload.Options.Player;
-    "P_R": Payload.Options.Player;
-    "PS_R": Payload.Options.Player;
+    "P_R": Payload.Options.Player & Payload.Options.Result;
+    "PS_R": Payload.Options.Player & Payload.Options.Result;
     "PS_C": Payload.Options.Character & Payload.Options.Player;
     "T": {};
     "NM": {};

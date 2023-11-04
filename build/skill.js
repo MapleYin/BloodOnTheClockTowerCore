@@ -10,7 +10,7 @@ var Skill = /** @class */ (function () {
         this.payloadKey = payloadKey;
         this.valid = validHandler || (function () { return true; });
         this.effect = effect || (function () { });
-        this.payloadOptions = payloadOptions || { player: {}, character: {} };
+        this.payloadOptions = payloadOptions || { player: {}, character: {}, result: {} };
     }
     return Skill;
 }());
@@ -46,7 +46,8 @@ exports.Kill = new Skill("Kill", "P_R", function (context) {
         players[payload.seat - 1].isKilled = true;
     }
 }, {
-    player: {}
+    player: {},
+    result: {}
 });
 /// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
 exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
@@ -111,8 +112,9 @@ exports.CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight, undefined, {
         range: {
             max: 2,
             min: 2
-        }
-    }
+        },
+    },
+    result: {}
 });
 exports.KnowEvilAround = new Skill("KnowEvilAround", "N", AliveAtNight, undefined, {
     range: {
@@ -176,7 +178,8 @@ exports.Nomination = new Skill("Nomination", "NM", undefined, function (nominato
 exports.Slay = new Skill("Slay", "P_R", undefined, function (_, payload, players) {
     players[payload.seat - 1].isSlew = payload.result;
 }, {
-    player: {}
+    player: {},
+    result: {}
 });
 exports.Excute = new Skill("Excute", "P", undefined, function (_, payload, players) {
     players[payload.seat - 1].isExecuted = true;
