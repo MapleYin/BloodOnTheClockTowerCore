@@ -76,7 +76,8 @@ var Timeline = /** @class */ (function () {
                 numberOfAlivePlayer: players.filter(function (p) { return !(0, player_1.isDeadPlayer)(p); }).length,
                 players: players,
                 player: ability.player,
-                killTarget: killTarget
+                killTarget: killTarget,
+                excuteInDay: players.find(function (p) { return p.isExecuted; })
             };
             return ability.skill.valid(context);
         }).map(function (ability) {

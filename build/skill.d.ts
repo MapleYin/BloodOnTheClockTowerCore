@@ -125,5 +125,6 @@ export declare const KnowTownsfolk: Skill<"PS_C">;
 export declare const Nomination: Skill<"NM">;
 export declare const Slay: Skill<"P_R">;
 export declare const Excute: Skill<"P">;
+export declare const ExcuteByRack: Skill<"P">;
 export declare const SkillForKey: (key: string) => Skill<"CS"> | Skill<"P"> | Skill<"P_R"> | Skill<"C"> | Skill<"T"> | Skill<"P_C"> | Skill<"PS_R"> | Skill<"N"> | Skill<"PS_C"> | Skill<"NM"> | undefined;
 export {};

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SkillForKey = exports.Excute = exports.Slay = exports.Nomination = exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
+exports.SkillForKey = exports.ExcuteByRack = exports.Excute = exports.Slay = exports.Nomination = exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
 var character_1 = require("./character");
 var player_1 = require("./player");
 var AliveAtNight = function (context) { return !(0, player_1.isDeadPlayer)(context.player) && context.time == "night"; };
@@ -174,6 +174,10 @@ exports.Nomination = new Skill("Nomination", "NM", undefined, function (nominato
     players[nominatorSeat - 1].nominationForbiden = true;
     players[payload.seat - 1].canNotBeNominated = true;
     players[payload.seat - 1].isOnGallows = payload.result;
+    /// 死亡角色，如果投票后无法再投票
+    players.filter(function (p) { return (0, player_1.isDeadPlayer)(p) && payload.seats.includes(p.seat); }).forEach(function (p) {
+        p.forbiddenVote = true;
+    });
 }, {});
 exports.Slay = new Skill("Slay", "P_R", undefined, function (_, payload, players) {
     players[payload.seat - 1].isSlew = payload.result;
@@ -186,6 +190,11 @@ exports.Excute = new Skill("Excute", "P", undefined, function (_, payload, playe
 }, {
     player: {}
 });
-var All = [exports.KnowAbsent, exports.Tramsform, exports.Kill, exports.BecomeImp, exports.Peep, exports.Poison, exports.ChooseMaster, exports.Scapegoat, exports.WakenKnowCharacter, exports.Guard, exports.DigKnowCharacter, exports.CheckImp, exports.KnowEvilAround, exports.KnowSeat, exports.KnowMinions, exports.KnowOutsiders, exports.KnowTownsfolk, exports.Nomination, exports.Slay, exports.Excute];
+exports.ExcuteByRack = new Skill("ExcuteByRack", "P", undefined, function (_, payload, players) {
+    players[payload.seat - 1].isExecuted = true;
+}, {
+    player: {}
+});
+var All = [exports.KnowAbsent, exports.Tramsform, exports.Kill, exports.BecomeImp, exports.Peep, exports.Poison, exports.ChooseMaster, exports.Scapegoat, exports.WakenKnowCharacter, exports.Guard, exports.DigKnowCharacter, exports.CheckImp, exports.KnowEvilAround, exports.KnowSeat, exports.KnowMinions, exports.KnowOutsiders, exports.KnowTownsfolk, exports.Nomination, exports.Slay, exports.Excute, exports.ExcuteByRack];
 var SkillForKey = function (key) { return All.find(function (sk) { return sk.key === key; }); };
 exports.SkillForKey = SkillForKey;

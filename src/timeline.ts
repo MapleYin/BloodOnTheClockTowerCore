@@ -82,7 +82,8 @@ export class Timeline implements ITimeline {
                 numberOfAlivePlayer: players.filter(p => !isDeadPlayer(p)).length,
                 players: players,
                 player: ability.player,
-                killTarget
+                killTarget,
+                excuteInDay: players.find(p => p.isExecuted)
             }
             return ability.skill.valid(context)
         }).map(ability => {

@@ -309,6 +309,10 @@ export const Nomination = new Skill("Nomination", "NM", undefined, (nominatorSea
     players[nominatorSeat - 1].nominationForbiden = true
     players[payload.seat - 1].canNotBeNominated = true
     players[payload.seat - 1].isOnGallows = payload.result
+    /// 死亡角色，如果投票后无法再投票
+    players.filter(p => isDeadPlayer(p) && payload.seats.includes(p.seat)).forEach(p => {
+        p.forbiddenVote = true
+    })
 }, {})
 
 export const Slay = new Skill("Slay", "P_R", undefined, (_, payload, players) => {
@@ -324,6 +328,12 @@ export const Excute = new Skill("Excute", "P", undefined, (_, payload, players) 
     player: {}
 })
 
-const All = [KnowAbsent, Tramsform, Kill, BecomeImp, Peep, Poison, ChooseMaster, Scapegoat, WakenKnowCharacter, Guard, DigKnowCharacter, CheckImp, KnowEvilAround, KnowSeat, KnowMinions, KnowOutsiders, KnowTownsfolk, Nomination, Slay, Excute]
+export const ExcuteByRack = new Skill("ExcuteByRack", "P", undefined, (_, payload, players) => {
+    players[payload.seat - 1].isExecuted = true
+}, {
+    player: {}
+})
+
+const All = [KnowAbsent, Tramsform, Kill, BecomeImp, Peep, Poison, ChooseMaster, Scapegoat, WakenKnowCharacter, Guard, DigKnowCharacter, CheckImp, KnowEvilAround, KnowSeat, KnowMinions, KnowOutsiders, KnowTownsfolk, Nomination, Slay, Excute, ExcuteByRack]
 
 export const SkillForKey = (key: string) => All.find(sk => sk.key === key)
