@@ -11,9 +11,6 @@ var Game = /** @class */ (function () {
     }
     Game.prototype.createTimeline = function () {
         var laseTimeline = this.timelines.length > 0 ? this.timelines[this.timelines.length - 1] : undefined;
-        if (laseTimeline && !laseTimeline.fulfilled()) {
-            return;
-        }
         var timeline = new timeline_1.Timeline(this.book, this.players, laseTimeline);
         this.timelines.push(timeline);
         return timeline;

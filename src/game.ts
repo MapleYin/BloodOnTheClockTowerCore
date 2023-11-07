@@ -14,9 +14,6 @@ export class Game {
 
     createTimeline(): Timeline | undefined {
         const laseTimeline = this.timelines.length > 0 ? this.timelines[this.timelines.length - 1] : undefined
-        if (laseTimeline && !laseTimeline.fulfilled()) {
-            return
-        }
         const timeline = new Timeline(this.book, this.players, laseTimeline)
         this.timelines.push(timeline);
         return timeline
