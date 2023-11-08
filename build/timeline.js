@@ -81,7 +81,13 @@ var Timeline = /** @class */ (function () {
             };
             return ability.skill.valid(context);
         }).map(function (ability) {
-            return _this.operations.find(function (op) { return op.skill.key === ability.skill.key; }) || (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
+            var operation = _this.operations.find(function (op) { return op.skill.key === ability.skill.key; }) || (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
+            if ("character" in operation.skill.payloadOptions && operation.skill.payloadOptions.character && operation.skill.payloadOptions.character.static) {
+                operation.payload = {
+                    character: operation.skill.payloadOptions.character.static
+                };
+            }
+            return operation;
         });
     };
     Timeline.prototype.updatePayload = function (at, payload) {

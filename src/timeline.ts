@@ -87,7 +87,13 @@ export class Timeline implements ITimeline {
             }
             return ability.skill.valid(context)
         }).map(ability => {
-            return this.operations.find(op => op.skill.key === ability.skill.key) || CreateOperation(ability.player.seat, ability.skill)
+            const operation = this.operations.find(op => op.skill.key === ability.skill.key) || CreateOperation(ability.player.seat, ability.skill)
+            if ("character" in operation.skill.payloadOptions && operation.skill.payloadOptions.character && operation.skill.payloadOptions.character.static) {
+                operation.payload = {
+                    character: operation.skill.payloadOptions.character.static
+                }
+            }
+            return operation
         })
     }
 
