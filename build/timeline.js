@@ -41,10 +41,6 @@ var Timeline = /** @class */ (function () {
     };
     Timeline.prototype.updateOperations = function () {
         var _this = this;
-        /// 白天的时间线不存在因 operation 的变化而变化的 operation
-        if (this.time === "day") {
-            return;
-        }
         var players = this.effected();
         var killTarget = players.find(function (p) {
             var operation = _this.operations.find(function (op) { return op.skill.key === skill_1.Kill.key; });
@@ -68,7 +64,7 @@ var Timeline = /** @class */ (function () {
         abilities.sort(function (a, b) {
             return _this.book.skills.findIndex(function (skill) { return skill.key === a.skill.key; }) - _this.book.skills.findIndex(function (skill) { return skill.key === b.skill.key; });
         });
-        this.operations = abilities.filter(function (ability) {
+        var newOperations = abilities.filter(function (ability) {
             var context = {
                 turn: _this.turn,
                 time: _this.time,
@@ -81,14 +77,14 @@ var Timeline = /** @class */ (function () {
             };
             return ability.skill.valid(context);
         }).map(function (ability) {
-            var operation = _this.operations.find(function (op) { return op.skill.key === ability.skill.key; }) || (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
-            if ("character" in operation.skill.payloadOptions && operation.skill.payloadOptions.character && operation.skill.payloadOptions.character.static) {
-                operation.payload = {
-                    character: operation.skill.payloadOptions.character.static
-                };
-            }
-            return operation;
+            return _this.operations.find(function (op) { return op.skill.key === ability.skill.key; }) || (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
         });
+        if (this.time === "day") {
+            this.operations = this.operations.concat(newOperations);
+        }
+        else {
+            this.operations = newOperations;
+        }
     };
     Timeline.prototype.updatePayload = function (at, payload) {
         this.operations[at].payload = payload;
@@ -106,8 +102,7 @@ var Timeline = /** @class */ (function () {
             if (!op.payload) {
                 return;
             }
-            var skill = (0, skill_1.SkillForKey)(op.skill.key);
-            skill.effect(op.seat, op.payload, players);
+            (0, operation_1.EffectOperation)(op, players);
         });
         return players;
     };

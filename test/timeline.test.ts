@@ -1,11 +1,10 @@
 import { describe, expect, test } from '@jest/globals';
 import { TroubleBrewing } from '../src/book';
-import { PlayerCase1 } from './caseData';
+import { PlayerCase1, PlayerCase2 } from './caseData';
 import { Timeline } from '../src/timeline';
-import { KnowAbsent, KnowEvilAround, KnowTownsfolk, Nomination, Poison, Slay, WakenKnowCharacter } from '../src/skill';
+import { ExcuteByRack, KnowAbsent, KnowEvilAround, KnowTownsfolk, Poison, WakenKnowCharacter } from '../src/skill';
 import { Empath } from '../src/character';
 import { CreateOperation } from '../src/operation';
-import { isDeadPlayer } from '../src/player';
 
 describe("Timeline creation perperty", () => {
 
@@ -67,5 +66,50 @@ describe("Timeline creation perperty", () => {
         const t = Timeline.from(TroubleBrewing, timelineNextNext)
 
         expect(t.operations[2].skill.key).toEqual(WakenKnowCharacter.key)
+    })
+
+    /**
+     * 
+     */
+    test("oprations PlayerCase2 on day time", () => {
+        let timeline = new Timeline(TroubleBrewing, PlayerCase2)
+        timeline.operations[0].payload = {
+            characters: []
+        }
+        timeline.operations[1].payload = {
+            seats: [PlayerCase2[0].seat, PlayerCase2[1].seat],
+            character: Empath.key
+        }
+        timeline.operations[2].payload = {
+            number: 2
+        }
+        let timelineNext = new Timeline(TroubleBrewing, PlayerCase2, timeline)
+
+        const excute = CreateOperation(2, ExcuteByRack)
+        excute.payload = {
+            seat: 3
+        }
+        timelineNext.operations.push(excute)
+        const t1 = Timeline.from(TroubleBrewing, timelineNext)
+        expect(t1.operations.length).toEqual(2)
+
+        const timelineNextNext = new Timeline(TroubleBrewing, PlayerCase2, t1)
+
+        /**
+         * 猩红女巫 恶魔 刀 人
+         * 共情信息
+         */
+        expect(timelineNextNext.operations.length).toEqual(2)
+
+        timelineNextNext.operations[0].payload = {
+            seat: PlayerCase2[4].seat,
+            result: true
+        }
+
+        const t2 = Timeline.from(TroubleBrewing, timelineNextNext)
+
+
+        expect(t2.operations[1].skill.key).toEqual(WakenKnowCharacter.key)
+        expect(t2.operations[2].skill.key).toEqual(KnowEvilAround.key)
     })
 })

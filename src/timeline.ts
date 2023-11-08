@@ -1,8 +1,8 @@
 import { IBook } from "./book";
 import { CharacterForKey } from "./character";
-import { CreateOperation, IOperation } from "./operation";
+import { CreateOperation, EffectOperation, IOperation } from "./operation";
 import { IPlayer, clearStatus, isDeadPlayer } from "./player";
-import { IContext, Kill, SkillForKey } from "./skill";
+import { BecomeImp, IContext, Kill, SkillForKey, WakenKnowCharacter } from "./skill";
 
 export interface ITimeline {
     readonly players: IPlayer[]
@@ -45,10 +45,6 @@ export class Timeline implements ITimeline {
     }
 
     private updateOperations() {
-        /// 白天的时间线不存在因 operation 的变化而变化的 operation
-        if (this.time === "day") {
-            return;
-        }
         const players = this.effected()
         const killTarget = players.find(p => {
             const operation = this.operations.find(op => op.skill.key === Kill.key)
@@ -74,7 +70,7 @@ export class Timeline implements ITimeline {
             this.book.skills.findIndex(skill => skill.key === a.skill.key) - this.book.skills.findIndex(skill => skill.key === b.skill.key)
         )
 
-        this.operations = abilities.filter(ability => {
+        const newOperations = abilities.filter(ability => {
             let context: IContext = {
                 turn: this.turn,
                 time: this.time,
@@ -87,14 +83,14 @@ export class Timeline implements ITimeline {
             }
             return ability.skill.valid(context)
         }).map(ability => {
-            const operation = this.operations.find(op => op.skill.key === ability.skill.key) || CreateOperation(ability.player.seat, ability.skill)
-            if ("character" in operation.skill.payloadOptions && operation.skill.payloadOptions.character && operation.skill.payloadOptions.character.static) {
-                operation.payload = {
-                    character: operation.skill.payloadOptions.character.static
-                }
-            }
-            return operation
+            return this.operations.find(op => op.skill.key === ability.skill.key) || CreateOperation(ability.player.seat, ability.skill)
         })
+
+        if (this.time === "day") {
+            this.operations = this.operations.concat(newOperations)
+        } else {
+            this.operations = newOperations
+        }
     }
 
     updatePayload(at: number, payload: any) {
@@ -115,8 +111,7 @@ export class Timeline implements ITimeline {
             if (!op.payload) {
                 return;
             }
-            const skill = SkillForKey(op.skill.key) as typeof op.skill
-            skill.effect(op.seat, op.payload, players)
+            EffectOperation(op, players)
         })
 
         return players

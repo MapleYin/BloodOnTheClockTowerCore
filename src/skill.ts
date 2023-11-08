@@ -1,4 +1,4 @@
-import { CharacterForKey, EKind, ICharacter, Imp } from "./character";
+import { CharacterForKey, EKind } from "./character";
 import { IPlayer, isDeadPlayer } from "./player";
 
 declare namespace Payload {
@@ -178,7 +178,7 @@ export const Kill = new Skill("Kill", "P_R", context =>
 
 /// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
 export const BecomeImp = new Skill("BecomeImp", "C", context =>
-    AliveAtNight(context) &&
+    !isDeadPlayer(context.player) &&
     context.numberOfAlivePlayer >= 4 && /// 人数大于4人
     context.players.findIndex(p => !isDeadPlayer(p) && CharacterForKey(p.character)?.kind == "Demons") == -1 /// 没有存活的恶魔
     , (seat, payload, players) => {
