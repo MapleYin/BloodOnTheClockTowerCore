@@ -207,9 +207,12 @@ export const ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, (_, pay
 })
 
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
-export const Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, (_, payload, players) => {
-    players[payload.seat - 1].isScapegoat = true
-}, {
+export const Scapegoat = new Skill("Scapegoat", "P", context =>
+    !isDeadPlayer(context.player) &&
+    context.killTarget?.seat == context.player.seat &&
+    context.time === "night", (_, payload, players) => {
+        players[payload.seat - 1].isScapegoat = true
+    }, {
     player: {}
 })
 

@@ -26,7 +26,7 @@ export interface IPlayer {
 }
 
 export const isDeadPlayer = (player: IPlayer) => {
-    return player.isKilled || player.isSlew || player.isExecuted || false
+    return player.isKilled || player.isSlew || player.isExecuted || player.isScapegoat || false
 }
 
 export const clearStatus = (player: IPlayer) => {

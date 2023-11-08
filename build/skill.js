@@ -77,7 +77,12 @@ exports.ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, function (_,
     player: {}
 });
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
-exports.Scapegoat = new Skill("Scapegoat", "P", AliveAtNight, function (_, payload, players) {
+exports.Scapegoat = new Skill("Scapegoat", "P", function (context) {
+    var _a;
+    return !(0, player_1.isDeadPlayer)(context.player) &&
+        ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat &&
+        context.time === "night";
+}, function (_, payload, players) {
     players[payload.seat - 1].isScapegoat = true;
 }, {
     player: {}
