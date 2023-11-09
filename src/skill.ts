@@ -291,7 +291,11 @@ export const KnowOutsiders = new Skill("KnowOutsiders", "PS_C", context =>
         }
     },
     character: {
-        kinds: ["Outsiders"]
+        kinds: ["Outsiders"],
+        range: {
+            min: 0,
+            max: 1
+        }
     }
 })
 export const KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", context =>

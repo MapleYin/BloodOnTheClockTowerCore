@@ -159,7 +159,11 @@ exports.KnowOutsiders = new Skill("KnowOutsiders", "PS_C", function (context) {
         }
     },
     character: {
-        kinds: ["Outsiders"]
+        kinds: ["Outsiders"],
+        range: {
+            min: 0,
+            max: 1
+        }
     }
 });
 exports.KnowTownsfolk = new Skill("KnowTownsfolk", "PS_C", function (context) {
