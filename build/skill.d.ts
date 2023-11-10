@@ -115,7 +115,7 @@ export declare const ChooseMaster: Skill<"P">;
 export declare const Scapegoat: Skill<"P">;
 export declare const WakenKnowCharacter: Skill<"P_C">;
 export declare const Guard: Skill<"P">;
-export declare const DigKnowCharacter: Skill<"P_C">;
+export declare const DigKnowCharacter: Skill<"C">;
 export declare const CheckImp: Skill<"PS_R">;
 export declare const KnowEvilAround: Skill<"N">;
 export declare const KnowSeat: Skill<"N">;

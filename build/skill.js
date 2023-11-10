@@ -105,11 +105,10 @@ exports.Guard = new Skill("Guard", "P", function (context) {
 }, {
     player: {}
 });
-exports.DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", function (context) {
+exports.DigKnowCharacter = new Skill("DigKnowCharacter", "C", function (context) {
     return AliveAtNight(context) &&
         !!context.excuteInDay;
 }, undefined, {
-    player: {},
     character: {}
 });
 exports.CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight, undefined, {

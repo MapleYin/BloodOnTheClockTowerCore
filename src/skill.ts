@@ -235,11 +235,10 @@ export const Guard = new Skill("Guard", "P", context =>
     player: {}
 })
 
-export const DigKnowCharacter = new Skill("DigKnowCharacter", "P_C", context =>
+export const DigKnowCharacter = new Skill("DigKnowCharacter", "C", context =>
     AliveAtNight(context) &&
     !!context.excuteInDay
     , undefined, {
-    player: {},
     character: {}
 })
 
