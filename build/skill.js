@@ -33,7 +33,11 @@ exports.Tramsform = new Skill("Tramsform", "P", function (context) {
     var _a;
     return (0, player_1.isDeadPlayer)(context.player) &&
         ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat;
-}, undefined, {
+}, function (_, payload, players) {
+    if (payload.seat) {
+        players[payload.seat - 1].avatar = "Imp";
+    }
+}, {
     player: {
         kinds: ["Minions"]
     }

@@ -164,7 +164,11 @@ export const KnowAbsent = new Skill("KnowAbsent", "CS", context =>
 export const Tramsform = new Skill("Tramsform", "P", context =>
     isDeadPlayer(context.player) &&
     context.killTarget?.seat == context.player.seat
-    , undefined, {
+    , (_, payload, players) => {
+        if (payload.seat) {
+            players[payload.seat - 1].avatar = "Imp"
+        }
+    }, {
     player: {
         kinds: ["Minions"]
     }
