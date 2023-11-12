@@ -45,6 +45,12 @@ declare namespace Payload {
         interface Result {
             result: {};
         }
+        interface Input {
+            input?: {
+                player?: Player;
+                character?: Character;
+            };
+        }
     }
 }
 export type PayloadDefind = {
@@ -79,7 +85,7 @@ export type PayloadOptionDefind = {
 };
 export type PayloadKey = keyof PayloadDefind;
 export type PayloadType = PayloadDefind[PayloadKey];
-export type PayloadOptions = PayloadOptionDefind[PayloadKey];
+export type PayloadOptions = PayloadOptionDefind[PayloadKey] & Payload.Options.Input;
 export interface IContext {
     turn: number;
     time: "day" | "night";
