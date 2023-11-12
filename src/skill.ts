@@ -172,7 +172,7 @@ export const Tramsform = new Skill("Tramsform", "P", context =>
 
 /// 选择一个目标，他死亡
 export const Kill = new Skill("Kill", "P_R", context =>
-    AliveAtNight(context) && context.turn != 1,
+    (AliveAtNight(context) || context.killTarget?.seat === context.player.seat) && context.turn != 1,
     (_, payload, players) => {
         if (payload.result) {
             players[payload.seat - 1].isKilled = true

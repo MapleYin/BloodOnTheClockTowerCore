@@ -39,9 +39,7 @@ exports.Tramsform = new Skill("Tramsform", "P", function (context) {
     }
 });
 /// 选择一个目标，他死亡
-exports.Kill = new Skill("Kill", "P_R", function (context) {
-    return AliveAtNight(context) && context.turn != 1;
-}, function (_, payload, players) {
+exports.Kill = new Skill("Kill", "P_R", function (context) { var _a; return (AliveAtNight(context) || ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) === context.player.seat) && context.turn != 1; }, function (_, payload, players) {
     if (payload.result) {
         players[payload.seat - 1].isKilled = true;
     }
