@@ -53,6 +53,9 @@ exports.Tramsform = new Skill({
     payloadOptions: {
         player: {
             kinds: ["Minions"]
+        },
+        output: {
+            disabled: true
         }
     },
     description: "选择一个爪牙变成恶魔"
@@ -79,7 +82,12 @@ exports.Kill = new Skill({
         player: {
             requireInput: true
         },
-        result: {}
+        result: {
+            display: ["未能杀害", "杀害成功"]
+        },
+        output: {
+            disabled: true
+        }
     },
     description: "选择一个目标，他死亡"
 });
@@ -99,6 +107,9 @@ exports.BecomeImp = new Skill({
     payloadOptions: {
         character: {
             static: "Imp"
+        },
+        output: {
+            disabled: true
         }
     },
     description: "化身为恶魔"
@@ -125,6 +136,9 @@ exports.Poison = new Skill({
     payloadOptions: {
         player: {
             requireInput: true
+        },
+        output: {
+            disabled: true
         }
     },
     description: "选择1名玩家，他中毒"
@@ -140,6 +154,9 @@ exports.ChooseMaster = new Skill({
     payloadOptions: {
         player: {
             requireInput: true
+        },
+        output: {
+            disabled: true
         }
     },
     description: "选择1名玩家作为主人"
@@ -158,7 +175,10 @@ exports.Scapegoat = new Skill({
         players[payload.seat - 1].isScapegoat = true;
     },
     payloadOptions: {
-        player: {}
+        player: {},
+        output: {
+            disabled: true
+        }
     },
     description: "选择1名代替市长死亡"
 });
@@ -193,6 +213,9 @@ exports.Guard = new Skill({
     payloadOptions: {
         player: {
             requireInput: true
+        },
+        output: {
+            disabled: true
         }
     },
     description: "选择1名玩家，守护他"
@@ -220,7 +243,9 @@ exports.CheckImp = new Skill({
                 min: 2
             },
         },
-        result: {}
+        result: {
+            display: ["无恶魔", "有恶魔"]
+        }
     },
     description: "选择2个玩家，是否存在恶魔"
 });
@@ -335,7 +360,9 @@ exports.Slay = new Skill({
     },
     payloadOptions: {
         player: {},
-        result: {}
+        result: {
+            display: ["无事发生", "猎杀成功"]
+        }
     },
     description: "猎杀"
 });

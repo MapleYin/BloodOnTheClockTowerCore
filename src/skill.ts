@@ -54,7 +54,14 @@ declare namespace Payload {
             }
         }
         interface Result {
-            result: {}
+            result: {
+                display?: [string, string]
+            }
+        }
+        interface Output {
+            output?: {
+                disabled?: boolean
+            }
         }
     }
 }
@@ -117,7 +124,7 @@ export interface ISkill {
 
     readonly key: string
     readonly payloadKey: PayloadKey
-    readonly payloadOptions: PayloadOptions
+    readonly payloadOptions: PayloadOptions & Payload.Options.Output
     readonly description: string
 
     valid(context: IContext): boolean
@@ -131,7 +138,7 @@ interface SkillProps<Key extends PayloadKey> {
     payloadKey: Key
     validHandler?: (context: IContext) => boolean
     effect?: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void
-    payloadOptions: PayloadOptionDefind[Key]
+    payloadOptions: PayloadOptionDefind[Key] & Payload.Options.Output
     description: string
 }
 
@@ -139,7 +146,7 @@ class Skill<Key extends PayloadKey> implements ISkill {
 
     readonly key: string;
     readonly payloadKey: Key;
-    readonly payloadOptions: PayloadOptionDefind[Key];
+    readonly payloadOptions: PayloadOptionDefind[Key] & Payload.Options.Output;
     readonly valid: (context: IContext) => boolean
     readonly effect: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void
     readonly description: string
@@ -190,6 +197,9 @@ export const Tramsform = new Skill({
     payloadOptions: {
         player: {
             kinds: ["Minions"]
+        },
+        output: {
+            disabled: true
         }
     },
     description: "选择一个爪牙变成恶魔"
@@ -216,7 +226,12 @@ export const Kill = new Skill({
         player: {
             requireInput: true
         },
-        result: {}
+        result: {
+            display: ["未能杀害", "杀害成功"]
+        },
+        output: {
+            disabled: true
+        }
     },
     description: "选择一个目标，他死亡"
 })
@@ -236,6 +251,9 @@ export const BecomeImp = new Skill({
     payloadOptions: {
         character: {
             static: "Imp"
+        },
+        output: {
+            disabled: true
         }
     },
     description: "化身为恶魔"
@@ -264,6 +282,9 @@ export const Poison = new Skill({
     payloadOptions: {
         player: {
             requireInput: true
+        },
+        output: {
+            disabled: true
         }
     },
     description: "选择1名玩家，他中毒"
@@ -280,6 +301,9 @@ export const ChooseMaster = new Skill({
     payloadOptions: {
         player: {
             requireInput: true
+        },
+        output: {
+            disabled: true
         }
     },
     description: "选择1名玩家作为主人"
@@ -297,7 +321,10 @@ export const Scapegoat = new Skill({
         players[payload.seat - 1].isScapegoat = true
     },
     payloadOptions: {
-        player: {}
+        player: {},
+        output: {
+            disabled: true
+        }
     },
     description: "选择1名代替市长死亡"
 })
@@ -333,6 +360,9 @@ export const Guard = new Skill({
     payloadOptions: {
         player: {
             requireInput: true
+        },
+        output: {
+            disabled: true
         }
     },
     description: "选择1名玩家，守护他"
@@ -361,7 +391,9 @@ export const CheckImp = new Skill({
                 min: 2
             },
         },
-        result: {}
+        result: {
+            display: ["无恶魔", "有恶魔"]
+        }
     },
     description: "选择2个玩家，是否存在恶魔"
 })
@@ -479,7 +511,9 @@ export const Slay = new Skill({
     },
     payloadOptions: {
         player: {},
-        result: {}
+        result: {
+            display: ["无事发生", "猎杀成功"]
+        }
     },
     description: "猎杀"
 })

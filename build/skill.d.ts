@@ -45,7 +45,14 @@ declare namespace Payload {
             };
         }
         interface Result {
-            result: {};
+            result: {
+                display?: [string, string];
+            };
+        }
+        interface Output {
+            output?: {
+                disabled?: boolean;
+            };
         }
     }
 }
@@ -96,7 +103,7 @@ export interface IContext {
 export interface ISkill {
     readonly key: string;
     readonly payloadKey: PayloadKey;
-    readonly payloadOptions: PayloadOptions;
+    readonly payloadOptions: PayloadOptions & Payload.Options.Output;
     readonly description: string;
     valid(context: IContext): boolean;
     effect(effector: number, payload: PayloadDefind[PayloadKey], players: IPlayer[]): void;
@@ -106,13 +113,13 @@ interface SkillProps<Key extends PayloadKey> {
     payloadKey: Key;
     validHandler?: (context: IContext) => boolean;
     effect?: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void;
-    payloadOptions: PayloadOptionDefind[Key];
+    payloadOptions: PayloadOptionDefind[Key] & Payload.Options.Output;
     description: string;
 }
 declare class Skill<Key extends PayloadKey> implements ISkill {
     readonly key: string;
     readonly payloadKey: Key;
-    readonly payloadOptions: PayloadOptionDefind[Key];
+    readonly payloadOptions: PayloadOptionDefind[Key] & Payload.Options.Output;
     readonly valid: (context: IContext) => boolean;
     readonly effect: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void;
     readonly description: string;
