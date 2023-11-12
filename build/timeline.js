@@ -57,11 +57,20 @@ var Timeline = /** @class */ (function () {
         });
         var tramsformedImp = (killTarget === null || killTarget === void 0 ? void 0 : killTarget.avatar) === character_1.Imp.key && players.find(function (p) { return !(0, player_1.isDeadPlayer)(p) && p.avatar === character_1.Imp.key; }) || undefined;
         var abilities = players.flatMap(function (p) {
+            var skills = [];
             var chatacter = (0, character_1.CharacterForKey)(p.avatar);
             if (!chatacter) {
                 throw "unexpected character";
             }
-            return chatacter.abilities.map(function (skill) {
+            skills.push.apply(skills, chatacter.abilities);
+            if (p.avatar != p.character) {
+                var chatacter_1 = (0, character_1.CharacterForKey)(p.character);
+                if (!chatacter_1) {
+                    throw "unexpected character";
+                }
+                skills.push.apply(skills, chatacter_1.abilities);
+            }
+            return skills.map(function (skill) {
                 return {
                     player: p,
                     skill: skill

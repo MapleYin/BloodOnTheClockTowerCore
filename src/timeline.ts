@@ -2,7 +2,7 @@ import { IBook } from "./book";
 import { CharacterForKey, Imp } from "./character";
 import { CreateOperation, EffectOperation, IOperation } from "./operation";
 import { IPlayer, clearStatus, isDeadPlayer } from "./player";
-import { BecomeImp, IContext, Kill, SkillForKey, WakenKnowCharacter } from "./skill";
+import { BecomeImp, IContext, ISkill, Kill, SkillForKey, WakenKnowCharacter } from "./skill";
 
 export interface ITimeline {
     readonly players: IPlayer[]
@@ -65,11 +65,20 @@ export class Timeline implements ITimeline {
         const tramsformedImp = killTarget?.avatar === Imp.key && players.find(p => !isDeadPlayer(p) && p.avatar === Imp.key) || undefined
 
         const abilities = players.flatMap(p => {
+            const skills: ISkill[] = []
             const chatacter = CharacterForKey(p.avatar)
             if (!chatacter) {
                 throw "unexpected character"
             }
-            return chatacter.abilities.map((skill) => {
+            skills.push(...chatacter.abilities)
+            if (p.avatar != p.character) {
+                const chatacter = CharacterForKey(p.character)
+                if (!chatacter) {
+                    throw "unexpected character"
+                }
+                skills.push(...chatacter.abilities)
+            }
+            return skills.map((skill) => {
                 return {
                     player: p,
                     skill
