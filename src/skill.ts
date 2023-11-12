@@ -199,7 +199,7 @@ export const BecomeImp = new Skill("BecomeImp", "C", context =>
     !isDeadPlayer(context.player) &&
     context.time == "day" &&
     context.numberOfAlivePlayer >= 4 && /// 人数大于4人
-    context.players.findIndex(p => !isDeadPlayer(p) && CharacterForKey(p.character)?.kind == "Demons") == -1 /// 没有存活的恶魔
+    context.players.findIndex(p => !isDeadPlayer(p) && CharacterForKey(p.avatar)?.kind == "Demons") == -1 /// 没有存活的恶魔
     , (seat, payload, players) => {
         players[seat - 1].avatar = payload.character
     }, {

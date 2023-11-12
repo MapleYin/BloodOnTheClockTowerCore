@@ -64,7 +64,7 @@ exports.BecomeImp = new Skill("BecomeImp", "C", function (context) {
     return !(0, player_1.isDeadPlayer)(context.player) &&
         context.time == "day" &&
         context.numberOfAlivePlayer >= 4 && /// 人数大于4人
-        context.players.findIndex(function (p) { var _a; return !(0, player_1.isDeadPlayer)(p) && ((_a = (0, character_1.CharacterForKey)(p.character)) === null || _a === void 0 ? void 0 : _a.kind) == "Demons"; }) == -1;
+        context.players.findIndex(function (p) { var _a; return !(0, player_1.isDeadPlayer)(p) && ((_a = (0, character_1.CharacterForKey)(p.avatar)) === null || _a === void 0 ? void 0 : _a.kind) == "Demons"; }) == -1;
 } /// 没有存活的恶魔
 , function (seat, payload, players) {
     players[seat - 1].avatar = payload.character;
