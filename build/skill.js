@@ -56,7 +56,9 @@ exports.Kill = new Skill("Kill", "P_R", function (context) {
         players[payload.seat - 1].isKilled = true;
     }
 }, {
-    player: {},
+    player: {
+        requireInput: true
+    },
     result: {}
 });
 /// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
@@ -79,13 +81,17 @@ exports.Peep = new Skill("Peep", "T", AliveAtNight, undefined, {});
 exports.Poison = new Skill("Poison", "P", AliveAtNight, function (_, payload, players) {
     players[payload.seat - 1].isPoisoned = true;
 }, {
-    player: {}
+    player: {
+        requireInput: true
+    }
 });
 /// 选择一个目标，第二天投票他投票你的票才生效
 exports.ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, function (_, payload, players) {
     players[payload.seat - 1].isMaster = true;
 }, {
-    player: {}
+    player: {
+        requireInput: true
+    }
 });
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
 exports.Scapegoat = new Skill("Scapegoat", "P", function (context) {
@@ -105,7 +111,9 @@ exports.WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", function (co
         ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat &&
         context.time === "night";
 }, undefined, {
-    player: {},
+    player: {
+        requireInput: true
+    },
     character: {}
 });
 exports.Guard = new Skill("Guard", "P", function (context) {
@@ -114,16 +122,18 @@ exports.Guard = new Skill("Guard", "P", function (context) {
 }, function (_, payload, players) {
     players[payload.seat - 1].isGuarded = true;
 }, {
-    player: {}
+    player: {
+        requireInput: true
+    }
 });
 exports.DigKnowCharacter = new Skill("DigKnowCharacter", "C", function (context) {
-    return AliveAtNight(context) &&
-        !!context.excuteInDay;
+    return AliveAtNight(context) && !!context.excuteInDay;
 }, undefined, {
     character: {}
 });
 exports.CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight, undefined, {
     player: {
+        requireInput: true,
         range: {
             max: 2,
             min: 2

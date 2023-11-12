@@ -25,6 +25,7 @@ declare namespace Payload {
     namespace Options {
         interface Character {
             character: {
+                requireInput?: boolean;
                 static?: string;
                 kinds?: EKind[];
                 exist?: "inGame" | "notInGame" | "all";
@@ -32,6 +33,7 @@ declare namespace Payload {
         }
         interface Player {
             player: {
+                requireInput?: boolean;
                 dead?: boolean;
                 kinds?: EKind[];
             } & Options.Range;
@@ -44,12 +46,6 @@ declare namespace Payload {
         }
         interface Result {
             result: {};
-        }
-        interface Input {
-            input?: {
-                player?: Player;
-                character?: Character;
-            };
         }
     }
 }
@@ -85,7 +81,7 @@ export type PayloadOptionDefind = {
 };
 export type PayloadKey = keyof PayloadDefind;
 export type PayloadType = PayloadDefind[PayloadKey];
-export type PayloadOptions = PayloadOptionDefind[PayloadKey] & Payload.Options.Input;
+export type PayloadOptions = PayloadOptionDefind[PayloadKey];
 export interface IContext {
     turn: number;
     time: "day" | "night";

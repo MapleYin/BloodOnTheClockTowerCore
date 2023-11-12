@@ -13,6 +13,7 @@ export declare class Timeline implements ITimeline {
     time: "day" | "night";
     book: IBook;
     players: IPlayer[];
+    lastExcute?: IPlayer;
     operations: IOperation[];
     static from(book: IBook, obj: Record<string, any>): Timeline;
     constructor(book: IBook, players: IPlayer[], lastTimeline?: Timeline);

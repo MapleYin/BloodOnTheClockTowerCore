@@ -17,6 +17,7 @@ export class Timeline implements ITimeline {
     time: "day" | "night";
     book: IBook
     players: IPlayer[];
+    lastExcute?: IPlayer
     operations: IOperation[] = [];
 
     static from(book: IBook, obj: Record<string, any>) {
@@ -25,6 +26,7 @@ export class Timeline implements ITimeline {
         timeline.time = obj.time
         timeline.players = obj.players
         timeline.operations = obj.operations
+        timeline.lastExcute = obj.lastExcute
         timeline.updateOperations()
         return timeline
     }
@@ -35,6 +37,13 @@ export class Timeline implements ITimeline {
         this.turn = time === "night" ? turn + 1 : turn
         this.time = time === "night" ? "day" : "night"
         this.players = lastTimeline ? lastTimeline.effected() : players
+
+        if (this.time === "night" && lastTimeline) {
+            const beforeDay = lastTimeline.players.filter(p => p.isExecuted);
+            const aferDay = lastTimeline.effected().filter(p => p.isExecuted);
+
+            this.lastExcute = aferDay.find(ap => beforeDay.findIndex(bp => bp.seat === ap.seat) === -1) || undefined
+        }
 
         /// 进入黑夜需要清除一些状态
         if (this.time === "night") {
@@ -80,7 +89,7 @@ export class Timeline implements ITimeline {
                 player: ability.player,
                 killTarget,
                 tramsformedImp: killTarget?.avatar === Imp.key && players.find(p => !isDeadPlayer(p) && p.avatar === Imp.key) || undefined,
-                excuteInDay: players.find(p => p.isExecuted) /// 这里不太对。。
+                excuteInDay: this.lastExcute
             }
             return ability.skill.valid(context)
         }).map(ability => {

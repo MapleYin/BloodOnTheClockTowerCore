@@ -24,6 +24,11 @@ var Timeline = /** @class */ (function () {
         this.turn = time === "night" ? turn + 1 : turn;
         this.time = time === "night" ? "day" : "night";
         this.players = lastTimeline ? lastTimeline.effected() : players;
+        if (this.time === "night" && lastTimeline) {
+            var beforeDay_1 = lastTimeline.players.filter(function (p) { return p.isExecuted; });
+            var aferDay = lastTimeline.effected().filter(function (p) { return p.isExecuted; });
+            this.lastExcute = aferDay.find(function (ap) { return beforeDay_1.findIndex(function (bp) { return bp.seat === ap.seat; }) === -1; }) || undefined;
+        }
         /// 进入黑夜需要清除一些状态
         if (this.time === "night") {
             this.players.forEach(player_1.clearStatus);
@@ -36,6 +41,7 @@ var Timeline = /** @class */ (function () {
         timeline.time = obj.time;
         timeline.players = obj.players;
         timeline.operations = obj.operations;
+        timeline.lastExcute = obj.lastExcute;
         timeline.updateOperations();
         return timeline;
     };
@@ -74,7 +80,7 @@ var Timeline = /** @class */ (function () {
                 player: ability.player,
                 killTarget: killTarget,
                 tramsformedImp: (killTarget === null || killTarget === void 0 ? void 0 : killTarget.avatar) === character_1.Imp.key && players.find(function (p) { return !(0, player_1.isDeadPlayer)(p) && p.avatar === character_1.Imp.key; }) || undefined,
-                excuteInDay: players.find(function (p) { return p.isExecuted; }) /// 这里不太对。。
+                excuteInDay: _this.lastExcute
             };
             return ability.skill.valid(context);
         }).map(function (ability) {

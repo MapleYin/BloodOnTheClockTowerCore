@@ -33,6 +33,7 @@ declare namespace Payload {
     namespace Options {
         interface Character {
             character: {
+                requireInput?: boolean
                 static?: string;
                 kinds?: EKind[];
                 exist?: "inGame" | "notInGame" | "all";
@@ -41,6 +42,7 @@ declare namespace Payload {
         }
         interface Player {
             player: {
+                requireInput?: boolean
                 dead?: boolean;
                 kinds?: EKind[];
             } & Options.Range
@@ -53,12 +55,6 @@ declare namespace Payload {
         }
         interface Result {
             result: {}
-        }
-        interface Input {
-            input?: {
-                player?: Player,
-                character?: Character
-            }
         }
     }
 }
@@ -99,7 +95,7 @@ export type PayloadKey = keyof PayloadDefind
 
 export type PayloadType = PayloadDefind[PayloadKey]
 
-export type PayloadOptions = PayloadOptionDefind[PayloadKey] & Payload.Options.Input
+export type PayloadOptions = PayloadOptionDefind[PayloadKey]
 
 export interface IContext {
     /// timeline
@@ -190,7 +186,9 @@ export const Kill = new Skill("Kill", "P_R",
             players[payload.seat - 1].isKilled = true
         }
     }, {
-    player: {},
+    player: {
+        requireInput: true
+    },
     result: {}
 })
 
@@ -215,14 +213,18 @@ export const Peep = new Skill("Peep", "T", AliveAtNight, undefined, {})
 export const Poison = new Skill("Poison", "P", AliveAtNight, (_, payload, players) => {
     players[payload.seat - 1].isPoisoned = true
 }, {
-    player: {}
+    player: {
+        requireInput: true
+    }
 })
 
 /// 选择一个目标，第二天投票他投票你的票才生效
 export const ChooseMaster = new Skill("ChooseMaster", "P", AliveAtNight, (_, payload, players) => {
     players[payload.seat - 1].isMaster = true
 }, {
-    player: {}
+    player: {
+        requireInput: true
+    }
 })
 
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
@@ -241,7 +243,9 @@ export const WakenKnowCharacter = new Skill("WakenKnowCharacter", "P_C", context
     context.killTarget?.seat == context.player.seat &&
     context.time === "night"
     , undefined, {
-    player: {},
+    player: {
+        requireInput: true
+    },
     character: {}
 })
 
@@ -251,18 +255,20 @@ export const Guard = new Skill("Guard", "P", context =>
     , (_, payload, players) => {
         players[payload.seat - 1].isGuarded = true
     }, {
-    player: {}
+    player: {
+        requireInput: true
+    }
 })
 
 export const DigKnowCharacter = new Skill("DigKnowCharacter", "C", context =>
-    AliveAtNight(context) &&
-    !!context.excuteInDay
+    AliveAtNight(context) && !!context.excuteInDay
     , undefined, {
     character: {}
 })
 
 export const CheckImp = new Skill("CheckImp", "PS_R", AliveAtNight, undefined, {
     player: {
+        requireInput: true,
         range: {
             max: 2,
             min: 2
