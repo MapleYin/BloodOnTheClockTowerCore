@@ -55,6 +55,7 @@ var Timeline = /** @class */ (function () {
             }
             return p.seat === operation.payload.seat;
         });
+        var tramsformedImp = (killTarget === null || killTarget === void 0 ? void 0 : killTarget.avatar) === character_1.Imp.key && players.find(function (p) { return !(0, player_1.isDeadPlayer)(p) && p.avatar === character_1.Imp.key; }) || undefined;
         var abilities = players.flatMap(function (p) {
             var chatacter = (0, character_1.CharacterForKey)(p.avatar);
             if (!chatacter) {
@@ -79,7 +80,7 @@ var Timeline = /** @class */ (function () {
                 players: players,
                 player: ability.player,
                 killTarget: killTarget,
-                tramsformedImp: (killTarget === null || killTarget === void 0 ? void 0 : killTarget.avatar) === character_1.Imp.key && players.find(function (p) { return !(0, player_1.isDeadPlayer)(p) && p.avatar === character_1.Imp.key; }) || undefined,
+                tramsformedImp: tramsformedImp,
                 excuteInDay: _this.lastExcute
             };
             return ability.skill.valid(context);

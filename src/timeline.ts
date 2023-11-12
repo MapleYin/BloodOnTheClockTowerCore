@@ -62,6 +62,7 @@ export class Timeline implements ITimeline {
             }
             return p.seat === operation.payload.seat
         })
+        const tramsformedImp = killTarget?.avatar === Imp.key && players.find(p => !isDeadPlayer(p) && p.avatar === Imp.key) || undefined
 
         const abilities = players.flatMap(p => {
             const chatacter = CharacterForKey(p.avatar)
@@ -88,7 +89,7 @@ export class Timeline implements ITimeline {
                 players: players,
                 player: ability.player,
                 killTarget,
-                tramsformedImp: killTarget?.avatar === Imp.key && players.find(p => !isDeadPlayer(p) && p.avatar === Imp.key) || undefined,
+                tramsformedImp,
                 excuteInDay: this.lastExcute
             }
             return ability.skill.valid(context)
