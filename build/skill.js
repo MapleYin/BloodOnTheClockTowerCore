@@ -106,7 +106,7 @@ exports.Poison = new Skill({
     payloadKey: "P",
     validHandler: function (context) {
         var _a;
-        return context.time == "night" && (!(0, player_1.isDeadPlayer)(context.player) || ((_a = context.tramsformedImp) === null || _a === void 0 ? void 0 : _a.seat) === context.player.seat);
+        return context.time == "night" && ((!(0, player_1.isDeadPlayer)(context.player) && context.player.avatar === "Poisoner") || ((_a = context.tramsformedImp) === null || _a === void 0 ? void 0 : _a.seat) === context.player.seat);
     },
     effect: function (_, payload, players) {
         players[payload.seat - 1].isPoisoned = true;
