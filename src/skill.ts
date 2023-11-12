@@ -118,6 +118,7 @@ export interface ISkill {
     readonly key: string
     readonly payloadKey: PayloadKey
     readonly payloadOptions: PayloadOptions
+    readonly description: string
 
     valid(context: IContext): boolean
     effect(effector: number, payload: PayloadDefind[PayloadKey], players: IPlayer[]): void
@@ -131,6 +132,7 @@ interface SkillProps<Key extends PayloadKey> {
     validHandler?: (context: IContext) => boolean
     effect?: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void
     payloadOptions: PayloadOptionDefind[Key]
+    description: string
 }
 
 class Skill<Key extends PayloadKey> implements ISkill {
@@ -140,13 +142,15 @@ class Skill<Key extends PayloadKey> implements ISkill {
     readonly payloadOptions: PayloadOptionDefind[Key];
     readonly valid: (context: IContext) => boolean
     readonly effect: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void
+    readonly description: string
 
-    constructor({ key, payloadKey, validHandler, effect, payloadOptions }: SkillProps<Key>) {
+    constructor({ key, payloadKey, validHandler, effect, payloadOptions, description }: SkillProps<Key>) {
         this.key = key
         this.payloadKey = payloadKey
         this.valid = validHandler || (() => true)
         this.effect = effect || (() => { })
         this.payloadOptions = payloadOptions
+        this.description = description;
     }
 }
 
@@ -167,7 +171,8 @@ export const KnowAbsent = new Skill({
                 max: 3
             }
         }
-    }
+    },
+    description: "得知三个不在场身份"
 })
 
 /// 如果自杀，另外一个爪牙变成恶魔
@@ -186,7 +191,8 @@ export const Tramsform = new Skill({
         player: {
             kinds: ["Minions"]
         }
-    }
+    },
+    description: "选择一个爪牙变成恶魔"
 })
 
 /// 选择一个目标，他死亡
@@ -211,7 +217,8 @@ export const Kill = new Skill({
             requireInput: true
         },
         result: {}
-    }
+    },
+    description: "选择一个目标，他死亡"
 })
 
 /// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
@@ -230,11 +237,19 @@ export const BecomeImp = new Skill({
         character: {
             static: "Imp"
         }
-    }
+    },
+    description: "化身为恶魔"
 })
 
 /// 可以观看魔典
-export const Peep = new Skill({ key: "Peep", payloadKey: "T", validHandler: AliveAtNight, payloadOptions: {} })
+export const Peep = new Skill({ 
+    key: "Peep", 
+    payloadKey: "T", 
+    validHandler: 
+    AliveAtNight, 
+    payloadOptions: {},
+    description: "得知所有信息"
+})
 
 /// 选择一个目标，他中毒
 export const Poison = new Skill({
@@ -250,7 +265,8 @@ export const Poison = new Skill({
         player: {
             requireInput: true
         }
-    }
+    },
+    description: "选择1名玩家，他中毒"
 })
 
 /// 选择一个目标，第二天投票他投票你的票才生效
@@ -265,7 +281,8 @@ export const ChooseMaster = new Skill({
         player: {
             requireInput: true
         }
-    }
+    },
+    description: "选择1名玩家作为主人"
 })
 
 /// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
@@ -281,7 +298,8 @@ export const Scapegoat = new Skill({
     },
     payloadOptions: {
         player: {}
-    }
+    },
+    description: "选择1名代替市长死亡"
 })
 
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
@@ -298,7 +316,8 @@ export const WakenKnowCharacter = new Skill({
             requireInput: true
         },
         character: {}
-    }
+    },
+    description: "选择1名玩家，得知他的身份"
 })
 
 export const Guard = new Skill({
@@ -315,7 +334,8 @@ export const Guard = new Skill({
         player: {
             requireInput: true
         }
-    }
+    },
+    description: "选择1名玩家，守护他"
 })
 
 export const DigKnowCharacter = new Skill({
@@ -325,7 +345,8 @@ export const DigKnowCharacter = new Skill({
         AliveAtNight(context) && !!context.excuteInDay,
     payloadOptions: {
         character: {}
-    }
+    },
+    description: "得知昨天白天被处决玩家的角色"
 })
 
 export const CheckImp = new Skill({
@@ -341,7 +362,8 @@ export const CheckImp = new Skill({
             },
         },
         result: {}
-    }
+    },
+    description: "选择2个玩家，是否存在恶魔"
 })
 
 export const KnowEvilAround = new Skill({
@@ -353,7 +375,8 @@ export const KnowEvilAround = new Skill({
             min: 0,
             max: 2
         }
-    }
+    },
+    description: "得知两边邪恶玩家人数"
 })
 
 export const KnowSeat = new Skill({
@@ -366,7 +389,8 @@ export const KnowSeat = new Skill({
             min: 0,
             max: 2
         }
-    }
+    },
+    description: "得知有多少对邪恶玩家邻座"
 })
 
 export const KnowMinions = new Skill({
@@ -385,7 +409,8 @@ export const KnowMinions = new Skill({
         character: {
             kinds: ["Minions"]
         }
-    }
+    },
+    description: "得知2名玩家中1个是某个爪牙"
 })
 
 export const KnowOutsiders = new Skill({
@@ -407,7 +432,8 @@ export const KnowOutsiders = new Skill({
                 max: 1
             }
         }
-    }
+    },
+    description: "得知2名玩家中1个是某个外来者"
 })
 
 export const KnowTownsfolk = new Skill({
@@ -425,7 +451,8 @@ export const KnowTownsfolk = new Skill({
         character: {
             kinds: ["Townsfolk"]
         }
-    }
+    },
+    description: "得知2名玩家中1个是某个村民"
 })
 
 export const Nomination = new Skill({
@@ -440,7 +467,8 @@ export const Nomination = new Skill({
             p.forbiddenVote = true
         })
     },
-    payloadOptions: {}
+    payloadOptions: {},
+    description: "提名玩家"
 })
 
 export const Slay = new Skill({
@@ -452,7 +480,8 @@ export const Slay = new Skill({
     payloadOptions: {
         player: {},
         result: {}
-    }
+    },
+    description: "猎杀"
 })
 
 export const Excute = new Skill({
@@ -463,7 +492,8 @@ export const Excute = new Skill({
     },
     payloadOptions: {
         player: {}
-    }
+    },
+    description: "提名圣女被处决"
 })
 
 export const ExcuteByRack = new Skill({
@@ -474,7 +504,8 @@ export const ExcuteByRack = new Skill({
     },
     payloadOptions: {
         player: {}
-    }
+    },
+    description: "上处刑架被处决"
 })
 
 const All = [KnowAbsent, Tramsform, Kill, BecomeImp, Peep, Poison, ChooseMaster, Scapegoat, WakenKnowCharacter, Guard, DigKnowCharacter, CheckImp, KnowEvilAround, KnowSeat, KnowMinions, KnowOutsiders, KnowTownsfolk, Nomination, Slay, Excute, ExcuteByRack]

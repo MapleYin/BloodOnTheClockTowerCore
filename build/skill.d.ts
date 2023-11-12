@@ -97,6 +97,7 @@ export interface ISkill {
     readonly key: string;
     readonly payloadKey: PayloadKey;
     readonly payloadOptions: PayloadOptions;
+    readonly description: string;
     valid(context: IContext): boolean;
     effect(effector: number, payload: PayloadDefind[PayloadKey], players: IPlayer[]): void;
 }
@@ -106,6 +107,7 @@ interface SkillProps<Key extends PayloadKey> {
     validHandler?: (context: IContext) => boolean;
     effect?: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void;
     payloadOptions: PayloadOptionDefind[Key];
+    description: string;
 }
 declare class Skill<Key extends PayloadKey> implements ISkill {
     readonly key: string;
@@ -113,7 +115,8 @@ declare class Skill<Key extends PayloadKey> implements ISkill {
     readonly payloadOptions: PayloadOptionDefind[Key];
     readonly valid: (context: IContext) => boolean;
     readonly effect: (effector: number, payload: PayloadDefind[Key], players: IPlayer[]) => void;
-    constructor({ key, payloadKey, validHandler, effect, payloadOptions }: SkillProps<Key>);
+    readonly description: string;
+    constructor({ key, payloadKey, validHandler, effect, payloadOptions, description }: SkillProps<Key>);
 }
 export declare const KnowAbsent: Skill<"CS">;
 export declare const Tramsform: Skill<"P">;
