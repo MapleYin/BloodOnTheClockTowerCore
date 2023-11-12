@@ -241,6 +241,7 @@ export const Poison = new Skill({
     key: "Poison",
     payloadKey: "P",
     validHandler: (context) => {
+        console.log(context);
         return AliveAtNight(context) || context.tramsformedImp?.seat === context.player.seat
     },
     effect: (_, payload, players) => {
