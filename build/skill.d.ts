@@ -94,6 +94,7 @@ export interface IContext {
     player: IPlayer;
     killTarget?: IPlayer;
     excuteInDay?: IPlayer;
+    tramsformedImp?: IPlayer;
     players: IPlayer[];
 }
 export interface ISkill {

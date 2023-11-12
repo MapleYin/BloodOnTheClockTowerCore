@@ -43,7 +43,15 @@ exports.Tramsform = new Skill("Tramsform", "P", function (context) {
     }
 });
 /// 选择一个目标，他死亡
-exports.Kill = new Skill("Kill", "P_R", function (context) { var _a; return (AliveAtNight(context) || ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) === context.player.seat) && context.turn != 1; }, function (_, payload, players) {
+exports.Kill = new Skill("Kill", "P_R", function (context) {
+    var _a, _b;
+    /// 1. 当晚存活或者击杀目标是自己
+    /// 2. 不是第一晚
+    /// 3. 当晚恶魔自刀,非新恶魔
+    return (AliveAtNight(context) || ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) === context.player.seat)
+        && context.turn != 1
+        && ((_b = context.tramsformedImp) === null || _b === void 0 ? void 0 : _b.seat) != context.player.seat;
+}, function (_, payload, players) {
     if (payload.result) {
         players[payload.seat - 1].isKilled = true;
     }

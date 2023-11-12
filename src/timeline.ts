@@ -1,5 +1,5 @@
 import { IBook } from "./book";
-import { CharacterForKey } from "./character";
+import { CharacterForKey, Imp } from "./character";
 import { CreateOperation, EffectOperation, IOperation } from "./operation";
 import { IPlayer, clearStatus, isDeadPlayer } from "./player";
 import { BecomeImp, IContext, Kill, SkillForKey, WakenKnowCharacter } from "./skill";
@@ -79,7 +79,8 @@ export class Timeline implements ITimeline {
                 players: players,
                 player: ability.player,
                 killTarget,
-                excuteInDay: players.find(p => p.isExecuted)
+                tramsformedImp: killTarget?.avatar === Imp.key && players.find(p => !isDeadPlayer(p) && p.avatar === Imp.key) || undefined,
+                excuteInDay: players.find(p => p.isExecuted) /// 这里不太对。。
             }
             return ability.skill.valid(context)
         }).map(ability => {

@@ -112,6 +112,7 @@ export interface IContext {
     player: IPlayer
     killTarget?: IPlayer
     excuteInDay?: IPlayer
+    tramsformedImp?: IPlayer
 
     players: IPlayer[]
 }
@@ -175,8 +176,15 @@ export const Tramsform = new Skill("Tramsform", "P", context =>
 })
 
 /// 选择一个目标，他死亡
-export const Kill = new Skill("Kill", "P_R", context =>
-    (AliveAtNight(context) || context.killTarget?.seat === context.player.seat) && context.turn != 1,
+export const Kill = new Skill("Kill", "P_R",
+    context => {
+        /// 1. 当晚存活或者击杀目标是自己
+        /// 2. 不是第一晚
+        /// 3. 当晚恶魔自刀,非新恶魔
+        return (AliveAtNight(context) || context.killTarget?.seat === context.player.seat)
+            && context.turn != 1
+            && context.tramsformedImp?.seat != context.player.seat
+    },
     (_, payload, players) => {
         if (payload.result) {
             players[payload.seat - 1].isKilled = true

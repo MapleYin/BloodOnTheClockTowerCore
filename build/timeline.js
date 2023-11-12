@@ -73,7 +73,8 @@ var Timeline = /** @class */ (function () {
                 players: players,
                 player: ability.player,
                 killTarget: killTarget,
-                excuteInDay: players.find(function (p) { return p.isExecuted; })
+                tramsformedImp: (killTarget === null || killTarget === void 0 ? void 0 : killTarget.avatar) === character_1.Imp.key && players.find(function (p) { return !(0, player_1.isDeadPlayer)(p) && p.avatar === character_1.Imp.key; }) || undefined,
+                excuteInDay: players.find(function (p) { return p.isExecuted; }) /// 这里不太对。。
             };
             return ability.skill.valid(context);
         }).map(function (ability) {
