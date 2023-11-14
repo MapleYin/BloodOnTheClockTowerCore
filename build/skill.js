@@ -270,7 +270,7 @@ exports.KnowSeat = new Skill({
     payloadOptions: {
         range: {
             min: 0,
-            max: 2
+            max: 4
         }
     },
     description: "得知有多少对邪恶玩家邻座"
