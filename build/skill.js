@@ -83,7 +83,9 @@ exports.Kill = new Skill({
             requireInput: true
         },
         result: {
-            display: ["未能杀害", "杀害成功"]
+            display: ["未能杀害", "杀害成功"],
+            prompt: "杀害是否生效",
+            subPrompt: "注：未生效情况可能有，士兵、市长、僧侣技能等"
         },
         output: {
             disabled: true
@@ -244,7 +246,8 @@ exports.CheckImp = new Skill({
             },
         },
         result: {
-            display: ["无恶魔", "有恶魔"]
+            display: ["无恶魔", "有恶魔"],
+            prompt: "是否存在恶魔"
         }
     },
     description: "选择2个玩家，是否存在恶魔"
@@ -361,7 +364,8 @@ exports.Slay = new Skill({
     payloadOptions: {
         player: {},
         result: {
-            display: ["无事发生", "猎杀成功"]
+            display: ["无事发生", "猎杀成功"],
+            prompt: "猎杀是否生效"
         }
     },
     description: "猎杀"
