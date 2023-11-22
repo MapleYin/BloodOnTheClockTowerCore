@@ -32,6 +32,9 @@ exports.KnowAbsent = new Skill({
                 min: 3,
                 max: 3
             }
+        },
+        output: {
+            disabled: true
         }
     },
     description: "得知三个不在场身份"

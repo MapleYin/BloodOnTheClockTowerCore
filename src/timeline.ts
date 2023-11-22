@@ -2,7 +2,7 @@ import { IBook } from "./book";
 import { CharacterForKey, Imp } from "./character";
 import { CreateOperation, EffectOperation, IOperation } from "./operation";
 import { IPlayer, clearStatus, isDeadPlayer } from "./player";
-import { BecomeImp, IContext, ISkill, Kill, SkillForKey, WakenKnowCharacter } from "./skill";
+import { IContext, ISkill, Kill } from "./skill";
 
 export interface ITimeline {
     readonly players: IPlayer[]
