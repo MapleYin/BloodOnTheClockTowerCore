@@ -62,7 +62,7 @@ export class Timeline implements ITimeline {
             }
             return p.seat === operation.payload.seat
         })
-        const tramsformedImp = killTarget?.avatar === Imp.key && players.find(p => !isDeadPlayer(p) && p.avatar === Imp.key) || undefined
+        const tramsformedImp = killTarget && isDeadPlayer(killTarget) && killTarget?.avatar === Imp.key && players.find(p => !isDeadPlayer(p) && p.avatar === Imp.key) || undefined
 
         const abilities = players.flatMap(p => {
             const skills: ISkill[] = []
