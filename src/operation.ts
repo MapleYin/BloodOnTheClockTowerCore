@@ -6,6 +6,7 @@ type DistributeOperation<T extends ISkill["payloadKey"]> = T extends any ? {
     skill: ISkill
     payloadKey: T
     payload?: PayloadDefind[T]
+    projected: boolean
 } : never
 
 export type IOperation = DistributeOperation<ISkill["payloadKey"]>
@@ -21,7 +22,8 @@ export function CreateOperation(seat: number, skill: ISkill): IOperation {
         seat,
         payloadKey: skill.payloadKey,
         skill,
-        payload
+        payload,
+        projected: false
     }
 }
 

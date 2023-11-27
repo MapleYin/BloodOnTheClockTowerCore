@@ -13,7 +13,8 @@ function CreateOperation(seat, skill) {
         seat: seat,
         payloadKey: skill.payloadKey,
         skill: skill,
-        payload: payload
+        payload: payload,
+        projected: false
     };
 }
 exports.CreateOperation = CreateOperation;

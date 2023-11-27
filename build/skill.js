@@ -123,7 +123,9 @@ exports.BecomeImp = new Skill({
 exports.Peep = new Skill({
     key: "Peep",
     payloadKey: "T",
-    validHandler: AliveAtNight,
+    validHandler: function (context) {
+        return AliveAtNight(context) && context.player.avatar === "Spy";
+    },
     payloadOptions: {},
     description: "得知所有信息"
 });
@@ -185,7 +187,7 @@ exports.Scapegoat = new Skill({
             disabled: true
         }
     },
-    description: "选择1名代替市长死亡"
+    description: "选择1名玩家代替市长死亡"
 });
 /// 当夜晚死亡时，可以被唤醒验证一个人身份
 exports.WakenKnowCharacter = new Skill({
@@ -207,17 +209,22 @@ exports.WakenKnowCharacter = new Skill({
 });
 exports.Guard = new Skill({
     key: "Guard",
-    payloadKey: "P",
+    payloadKey: "P_R",
     validHandler: function (context) {
         return AliveAtNight(context) &&
             context.turn != 1;
     },
     effect: function (_, payload, players) {
-        players[payload.seat - 1].isGuarded = true;
+        players[payload.seat - 1].isGuarded = payload.result;
     },
     payloadOptions: {
         player: {
             requireInput: true
+        },
+        result: {
+            display: ["守护成功", "守护失败"],
+            prompt: "守护是否生效",
+            subPrompt: "注：未生效情况可能是：被毒、是酒鬼"
         },
         output: {
             disabled: true
