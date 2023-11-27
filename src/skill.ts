@@ -224,9 +224,7 @@ export const Kill = new Skill({
             && context.tramsformedImp?.seat != context.player.seat
     },
     effect: (_, payload, players) => {
-        if (payload.result) {
-            players[payload.seat - 1].isKilled = true
-        }
+        players[payload.seat - 1].isKilled = payload.result
     },
     payloadOptions: {
         player: {

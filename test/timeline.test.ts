@@ -112,4 +112,18 @@ describe("Timeline creation perperty", () => {
         expect(t2.operations[1].skill.key).toEqual(WakenKnowCharacter.key)
         expect(t2.operations[2].skill.key).toEqual(KnowEvilAround.key)
     })
+
+    test("oprations PlayerCase2 on night time", () => {
+        let timeline = new Timeline(TroubleBrewing, PlayerCase1)
+        let timelineNext = new Timeline(TroubleBrewing, PlayerCase1, timeline)
+        const timelineNextNext = new Timeline(TroubleBrewing, PlayerCase1, timelineNext)
+
+
+        timelineNextNext.updatePayload(1, {
+            seat: 3,
+            result: false
+        })
+        console.log(timelineNextNext.operations)
+        expect(timelineNextNext.operations[1].payload).toBeDefined()
+    })
 })

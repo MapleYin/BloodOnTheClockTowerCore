@@ -77,9 +77,7 @@ exports.Kill = new Skill({
             && ((_b = context.tramsformedImp) === null || _b === void 0 ? void 0 : _b.seat) != context.player.seat;
     },
     effect: function (_, payload, players) {
-        if (payload.result) {
-            players[payload.seat - 1].isKilled = true;
-        }
+        players[payload.seat - 1].isKilled = payload.result;
     },
     payloadOptions: {
         player: {
