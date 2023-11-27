@@ -58,6 +58,7 @@ declare namespace Payload {
                 display?: [string, string]
                 prompt: string
                 subPrompt?: string
+                default?: boolean
             }
         }
         interface Output {
@@ -234,7 +235,8 @@ export const Kill = new Skill({
         result: {
             display: ["未能杀害", "杀害成功"],
             prompt: "杀害是否生效",
-            subPrompt: "注：未生效情况可能有，士兵、市长、僧侣技能等"
+            subPrompt: "注：未生效情况可能有，士兵、市长、僧侣技能等",
+            default: true
         },
         output: {
             disabled: true
@@ -372,7 +374,8 @@ export const Guard = new Skill({
         result: {
             display: ["守护成功", "守护失败"],
             prompt: "守护是否生效",
-            subPrompt: "注：未生效情况可能是：被毒、是酒鬼"
+            subPrompt: "注：未生效情况可能是：被毒、是酒鬼",
+            default: true
         },
         output: {
             disabled: true

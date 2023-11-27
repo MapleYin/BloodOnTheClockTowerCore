@@ -49,6 +49,7 @@ declare namespace Payload {
                 display?: [string, string];
                 prompt: string;
                 subPrompt?: string;
+                default?: boolean;
             };
         }
         interface Output {
