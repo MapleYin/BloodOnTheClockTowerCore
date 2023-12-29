@@ -1,5 +1,5 @@
 export const zh = {
     "TroubleBrewing": "灾祸滋生",
-    "SectsViolets": "黯月初升",
-    "BadMoonRising": "梦殒春宵"
+    "SectsViolets": "梦殒春宵",
+    "BadMoonRising": "黯月初升"
 }
