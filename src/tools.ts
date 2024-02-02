@@ -1,5 +1,3 @@
-import { EKind, ICharacter } from "./character";
-
 export const GroupedChatacters = (characters: ICharacter[]) => {
     const groupMap = characters.reduce((previousValue, character) => {
         if (character.kind in previousValue) {

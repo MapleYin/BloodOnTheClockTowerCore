@@ -1,36 +1,20 @@
-import { IPlayer } from "./player"
-import { ISkill, PayloadDefind, SkillForKey } from "./skill"
-
-type DistributeOperation<T extends ISkill["payloadKey"]> = T extends any ? {
-    seat: number
-    skill: ISkill
-    payloadKey: T
-    payload?: PayloadDefind[T]
-    projected: boolean
-} : never
-
-export type IOperation = DistributeOperation<ISkill["payloadKey"]>
-
-export function CreateOperation(seat: number, skill: ISkill): IOperation {
-    let payload: any = undefined
-    if ("character" in skill.payloadOptions && skill.payloadOptions.character.static) {
-        payload = {
-            character: skill.payloadOptions.character.static
-        }
-    }
+import { SkillForKey } from "./skill";
+export const NewOperation = (seat: number, players: IPlayer[], skill: ISkill): IOperation => {
     return {
         seat,
-        payloadKey: skill.payloadKey,
         skill,
-        payload,
-        projected: false
+        players,
+        payloadKey: skill.type,
+        payload: undefined,
+        manual: true
     }
 }
 
 export const EffectOperation = (operation: IOperation, players: IPlayer[]) => {
+    operation.players = players.map(player => ({ ...player }));
     if (!operation.payload) {
-        return players;
+        return
     }
     const skill = SkillForKey(operation.skill.key) as typeof operation.skill
-    skill.effect(operation.seat, operation.payload, players)
+    skill.effect && skill.effect(operation.seat, operation.payload, players)
 }

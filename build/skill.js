@@ -1,358 +1,290 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SkillForKey = exports.ExcuteByRack = exports.Excute = exports.Slay = exports.Nomination = exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
+exports.SkillForKey = exports.skills = exports.DreamADream = exports.TimeTick = exports.ExcuteByRack = exports.Excute = exports.Slay = exports.Nomination = exports.KnowTownsfolk = exports.KnowOutsiders = exports.KnowMinions = exports.KnowSeat = exports.KnowEvilAround = exports.CheckImp = exports.DigKnowCharacter = exports.Guard = exports.WakenKnowCharacter = exports.Scapegoat = exports.ChooseMaster = exports.Poison = exports.Peep = exports.BecomeImp = exports.Kill = exports.Tramsform = exports.KnowAbsent = void 0;
 var character_1 = require("./character");
 var player_1 = require("./player");
-var AliveAtNight = function (context) { return !(0, player_1.isDeadPlayer)(context.player) && context.time == "night"; };
-var Skill = /** @class */ (function () {
-    function Skill(_a) {
-        var key = _a.key, payloadKey = _a.payloadKey, validHandler = _a.validHandler, effect = _a.effect, payloadOptions = _a.payloadOptions, description = _a.description;
-        this.key = key;
-        this.payloadKey = payloadKey;
-        this.valid = validHandler || (function () { return true; });
-        this.effect = effect || (function () { });
-        this.payloadOptions = payloadOptions;
-        this.description = description;
-    }
-    return Skill;
-}());
-/// 得知不在场身份
-exports.KnowAbsent = new Skill({
+var firstNight = function (context) {
+    return context.timeline.time === "night" && context.timeline.turn === 1;
+};
+var otherNight = function (context) {
+    return context.timeline.time === "night" && context.timeline.turn > 1;
+};
+var isAlive = function (context) {
+    return !(0, player_1.isDeadPlayer)(context.player);
+};
+var isAliveAtNight = function (context) {
+    return isAlive(context) && context.timeline.time === "night";
+};
+var CreateSkill = function (params) {
+    return params;
+};
+exports.KnowAbsent = CreateSkill({
     key: "KnowAbsent",
-    payloadKey: "CS",
-    validHandler: function (context) {
-        return context.turn == 1 &&
-            context.time == "night";
-    },
-    payloadOptions: {
-        character: {
-            kinds: ["Townsfolk", "Outsiders"],
-            exist: "notInGame",
-            range: {
-                min: 3,
-                max: 3
-            }
+    description: "得知三个不在场身份",
+    valid: firstNight,
+    type: "CS",
+    options: {
+        "character": {
+            "kinds": ["Townsfolk", "Outsiders"],
+            "exist": "notInGame",
+            "range": { "min": 3, "max": 3 }
         },
-        output: {
-            disabled: true
-        }
-    },
-    description: "得知三个不在场身份"
+        "output": { "disabled": true }
+    }
 });
-/// 如果自杀，另外一个爪牙变成恶魔
-exports.Tramsform = new Skill({
+exports.Tramsform = CreateSkill({
     key: "Tramsform",
-    payloadKey: "P",
-    validHandler: function (context) {
-        var _a;
-        return (0, player_1.isDeadPlayer)(context.player) &&
-            ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat;
-    },
-    effect: function (_, payload, players) {
-        if (payload.seat) {
-            players[payload.seat - 1].avatar = "Imp";
+    description: "选择1个爪牙变成小恶魔",
+    valid: function (context) {
+        if (!(0, player_1.isDeadPlayer)(context.player)) {
+            return false;
         }
-    },
-    payloadOptions: {
-        player: {
-            kinds: ["Minions"]
-        },
-        output: {
-            disabled: true
+        var timeline = context.timeline;
+        if (timeline.time === "day") {
+            return false;
         }
-    },
-    description: "选择一个爪牙变成恶魔"
-});
-/// 选择一个目标，他死亡
-exports.Kill = new Skill({
-    key: "Kill",
-    payloadKey: "P_R",
-    validHandler: function (context) {
-        var _a, _b;
-        /// 1. 当晚存活或者击杀目标是自己
-        /// 2. 不是第一晚
-        /// 3. 当晚恶魔自刀,非新恶魔
-        return (AliveAtNight(context) || ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) === context.player.seat)
-            && context.turn != 1
-            && ((_b = context.tramsformedImp) === null || _b === void 0 ? void 0 : _b.seat) != context.player.seat;
-    },
-    effect: function (_, payload, players) {
-        players[payload.seat - 1].isKilled = payload.result;
-    },
-    payloadOptions: {
-        player: {
-            requireInput: true
-        },
-        result: {
-            display: ["未能杀害", "杀害成功"],
-            prompt: "杀害是否生效",
-            subPrompt: "注：未生效情况可能有，士兵、市长、僧侣技能等",
-            default: true
-        },
-        output: {
-            disabled: true
+        var operation = timeline.operations.find(function (operation) { return operation.skill.key === exports.Kill.key; });
+        if (!operation ||
+            operation.payloadKey != "P_R" ||
+            !operation.payload ||
+            !operation.payload.result ||
+            operation.payload.seat != context.player.seat) {
+            return false;
         }
-    },
-    description: "选择一个目标，他死亡"
-});
-/// 如果存活的人数大于等于5 人时，恶魔死亡时，可以变成恶魔
-exports.BecomeImp = new Skill({
-    key: "BecomeImp",
-    payloadKey: "C",
-    validHandler: function (context) {
-        return !(0, player_1.isDeadPlayer)(context.player) &&
-            context.time == "day" &&
-            context.numberOfAlivePlayer >= 4 && /// 人数大于4人
-            context.players.findIndex(function (p) { var _a; return !(0, player_1.isDeadPlayer)(p) && ((_a = (0, character_1.CharacterForKey)(p.avatar)) === null || _a === void 0 ? void 0 : _a.kind) == "Demons"; }) == -1;
+        return true;
     },
     effect: function (seat, payload, players) {
-        players[seat - 1].avatar = payload.character;
+        players[payload.seat - 1].avatar = "Imp";
     },
-    payloadOptions: {
-        character: {
-            static: "Imp"
+    type: "P",
+    options: {
+        "player": {
+            "kinds": ["Minions"]
         },
-        output: {
-            disabled: true
+        "output": { "disabled": true }
+    }
+});
+exports.Kill = CreateSkill({
+    key: "Kill",
+    description: "选择1个目标，他死亡",
+    valid: function (context) { return !(0, player_1.isDeadPlayer)(context.player) && otherNight(context); },
+    effect: function (seat, payload, players) {
+        players[payload.seat - 1].isKilled = payload.result;
+    },
+    type: "P_R",
+    options: {
+        "player": {},
+        "result": {
+            "display": ["未能杀害", "杀害成功"],
+            "prompt": "杀害是否生效",
+            "subPrompt": "注：未生效情况可能有，士兵、市长、僧侣技能等",
+            "default": true
+        },
+        "output": { "disabled": true }
+    }
+});
+exports.BecomeImp = CreateSkill({
+    key: "BecomeImp",
+    description: "化身为恶魔",
+    valid: function (context) {
+        if ((0, player_1.isDeadPlayer)(context.player)) {
+            return false;
+        }
+        var timeline = context.timeline;
+        var aliveDemons = timeline.players.filter(function (player) { var _a; return ((_a = (0, character_1.CharacterForKey)(player.avatar)) === null || _a === void 0 ? void 0 : _a.kind) === "Demons" && !(0, player_1.isDeadPlayer)(player); });
+        var deadDemons = context.players.filter(function (player) { var _a; return ((_a = (0, character_1.CharacterForKey)(player.avatar)) === null || _a === void 0 ? void 0 : _a.kind) === "Demons" && (0, player_1.isDeadPlayer)(player); });
+        var demonsDeadToday = deadDemons.find(function (dead) { return aliveDemons.findIndex(function (alive) { return alive.seat === dead.seat; }) !== -1; });
+        var numberOfAlivePlayer = context.players.filter(function (player) { return !(0, player_1.isDeadPlayer)(player); }).length;
+        return !!demonsDeadToday && numberOfAlivePlayer >= 4;
+    },
+    effect: function (seat, payload, players) {
+        var timeline = payload;
+        var aliveDemons = timeline.players.filter(function (player) { var _a; return ((_a = (0, character_1.CharacterForKey)(player.avatar)) === null || _a === void 0 ? void 0 : _a.kind) === "Demons" && !(0, player_1.isDeadPlayer)(player); });
+        var deadDemons = players.filter(function (player) { var _a; return ((_a = (0, character_1.CharacterForKey)(player.avatar)) === null || _a === void 0 ? void 0 : _a.kind) === "Demons" && (0, player_1.isDeadPlayer)(player); });
+        var demonsDeadToday = deadDemons.find(function (dead) { return aliveDemons.findIndex(function (alive) { return alive.seat === dead.seat; }) !== -1; });
+        if (demonsDeadToday) {
+            players[seat - 1].avatar = demonsDeadToday.avatar;
         }
     },
-    description: "化身为恶魔"
+    type: "A",
+    options: {
+        "output": { "disabled": true }
+    }
 });
-/// 可以观看魔典
-exports.Peep = new Skill({
+exports.Peep = CreateSkill({
     key: "Peep",
-    payloadKey: "T",
-    validHandler: function (context) {
-        return AliveAtNight(context) && context.player.avatar === "Spy";
-    },
-    payloadOptions: {},
-    description: "得知所有信息"
+    description: "得知所有信息",
+    valid: isAliveAtNight,
+    type: "T",
+    options: {},
 });
-/// 选择一个目标，他中毒
-exports.Poison = new Skill({
+exports.Poison = CreateSkill({
     key: "Poison",
-    payloadKey: "P",
-    validHandler: function (context) {
-        var _a;
-        return context.time == "night" && ((!(0, player_1.isDeadPlayer)(context.player) && context.player.avatar === "Poisoner") || ((_a = context.tramsformedImp) === null || _a === void 0 ? void 0 : _a.seat) === context.player.seat);
-    },
+    description: "选择1名玩家，他中毒",
+    valid: isAliveAtNight,
     effect: function (_, payload, players) {
         players[payload.seat - 1].isPoisoned = true;
     },
-    payloadOptions: {
-        player: {
-            requireInput: true
-        },
-        output: {
-            disabled: true
-        }
-    },
-    description: "选择1名玩家，他中毒"
+    type: "P",
+    options: {
+        "player": {},
+        "output": { "disabled": true }
+    }
 });
-/// 选择一个目标，第二天投票他投票你的票才生效
-exports.ChooseMaster = new Skill({
+exports.ChooseMaster = CreateSkill({
     key: "ChooseMaster",
-    payloadKey: "P",
-    validHandler: AliveAtNight,
+    description: "选择1名玩家作为主人",
+    valid: isAliveAtNight,
     effect: function (_, payload, players) {
         players[payload.seat - 1].isMaster = true;
     },
-    payloadOptions: {
-        player: {
-            requireInput: true
-        },
-        output: {
-            disabled: true
-        }
+    type: "P",
+    options: {
+        "player": {},
+        "output": { "disabled": true }
     },
-    description: "选择1名玩家作为主人"
 });
-/// 当恶魔技能以你为目标时，有另外一个村民会替你死亡
-exports.Scapegoat = new Skill({
+exports.Scapegoat = CreateSkill({
     key: "Scapegoat",
-    payloadKey: "P",
-    validHandler: function (context) {
-        var _a;
-        return !(0, player_1.isDeadPlayer)(context.player) &&
-            ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat &&
-            context.time === "night";
-    },
+    description: "选择1名玩家代替市长死亡",
+    /// 即将死亡
+    valid: function (_) { return true; },
     effect: function (_, payload, players) {
         players[payload.seat - 1].isScapegoat = true;
     },
-    payloadOptions: {
-        player: {},
-        output: {
-            disabled: true
-        }
-    },
-    description: "选择1名玩家代替市长死亡"
+    type: "P",
+    options: {
+        "player": {},
+        "output": { "disabled": true }
+    }
 });
-/// 当夜晚死亡时，可以被唤醒验证一个人身份
-exports.WakenKnowCharacter = new Skill({
+exports.WakenKnowCharacter = CreateSkill({
     key: "WakenKnowCharacter",
-    payloadKey: "P_C",
-    validHandler: function (context) {
-        var _a;
-        return (0, player_1.isDeadPlayer)(context.player) &&
-            ((_a = context.killTarget) === null || _a === void 0 ? void 0 : _a.seat) == context.player.seat &&
-            context.time === "night";
+    description: "选择1名玩家，得知他的身份",
+    valid: function (context) {
+        var atNight = context.timeline.time === "night";
+        var beforeNightPlayer = context.timeline.players.find(function (player) { return player.seat === context.player.seat; });
+        return atNight && !!beforeNightPlayer && !(0, player_1.isDeadPlayer)(beforeNightPlayer) && (0, player_1.isDeadPlayer)(context.player);
     },
-    payloadOptions: {
-        player: {
-            requireInput: true
-        },
-        character: {}
-    },
-    description: "选择1名玩家，得知他的身份"
+    type: "P_C",
+    options: {
+        "player": {},
+        "character": {}
+    }
 });
-exports.Guard = new Skill({
+exports.Guard = CreateSkill({
     key: "Guard",
-    payloadKey: "P_R",
-    validHandler: function (context) {
-        return AliveAtNight(context) &&
-            context.turn != 1;
-    },
+    description: "选择1名玩家，守护他",
+    valid: function (context) { return isAliveAtNight(context) && otherNight(context); },
     effect: function (_, payload, players) {
         players[payload.seat - 1].isGuarded = payload.result;
     },
-    payloadOptions: {
-        player: {
-            requireInput: true
+    type: "P_R",
+    options: {
+        "player": {},
+        "result": {
+            "display": ["守护成功", "守护失败"],
+            "prompt": "守护是否生效",
+            "subPrompt": "注：未生效情况可能是：被毒、是酒鬼",
+            "default": true
         },
-        result: {
-            display: ["守护成功", "守护失败"],
-            prompt: "守护是否生效",
-            subPrompt: "注：未生效情况可能是：被毒、是酒鬼",
-            default: true
-        },
-        output: {
-            disabled: true
-        }
-    },
-    description: "选择1名玩家，守护他"
+        "output": { "disabled": true }
+    }
 });
-exports.DigKnowCharacter = new Skill({
+exports.DigKnowCharacter = CreateSkill({
     key: "DigKnowCharacter",
-    payloadKey: "C",
-    validHandler: function (context) {
-        return AliveAtNight(context) && !!context.excuteInDay;
-    },
-    payloadOptions: {
-        character: {}
-    },
-    description: "得知昨天白天被处决玩家的角色"
+    description: "得知昨天白天被处决玩家的角色",
+    valid: function (context) { return isAliveAtNight(context) && otherNight(context); },
+    type: "C",
+    options: {
+        "character": {},
+        "display": {
+            "excution": true
+        }
+    }
 });
-exports.CheckImp = new Skill({
+exports.CheckImp = CreateSkill({
     key: "CheckImp",
-    payloadKey: "PS_R",
-    validHandler: AliveAtNight,
-    payloadOptions: {
-        player: {
-            requireInput: true,
-            range: {
-                max: 2,
-                min: 2
-            },
+    description: "选择2个玩家，是否存在恶魔",
+    valid: isAliveAtNight,
+    type: "PS_R",
+    options: {
+        "player": {
+            "range": { "max": 2, "min": 2 }
         },
-        result: {
-            display: ["无恶魔", "有恶魔"],
-            prompt: "是否存在恶魔"
+        "result": {
+            "display": ["无恶魔", "有恶魔"],
+            "prompt": "是否存在恶魔"
         }
-    },
-    description: "选择2个玩家，是否存在恶魔"
+    }
 });
-exports.KnowEvilAround = new Skill({
+exports.KnowEvilAround = CreateSkill({
     key: "KnowEvilAround",
-    payloadKey: "N",
-    validHandler: AliveAtNight,
-    payloadOptions: {
-        range: {
-            min: 0,
-            max: 2
-        }
-    },
-    description: "得知两边邪恶玩家人数"
+    description: "得知两边邪恶玩家人数",
+    valid: isAliveAtNight,
+    type: "N",
+    options: {
+        "range": { "min": 0, "max": 2 },
+        "display": { "players": true }
+    }
 });
-exports.KnowSeat = new Skill({
+exports.KnowSeat = CreateSkill({
     key: "KnowSeat",
-    payloadKey: "N",
-    validHandler: function (context) {
-        return AliveAtNight(context) && context.turn === 1;
-    },
-    payloadOptions: {
-        range: {
-            min: 0,
-            max: 4
-        }
-    },
-    description: "得知有多少对邪恶玩家邻座"
+    description: "得知有多少对邪恶玩家邻座",
+    valid: isAliveAtNight,
+    type: "N",
+    options: {
+        "range": { "min": 0, "max": 4 },
+        "display": { "players": true }
+    }
 });
-exports.KnowMinions = new Skill({
+exports.KnowMinions = CreateSkill({
     key: "KnowMinions",
-    payloadKey: "PS_C",
-    validHandler: function (context) {
-        return AliveAtNight(context) &&
-            context.turn === 1;
-    },
-    payloadOptions: {
-        player: {
-            range: {
-                min: 2,
-                max: 2
-            }
+    description: "得知2名玩家中1个是某个爪牙",
+    valid: firstNight,
+    type: "PS_C",
+    options: {
+        "player": {
+            "range": { "min": 2, "max": 2 }
         },
-        character: {
-            kinds: ["Minions"]
+        "character": {
+            "kinds": ["Minions"]
         }
-    },
-    description: "得知2名玩家中1个是某个爪牙"
+    }
 });
-exports.KnowOutsiders = new Skill({
+exports.KnowOutsiders = CreateSkill({
     key: "KnowOutsiders",
-    payloadKey: "PS_C",
-    validHandler: function (context) {
-        return AliveAtNight(context) && context.turn === 1;
-    },
-    payloadOptions: {
+    description: "得知2名玩家中1个是某个外来者",
+    valid: firstNight,
+    type: "PS_C",
+    options: {
         player: {
-            range: {
-                min: 2,
-                max: 2
-            }
+            range: { min: 2, max: 2 }
         },
         character: {
             kinds: ["Outsiders"],
-            range: {
-                min: 0,
-                max: 1
-            }
+            range: { min: 0, max: 1 }
         }
-    },
-    description: "得知2名玩家中1个是某个外来者"
+    }
 });
-exports.KnowTownsfolk = new Skill({
+exports.KnowTownsfolk = CreateSkill({
     key: "KnowTownsfolk",
-    payloadKey: "PS_C",
-    validHandler: function (context) {
-        return AliveAtNight(context) && context.turn === 1;
-    },
-    payloadOptions: {
+    description: "得知2名玩家中1个是某个村民",
+    valid: firstNight,
+    type: "PS_C",
+    options: {
         player: {
-            range: {
-                min: 2,
-                max: 2
-            }
+            range: { min: 2, max: 2 }
         },
         character: {
             kinds: ["Townsfolk"]
         }
-    },
-    description: "得知2名玩家中1个是某个村民"
+    }
 });
-exports.Nomination = new Skill({
+exports.Nomination = CreateSkill({
     key: "Nomination",
-    payloadKey: "NM",
+    description: "提名玩家",
+    valid: function (_) { return true; },
     effect: function (nominatorSeat, payload, players) {
         players[nominatorSeat - 1].nominationForbiden = true;
         players[payload.seat - 1].canNotBeNominated = true;
@@ -362,46 +294,100 @@ exports.Nomination = new Skill({
             p.forbiddenVote = true;
         });
     },
-    payloadOptions: {},
-    description: "提名玩家"
+    type: "NM",
+    options: {}
 });
-exports.Slay = new Skill({
+exports.Slay = CreateSkill({
     key: "Slay",
-    payloadKey: "P_R",
+    description: "猎杀",
+    valid: function (_) { return true; },
     effect: function (_, payload, players) {
         players[payload.seat - 1].isSlew = payload.result;
     },
-    payloadOptions: {
+    type: "P_R",
+    options: {
         player: {},
         result: {
             display: ["无事发生", "猎杀成功"],
             prompt: "猎杀是否生效"
         }
-    },
-    description: "猎杀"
+    }
 });
-exports.Excute = new Skill({
+exports.Excute = CreateSkill({
     key: "Excute",
-    payloadKey: "P",
+    description: "提名圣女被处决",
+    valid: function (_) { return true; },
     effect: function (_, payload, players) {
         players[payload.seat - 1].isExecuted = true;
     },
-    payloadOptions: {
+    type: "P",
+    options: {
         player: {}
-    },
-    description: "提名圣女被处决"
+    }
 });
-exports.ExcuteByRack = new Skill({
+exports.ExcuteByRack = CreateSkill({
     key: "ExcuteByRack",
-    payloadKey: "P",
+    description: "上处刑架被处决",
+    valid: function (_) { return true; },
     effect: function (_, payload, players) {
         players[payload.seat - 1].isExecuted = true;
     },
-    payloadOptions: {
-        player: {}
-    },
-    description: "上处刑架被处决"
+    type: "P",
+    options: {
+        "player": {}
+    }
 });
-var All = [exports.KnowAbsent, exports.Tramsform, exports.Kill, exports.BecomeImp, exports.Peep, exports.Poison, exports.ChooseMaster, exports.Scapegoat, exports.WakenKnowCharacter, exports.Guard, exports.DigKnowCharacter, exports.CheckImp, exports.KnowEvilAround, exports.KnowSeat, exports.KnowMinions, exports.KnowOutsiders, exports.KnowTownsfolk, exports.Nomination, exports.Slay, exports.Excute, exports.ExcuteByRack];
-var SkillForKey = function (key) { return All.find(function (sk) { return sk.key === key; }); };
+exports.TimeTick = CreateSkill({
+    key: "TimeTick",
+    description: "得知恶魔与爪牙最近的距离",
+    valid: firstNight,
+    type: "N",
+    options: {
+        "display": {
+            "players": true
+        }
+    }
+});
+exports.DreamADream = CreateSkill({
+    key: "DreamADream",
+    description: "得知1名玩家是1个善良和1个邪恶角色中1个",
+    valid: firstNight,
+    type: "P_CS",
+    options: {
+        "player": {
+            range: { min: 1, max: 1 }
+        },
+        character: {
+            range: { min: 2, max: 2 }
+        },
+        "display": {
+            "players": true
+        }
+    }
+});
+exports.skills = [
+    exports.KnowAbsent,
+    exports.Tramsform,
+    exports.Kill,
+    exports.BecomeImp,
+    exports.Peep,
+    exports.Poison,
+    exports.ChooseMaster,
+    exports.Scapegoat,
+    exports.WakenKnowCharacter,
+    exports.Guard,
+    exports.DigKnowCharacter,
+    exports.CheckImp,
+    exports.KnowEvilAround,
+    exports.KnowSeat,
+    exports.KnowMinions,
+    exports.KnowOutsiders,
+    exports.KnowTownsfolk,
+    exports.Slay,
+    exports.Excute,
+    exports.Nomination,
+    exports.ExcuteByRack,
+    exports.TimeTick,
+];
+var SkillForKey = function (key) { return exports.skills.find(function (s) { return s.key == key; }); };
 exports.SkillForKey = SkillForKey;

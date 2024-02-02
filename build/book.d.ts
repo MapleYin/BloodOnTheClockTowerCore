@@ -1,5 +1,3 @@
-import { EKind, ICharacter } from "./character";
-import { ISkill } from "./skill";
 export interface IBook {
     readonly key: string;
     readonly name: string;

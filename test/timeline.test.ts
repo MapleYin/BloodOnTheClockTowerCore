@@ -1,15 +1,15 @@
-import { describe, expect, test } from '@jest/globals';
-import { TroubleBrewing } from '../src/book';
+import { beforeAll, describe, expect, test } from '@jest/globals';
+import { BadMoonRising, SectsViolets, TroubleBrewing } from '../src/book';
 import { PlayerCase1, PlayerCase2 } from './caseData';
-import { Timeline } from '../src/timeline';
 import { ExcuteByRack, KnowAbsent, KnowEvilAround, KnowTownsfolk, Poison, WakenKnowCharacter } from '../src/skill';
+import { NextTimeline, UpdateOperations } from "../src/timeline"
 import { Empath } from '../src/character';
-import { CreateOperation } from '../src/operation';
+import { NewOperation } from '../src/operation';
 
 describe("Timeline creation perperty", () => {
 
     test("turn/time", () => {
-        let timeline = new Timeline(TroubleBrewing, PlayerCase1)
+        let timeline = NextTimeline(TroubleBrewing.key, PlayerCase1)
         expect(timeline.turn).toEqual(1)
         expect(timeline.time).toEqual("night")
     })
@@ -20,7 +20,7 @@ describe("Timeline creation perperty", () => {
      * Washerwoman, Empath, Imp, Poisoner, Undertaker
      */
     test("oprations PlayerCase1", () => {
-        let timeline = new Timeline(TroubleBrewing, PlayerCase1)
+        let timeline = NextTimeline(TroubleBrewing.key, PlayerCase1)
         expect(timeline.operations.length).toEqual(4)
         expect(timeline.operations[0].skill).toEqual(KnowAbsent)
         expect(timeline.operations[1].skill).toEqual(Poison)
@@ -32,7 +32,7 @@ describe("Timeline creation perperty", () => {
      * 
      */
     test("oprations PlayerCase1 on day time", () => {
-        let timeline = new Timeline(TroubleBrewing, PlayerCase1)
+        let timeline = NextTimeline(TroubleBrewing.key, PlayerCase1)
         expect(timeline.operations[1].payloadKey).toEqual("P")
         timeline.operations[0].payload = {
             characters: []
@@ -47,12 +47,12 @@ describe("Timeline creation perperty", () => {
         timeline.operations[3].payload = {
             number: 2
         }
-        let timelineNext = new Timeline(TroubleBrewing, PlayerCase1, timeline)
+        let timelineNext = NextTimeline(timeline)
         expect(timelineNext.players[0].isPoisoned).toBeTruthy()
 
         expect(timelineNext.operations.length).toEqual(0)
 
-        const timelineNextNext = new Timeline(TroubleBrewing, PlayerCase1, timelineNext)
+        const timelineNextNext = NextTimeline(timelineNext)
 
         timelineNextNext.operations[0].payload = {
             seat: PlayerCase1[4].seat,
@@ -63,16 +63,16 @@ describe("Timeline creation perperty", () => {
             result: true
         }
 
-        const t = Timeline.from(TroubleBrewing, timelineNextNext)
+        UpdateOperations(timelineNextNext)
 
-        expect(t.operations[2].skill.key).toEqual(WakenKnowCharacter.key)
+        expect(timelineNextNext.operations[2].skill.key).toEqual(WakenKnowCharacter.key)
     })
 
     /**
      * 
      */
     test("oprations PlayerCase2 on day time", () => {
-        let timeline = new Timeline(TroubleBrewing, PlayerCase2)
+        let timeline = NextTimeline(TroubleBrewing.key, PlayerCase2)
         timeline.operations[0].payload = {
             characters: []
         }
@@ -83,17 +83,18 @@ describe("Timeline creation perperty", () => {
         timeline.operations[2].payload = {
             number: 2
         }
-        let timelineNext = new Timeline(TroubleBrewing, PlayerCase2, timeline)
+        UpdateOperations(timeline)
+        let timelineNext = NextTimeline(timeline)
 
-        const excute = CreateOperation(2, ExcuteByRack)
-        excute.payload = {
+        const operation = NewOperation(2, timelineNext.operatedPlayers, ExcuteByRack)
+        operation.payload = {
             seat: 3
         }
-        timelineNext.operations.push(excute)
-        const t1 = Timeline.from(TroubleBrewing, timelineNext)
-        expect(t1.operations.length).toEqual(2)
+        timelineNext.operations.push(operation)
+        UpdateOperations(timelineNext)
+        expect(timelineNext.operations.length).toEqual(2)
 
-        const timelineNextNext = new Timeline(TroubleBrewing, PlayerCase2, t1)
+        const timelineNextNext = NextTimeline(timelineNext)
 
         /**
          * 猩红女巫 恶魔 刀 人
@@ -106,24 +107,22 @@ describe("Timeline creation perperty", () => {
             result: true
         }
 
-        const t2 = Timeline.from(TroubleBrewing, timelineNextNext)
+        UpdateOperations(timelineNextNext)
 
-
-        expect(t2.operations[1].skill.key).toEqual(WakenKnowCharacter.key)
-        expect(t2.operations[2].skill.key).toEqual(KnowEvilAround.key)
+        expect(timelineNextNext.operations[1].skill.key).toEqual(WakenKnowCharacter.key)
+        expect(timelineNextNext.operations[2].skill.key).toEqual(KnowEvilAround.key)
     })
 
     test("oprations PlayerCase2 on night time", () => {
-        let timeline = new Timeline(TroubleBrewing, PlayerCase1)
-        let timelineNext = new Timeline(TroubleBrewing, PlayerCase1, timeline)
-        const timelineNextNext = new Timeline(TroubleBrewing, PlayerCase1, timelineNext)
+        let timeline = NextTimeline(TroubleBrewing.key, PlayerCase1)
+        let timelineNext = NextTimeline(timeline)
+        const timelineNextNext = NextTimeline(timelineNext)
 
-
-        timelineNextNext.updatePayload(1, {
+        timelineNextNext.operations[1].payload = {
             seat: 3,
             result: false
-        })
-        console.log(timelineNextNext.operations)
+        }
+        UpdateOperations(timelineNextNext)
         expect(timelineNextNext.operations[1].payload).toBeDefined()
     })
 })

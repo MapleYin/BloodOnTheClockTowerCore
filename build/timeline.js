@@ -11,118 +11,125 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Timeline = void 0;
+exports.UpdateOperations = exports.NextTimeline = void 0;
+var book_1 = require("./book");
 var character_1 = require("./character");
 var operation_1 = require("./operation");
 var player_1 = require("./player");
-var skill_1 = require("./skill");
-var Timeline = /** @class */ (function () {
-    function Timeline(book, players, lastTimeline) {
-        this.operations = [];
-        this.book = book;
-        var _a = lastTimeline || { time: 'day', turn: 1 }, time = _a.time, turn = _a.turn;
-        this.turn = time === "night" ? turn + 1 : turn;
-        this.time = time === "night" ? "day" : "night";
-        this.players = lastTimeline ? lastTimeline.effected() : players;
-        if (this.time === "night" && lastTimeline) {
-            var beforeDay_1 = lastTimeline.players.filter(function (p) { return p.isExecuted; });
-            var aferDay = lastTimeline.effected().filter(function (p) { return p.isExecuted; });
-            this.lastExcute = aferDay.find(function (ap) { return beforeDay_1.findIndex(function (bp) { return bp.seat === ap.seat; }) === -1; }) || undefined;
+function NextTimeline() {
+    var _a;
+    var bookKey;
+    var players;
+    var time;
+    var turn;
+    var excuteInDay;
+    if (arguments.length === 1) {
+        var lastTimeline = arguments[0];
+        bookKey = lastTimeline.bookKey || ((_a = lastTimeline.book) === null || _a === void 0 ? void 0 : _a.key) || "";
+        players = MakePlayerEffect(lastTimeline);
+        time = lastTimeline.time === "night" ? "day" : "night";
+        turn = lastTimeline.time === "night" ? lastTimeline.turn + 1 : lastTimeline.turn;
+        if (lastTimeline.time == "day") {
+            var beforeDay_1 = lastTimeline.players.filter(function (player) { return player.isExecuted; });
+            var afterDay = MakePlayerEffect(lastTimeline).filter(function (player) { return player.isExecuted; });
+            excuteInDay = afterDay.find(function (ap) { return beforeDay_1.findIndex(function (bp) { return bp.seat === ap.seat; }) === -1; }) || undefined;
         }
-        /// 进入黑夜需要清除一些状态
-        if (this.time === "night") {
-            this.players.forEach(player_1.clearStatus);
-        }
-        this.updateOperations();
     }
-    Timeline.from = function (book, obj) {
-        var timeline = new Timeline(book, []);
-        timeline.turn = obj.turn;
-        timeline.time = obj.time;
-        timeline.players = obj.players;
-        timeline.operations = obj.operations;
-        timeline.lastExcute = obj.lastExcute;
-        timeline.updateOperations();
-        return timeline;
+    else {
+        bookKey = arguments[0];
+        players = arguments[1];
+        time = "night";
+        turn = 1;
+    }
+    var timeline = {
+        bookKey: bookKey,
+        time: time,
+        turn: turn,
+        players: players,
+        operatedPlayers: [],
+        operations: [],
+        extra: {
+            excuteInDay: excuteInDay
+        }
     };
-    Timeline.prototype.updateOperations = function () {
-        var _this = this;
-        var players = this.effected();
-        var killTarget = players.find(function (p) {
-            var operation = _this.operations.find(function (op) { return op.skill.key === skill_1.Kill.key; });
-            if (!operation || operation.payloadKey != "P_R" || !operation.payload) {
-                return false;
+    /// clear status
+    if (time === "night") {
+        timeline.players.forEach(player_1.clearStatus);
+    }
+    (0, exports.UpdateOperations)(timeline);
+    return timeline;
+}
+exports.NextTimeline = NextTimeline;
+var UpdateOperations = function (timeline) {
+    var book = (0, book_1.BookForName)(timeline.bookKey);
+    if (!book) {
+        return;
+    }
+    var players = timeline.players.map(function (player) { return (__assign({}, player)); });
+    /// all posible abilities
+    var abilities = timeline.players
+        .flatMap(function (player) {
+        var _a;
+        return (_a = (0, character_1.CharacterForKey)(player.avatar)) === null || _a === void 0 ? void 0 : _a.abilities.map(function (skill) { return ({
+            player: player,
+            skill: skill
+        }); });
+    })
+        .sort(function (a, b) { return book.skills.findIndex(function (s) { var _a; return ((_a = a === null || a === void 0 ? void 0 : a.skill) === null || _a === void 0 ? void 0 : _a.key) === s.key; }) - book.skills.findIndex(function (s) { var _a; return ((_a = b === null || b === void 0 ? void 0 : b.skill) === null || _a === void 0 ? void 0 : _a.key) === s.key; }); })
+        .filter(function (ability) { return ability && ability.skill; });
+    var oldOperations = timeline.operations.slice(0);
+    var oldOperation = oldOperations.shift();
+    /// abilities => operations
+    var operations = [];
+    for (var idx = 0; idx < abilities.length; idx++) {
+        var ability = abilities[idx];
+        var skill = ability.skill;
+        var player = ability.player;
+        var context = {
+            timeline: timeline,
+            player: players[player.seat - 1],
+            players: players,
+        };
+        /// 添加手动添加的操作
+        while (oldOperation && oldOperation.manual) {
+            (0, operation_1.EffectOperation)(oldOperation, players);
+            operations.push(oldOperation);
+            oldOperation = oldOperations.shift();
+        }
+        if (!skill.valid(context)) {
+            if (oldOperation && oldOperation.skill.key === skill.key && oldOperation.seat === context.player.seat) {
+                oldOperation = oldOperations.shift();
             }
-            return p.seat === operation.payload.seat;
-        });
-        var tramsformedImp = killTarget && (0, player_1.isDeadPlayer)(killTarget) && (killTarget === null || killTarget === void 0 ? void 0 : killTarget.avatar) === character_1.Imp.key && players.find(function (p) { return !(0, player_1.isDeadPlayer)(p) && p.avatar === character_1.Imp.key; }) || undefined;
-        var abilities = players.flatMap(function (p) {
-            var skills = [];
-            var chatacter = (0, character_1.CharacterForKey)(p.avatar);
-            if (!chatacter) {
-                throw "unexpected character";
-            }
-            skills.push.apply(skills, chatacter.abilities);
-            if (p.avatar != p.character) {
-                var chatacter_1 = (0, character_1.CharacterForKey)(p.character);
-                if (!chatacter_1) {
-                    throw "unexpected character";
-                }
-                skills.push.apply(skills, chatacter_1.abilities);
-            }
-            return skills.map(function (skill) {
-                return {
-                    player: p,
-                    skill: skill
-                };
-            });
-        });
-        abilities.sort(function (a, b) {
-            return _this.book.skills.findIndex(function (skill) { return skill.key === a.skill.key; }) - _this.book.skills.findIndex(function (skill) { return skill.key === b.skill.key; });
-        });
-        var newOperations = abilities.filter(function (ability) {
-            var context = {
-                turn: _this.turn,
-                time: _this.time,
-                numberOfPlayer: players.length,
-                numberOfAlivePlayer: players.filter(function (p) { return !(0, player_1.isDeadPlayer)(p); }).length,
-                players: players,
-                player: ability.player,
-                killTarget: killTarget,
-                tramsformedImp: tramsformedImp,
-                excuteInDay: _this.lastExcute
-            };
-            return ability.skill.valid(context);
-        }).map(function (ability) {
-            return _this.operations.find(function (op) { return op.skill.key === ability.skill.key; }) || (0, operation_1.CreateOperation)(ability.player.seat, ability.skill);
-        });
-        if (this.time === "day") {
-            this.operations = this.operations.concat(newOperations);
+            continue;
+        }
+        var operation = oldOperation;
+        if (operation && operation.skill.key === skill.key) {
+            oldOperation = oldOperations.shift();
+            (0, operation_1.EffectOperation)(operation, players);
         }
         else {
-            this.operations = newOperations;
-        }
-    };
-    Timeline.prototype.updatePayload = function (at, payload) {
-        this.operations[at].payload = payload;
-        this.updateOperations();
-    };
-    Timeline.prototype.fulfilled = function () {
-        return !this.operations.some(function (op) {
-            return !op.payload;
-        });
-    };
-    Timeline.prototype.effected = function (at) {
-        var progress = typeof at === "number" ? at : this.operations.length;
-        var players = this.players.map(function (p) { return __assign({}, p); });
-        this.operations.filter(function (_, idx) { return idx < progress; }).forEach(function (op) {
-            if (!op.payload) {
-                return;
+            var payloadKey = skill.payloadKey || skill.type;
+            operation = {
+                seat: ability.player.seat,
+                skill: skill,
+                players: players.map(function (player) { return (__assign({}, player)); }),
+                payloadKey: payloadKey,
+            };
+            if (payloadKey === "A") {
+                operation.payload = timeline;
+                (0, operation_1.EffectOperation)(operation, players);
             }
-            (0, operation_1.EffectOperation)(op, players);
-        });
-        return players;
-    };
-    return Timeline;
-}());
-exports.Timeline = Timeline;
+        }
+        operations.push(operation);
+    }
+    timeline.operations = operations;
+    timeline.operatedPlayers = players;
+};
+exports.UpdateOperations = UpdateOperations;
+var MakePlayerEffect = function (timeline) {
+    var players = timeline.players.map(function (player) { return (__assign({}, player)); });
+    timeline.operations.filter(function (operation) { return operation.payload; }).forEach(function (operation) {
+        (0, operation_1.EffectOperation)(operation, players);
+    });
+    return players;
+};
