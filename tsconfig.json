@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
-        "target": "ES5",
-        "module": "CommonJS",
+        "target": "ESNext",
+        "module": "NodeNext",
         "allowJs": true,
-        "moduleResolution": "node",
+        "moduleDetection": "force",
         "strictNullChecks": true,
         "resolveJsonModule": true,
+        "noImplicitOverride": true,
         "declaration": true,
+        "declarationMap": true,
         "lib": [
             "es6"
         ],
@@ -16,6 +17,7 @@
         "skipLibCheck": true,
     },
     "include": [
-        "./src/**/*"
+        "./src/**/*",
+        "./src/types.d.ts"
     ]
 }

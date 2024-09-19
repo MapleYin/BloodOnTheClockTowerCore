@@ -1,130 +1,3 @@
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-
-// src/index.ts
-var src_exports = {};
-__export(src_exports, {
-  All: () => All,
-  Artist: () => Artist,
-  Assassin: () => Assassin,
-  Barber: () => Barber,
-  Baron: () => Baron,
-  BecomeDemon: () => BecomeDemon,
-  Butler: () => Butler,
-  Cerenovus: () => Cerenovus,
-  Chambermaid: () => Chambermaid,
-  CharacterForKey: () => CharacterForKey,
-  CheckImp: () => CheckImp,
-  Chef: () => Chef,
-  ChooseMaster: () => ChooseMaster,
-  Clockmaker: () => Clockmaker,
-  Courtier: () => Courtier,
-  Defense: () => Defense,
-  Devilsadvocate: () => Devilsadvocate,
-  DigKnowCharacter: () => DigKnowCharacter,
-  Dreamer: () => Dreamer,
-  Drunk: () => Drunk,
-  Empath: () => Empath,
-  Eviltwin: () => Eviltwin,
-  Excute: () => Excute,
-  ExcuteByRack: () => ExcuteByRack,
-  Exorcist: () => Exorcist,
-  Fanggu: () => Fanggu,
-  Flowergirl: () => Flowergirl,
-  Fool: () => Fool,
-  FortuneTeller: () => FortuneTeller,
-  Gambler: () => Gambler,
-  Game: () => Game,
-  Godfather: () => Godfather,
-  Goon: () => Goon,
-  Gossip: () => Gossip,
-  Grandmother: () => Grandmother,
-  Guard: () => Guard,
-  Imp: () => Imp,
-  Innkeeper: () => Innkeeper,
-  Investigator: () => Investigator,
-  Juggler: () => Juggler,
-  Kill: () => Kill,
-  Klutz: () => Klutz,
-  KnowAbsent: () => KnowAbsent,
-  KnowEvilAround: () => KnowEvilAround,
-  KnowMinions: () => KnowMinions,
-  KnowOutsiders: () => KnowOutsiders,
-  KnowSeat: () => KnowSeat,
-  KnowTownsfolk: () => KnowTownsfolk,
-  Librarian: () => Librarian,
-  Lunatic: () => Lunatic,
-  Mastermind: () => Mastermind,
-  Mathematician: () => Mathematician,
-  Mayor: () => Mayor,
-  Minstrel: () => Minstrel,
-  Monk: () => Monk,
-  Moonchild: () => Moonchild,
-  Mutant: () => Mutant,
-  Nodashii: () => Nodashii,
-  Nomination: () => Nomination,
-  Oracle: () => Oracle,
-  Pacifist: () => Pacifist,
-  Peep: () => Peep,
-  Philosopher: () => Philosopher,
-  Pithag: () => Pithag,
-  Po: () => Po,
-  Poison: () => Poison,
-  Poisoner: () => Poisoner,
-  Professor: () => Professor,
-  Pukka: () => Pukka,
-  Ravenkeeper: () => Ravenkeeper,
-  Recluse: () => Recluse,
-  Sage: () => Sage,
-  Sailor: () => Sailor,
-  Saint: () => Saint,
-  Savant: () => Savant,
-  Scapegoat: () => Scapegoat,
-  ScarletWoman: () => ScarletWoman,
-  Seamstress: () => Seamstress,
-  Shabaloth: () => Shabaloth,
-  Slay: () => Slay,
-  Slayer: () => Slayer,
-  Snakecharmer: () => Snakecharmer,
-  Soldier: () => Soldier,
-  Spy: () => Spy,
-  Sweetheart: () => Sweetheart,
-  Tealady: () => Tealady,
-  Tinker: () => Tinker,
-  Towncrier: () => Towncrier,
-  Transform: () => Transform,
-  Undertaker: () => Undertaker,
-  Vigormortis: () => Vigormortis,
-  Virgin: () => Virgin,
-  Vortox: () => Vortox,
-  WakenKnowCharacter: () => WakenKnowCharacter,
-  Washerwoman: () => Washerwoman,
-  Witch: () => Witch,
-  Zombuul: () => Zombuul,
-  copyPlayers: () => copyPlayers,
-  getAbility: () => getAbility,
-  hasRealAbility: () => hasRealAbility,
-  isAlivePlayer: () => isAlivePlayer,
-  isDeadPlayer: () => isDeadPlayer,
-  timelinesWithPlayerStatus: () => timelinesWithPlayerStatus
-});
-module.exports = __toCommonJS(src_exports);
-
 // src/common.ts
 var isDeadPlayer = (player) => player.isKilled || player.isSlew || player.isExecuted;
 var isAlivePlayer = (player) => !isDeadPlayer(player);
@@ -1097,8 +970,7 @@ var All = [
   Vortox
 ];
 var CharacterForKey = (key) => All.find((c) => c.key === key);
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
+export {
   All,
   Artist,
   Assassin,
@@ -1202,4 +1074,4 @@ var CharacterForKey = (key) => All.find((c) => c.key === key);
   isAlivePlayer,
   isDeadPlayer,
   timelinesWithPlayerStatus
-});
+};
