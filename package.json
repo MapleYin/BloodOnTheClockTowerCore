@@ -16,8 +16,8 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.js",
-      "default": "./dist/index.cjs"
+      "import": "./build/index.js",
+      "default": "./build/index.cjs"
     }
   },
   "devDependencies": {
