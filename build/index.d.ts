@@ -1,46 +1,105 @@
-declare class Game implements BCT.TGame {
-    players: BCT.TPlayer[];
-    timelines: BCT.TTimeline[];
-    private orderedAbilities;
-    constructor(players: BCT.TPlayer[], abilityOrder: string[]);
-    nextTimeline(): BCT.TTimeline;
-    createOperation(abilityKey: string, effector: number, payload: Record<string, any>): void;
-    updatePayload(timelineIdx: number, operationIdx: number, payload: Record<string, any>): void;
-    timelinesWithPlayerStatus(): {
-        initPlayers: BCT.TPlayer[];
-        effectedPlayers: BCT.TPlayer[];
-        operations: {
-            initPlayers: BCT.TPlayer[];
-            effectedPlayers: BCT.TPlayer[];
-            abilityKey: string;
-            effector: number;
-            payload?: Record<string, any> | undefined;
-            turn: number;
-            time: "day" | "night";
-            hasEffect: boolean;
-            manual?: boolean | undefined;
-        }[];
-        turn: number;
-        time: "day" | "night";
-    }[];
+declare global {
+    namespace BCT {
+        type ECharacterKey = "Lycanthrope" | "Choirboy" | "Preacher" | "Engineer" | "Noble" | "King" | "General" | "Alchemist" | "Magician" | "Farmer" | "Balloonist" | "Bountyhunter" | "Amnesiac" | "Cannibal" | "Nightwatchman" | "Atheist" | "Pixie" | "Huntsman" | "Cultleader" | "Poppygrower" | "Fisherman" | "Snitch" | "Puzzlemaster" | "Damsel" | "Golem" | "Heretic" | "Acrobat" | "Politician" | "Goblin" | "Widow" | "Psychopath" | "Fearmonger" | "Mezepheles" | "Marionette" | "Boomdandy" | "Riot" | "Alhadikhia" | "Legion" | "Leviathan" | "Lleech" | "Lilmonsta" | "Clockmaker" | "Dreamer" | "Snakecharmer" | "Mathematician" | "Flowergirl" | "Towncrier" | "Oracle" | "Savant" | "Seamstress" | "Philosopher" | "Artist" | "Juggler" | "Sage" | "Mutant" | "Sweetheart" | "Barber" | "Klutz" | "Eviltwin" | "Witch" | "Cerenovus" | "Pithag" | "Fanggu" | "Vigormortis" | "Nodashii" | "Vortox" | "Grandmother" | "Sailor" | "Chambermaid" | "Exorcist" | "Innkeeper" | "Gambler" | "Gossip" | "Courtier" | "Professor" | "Minstrel" | "Tealady" | "Pacifist" | "Fool" | "Tinker" | "Moonchild" | "Goon" | "Lunatic" | "Godfather" | "Devilsadvocate" | "Assassin" | "Mastermind" | "Zombuul" | "Pukka" | "Shabaloth" | "Po" | "Washerwoman" | "Librarian" | "Investigator" | "Chef" | "Empath" | "Fortuneteller" | "Undertaker" | "Monk" | "Ravenkeeper" | "Virgin" | "Slayer" | "Soldier" | "Mayor" | "Butler" | "Drunk" | "Recluse" | "Saint" | "Poisoner" | "Spy" | "Scarletwoman" | "Baron" | "Imp"
+
+        type EKind = "Townsfolk" | "Outsiders" | "Minions" | "Demons"
+
+        type TContext = {
+            /// 轮次
+            turn: number
+            /// 时间
+            time: "day" | "night"
+            /// 当前玩家
+            player: TPlayer
+            /// 当前玩家状态
+            players: TPlayer[]
+
+            timelines: TTimelinesWithPlayerStatus[]
+        }
+
+        type TAbility = {
+            /// 能力名
+            key: string
+            /// 验证是否可以执行
+            validate: (content: TContext) => boolean
+            /// 执行
+            effect?: (operation: TOperation, players: TPlayer[], timelines: TTimeline[]) => void
+            /// 自动填充payload
+            autoPayload?: (content: TContext) => Record<string, any>
+            /// 执行条件
+            effectCondition?: "alive"
+            /// 效果类型
+            effectKind?: "buff"
+            /// 持续时间
+            effectDuration?: "ntd"
+        }
+
+        type TCharacter = {
+            /// 角色名
+            key: BCT.ECharacterKey
+            /// 角色类型
+            kind: EKind
+            /// 角色能力
+            abilities: TAbility[]
+        }
+
+        type TOperation = {
+            /// 能力名
+            abilityKey: string
+            /// 执行者
+            effector: number
+            /// 执行参数
+            payload?: Record<string, any>
+
+            /// 轮次
+            turn: number
+
+            /// 时间
+            time: "day" | "night"
+
+            /// 是否生效
+            hasEffect: boolean
+
+            /// manual
+            manual?: boolean
+        }
+
+        type TPlayer = {
+            /// 位置
+            position: number
+            /// 角色名  
+            character: {
+                key: BCT.ECharacterKey,
+                kind: EKind,
+                abilities: string[]
+            }
+            /// 角色状态
+            [key: string]: any
+        }
+
+        type TGame = {
+            players: TPlayer[]
+            timelines: TTimeline[]
+
+            nextTimeline: () => TTimeline
+        }
+
+        type TTimeline = {
+            turn: number
+            time: "day" | "night"
+            operations: TOperation[]
+        }
+
+        type TTimelinesWithPlayerStatus = TTimeline & {
+            initPlayers: TPlayer[]
+            effectedPlayers: TPlayer[]
+            operations: (TOperation & {
+                initPlayers: TPlayer[]
+                effectedPlayers: TPlayer[]
+            })[]
+        }
+    }
 }
-declare const timelinesWithPlayerStatus: (timelines: BCT.TTimeline[], players: BCT.TPlayer[]) => {
-    initPlayers: BCT.TPlayer[];
-    effectedPlayers: BCT.TPlayer[];
-    operations: {
-        initPlayers: BCT.TPlayer[];
-        effectedPlayers: BCT.TPlayer[];
-        abilityKey: string;
-        effector: number;
-        payload?: Record<string, any> | undefined;
-        turn: number;
-        time: "day" | "night";
-        hasEffect: boolean;
-        manual?: boolean | undefined;
-    }[];
-    turn: number;
-    time: "day" | "night";
-}[];
 
 declare const BecomeDemon: BCT.TAbility;
 
@@ -168,4 +227,37 @@ declare const Vortox: BCT.TCharacter;
 declare const All: BCT.TCharacter[];
 declare const CharacterForKey: (key: BCT.ECharacterKey) => BCT.TCharacter;
 
-export { All, Artist, Assassin, Barber, Baron, BecomeDemon, Butler, Cerenovus, Chambermaid, CharacterForKey, CheckImp, Chef, ChooseMaster, Clockmaker, Courtier, Defense, Devilsadvocate, DigKnowCharacter, Dreamer, Drunk, Empath, Eviltwin, Excute, ExcuteByRack, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Game, Godfather, Goon, Gossip, Grandmother, Guard, Imp, Innkeeper, Investigator, Juggler, Kill, Klutz, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Nomination, Oracle, Pacifist, Peep, Philosopher, Pithag, Po, Poison, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, Scapegoat, ScarletWoman, Seamstress, Shabaloth, Slay, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Transform, Undertaker, Vigormortis, Virgin, Vortox, WakenKnowCharacter, Washerwoman, Witch, Zombuul, copyPlayers, getAbility, hasRealAbility, isAlivePlayer, isDeadPlayer, timelinesWithPlayerStatus };
+declare const nextTimeline: (players: BCT.TPlayer[], timelines: BCT.TTimeline[], abilityOrder: string[]) => void;
+declare const createOperation: (abilityKey: string, effector: number, payload: Record<string, any>, timeline: BCT.TTimeline) => void;
+/**
+ * 更新操作的payload
+ * @param timeline
+ * @param operationIdx
+ * @param payload
+ */
+declare const updatePayload: (timeline: BCT.TTimeline, operationIdx: number, payload: Record<string, any>) => void;
+/**
+ * 获取每个timeline的初始玩家和受影响的玩家
+ * @param timelines 时间线
+ * @param players 玩家
+ * @returns 每个时间线以及相关操作的初始玩家和受影响的玩家
+ */
+declare const timelinesWithPlayerStatus: (timelines: BCT.TTimeline[], players: BCT.TPlayer[]) => {
+    initPlayers: BCT.TPlayer[];
+    effectedPlayers: BCT.TPlayer[];
+    operations: {
+        initPlayers: BCT.TPlayer[];
+        effectedPlayers: BCT.TPlayer[];
+        abilityKey: string;
+        effector: number;
+        payload?: Record<string, any> | undefined;
+        turn: number;
+        time: "day" | "night";
+        hasEffect: boolean;
+        manual?: boolean | undefined;
+    }[];
+    turn: number;
+    time: "day" | "night";
+}[];
+
+export { All, Artist, Assassin, Barber, Baron, BecomeDemon, Butler, Cerenovus, Chambermaid, CharacterForKey, CheckImp, Chef, ChooseMaster, Clockmaker, Courtier, Defense, Devilsadvocate, DigKnowCharacter, Dreamer, Drunk, Empath, Eviltwin, Excute, ExcuteByRack, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, Guard, Imp, Innkeeper, Investigator, Juggler, Kill, Klutz, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Nomination, Oracle, Pacifist, Peep, Philosopher, Pithag, Po, Poison, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, Scapegoat, ScarletWoman, Seamstress, Shabaloth, Slay, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Transform, Undertaker, Vigormortis, Virgin, Vortox, WakenKnowCharacter, Washerwoman, Witch, Zombuul, copyPlayers, createOperation, getAbility, hasRealAbility, isAlivePlayer, isDeadPlayer, nextTimeline, timelinesWithPlayerStatus, updatePayload };

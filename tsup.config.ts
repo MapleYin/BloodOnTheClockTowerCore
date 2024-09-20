@@ -6,4 +6,5 @@ export default defineConfig({
     dts: true,
     outDir: "build",
     clean: true,
+    treeshake: true,
 });

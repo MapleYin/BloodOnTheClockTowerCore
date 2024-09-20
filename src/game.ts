@@ -208,7 +208,7 @@ export const timelinesWithPlayerStatus = (timelines: BCT.TTimeline[], players: B
 }
 
 
-    const updateNomination = (timelines: BCT.TTimeline[], players: BCT.TPlayer[]) => {
+const updateNomination = (timelines: BCT.TTimeline[], players: BCT.TPlayer[]) => {
     const timeline = timelines[timelines.length - 1]
     if (!timeline || timeline.time !== "day") {
         return

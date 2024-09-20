@@ -311,229 +311,6 @@ var abilities = [
 ];
 var getAbility = (key) => abilities.find((ability) => ability.key === key);
 
-// src/game.ts
-var Game = class {
-  players;
-  timelines = [];
-  orderedAbilities;
-  constructor(players, abilityOrder) {
-    this.players = players;
-    this.orderedAbilities = abilityOrder.flatMap((key) => getAbility(key) || []);
-  }
-  nextTimeline() {
-    let lastTimeline = this.timelines[this.timelines.length - 1];
-    const timeline = lastTimeline ? {
-      turn: lastTimeline.time === "night" ? lastTimeline.turn : lastTimeline.turn + 1,
-      time: lastTimeline.time === "day" ? "night" : "day",
-      operations: []
-    } : {
-      turn: 1,
-      time: "night",
-      operations: []
-    };
-    updateNomination(this.timelines, this.players);
-    this.timelines.push(timeline);
-    setupTimelines(this.timelines, this.players, this.orderedAbilities);
-    return timeline;
-  }
-  createOperation(abilityKey, effector, payload) {
-    const timelineIdx = this.timelines.length - 1;
-    const timeline = this.timelines[timelineIdx];
-    timeline.operations.push({
-      abilityKey,
-      effector,
-      turn: timeline.turn,
-      time: timeline.time,
-      hasEffect: true,
-      payload,
-      manual: true
-    });
-    setupTimelines(this.timelines, this.players, this.orderedAbilities);
-  }
-  updatePayload(timelineIdx, operationIdx, payload) {
-    this.timelines[timelineIdx].operations[operationIdx].payload = payload;
-    setupTimelines(this.timelines, this.players, this.orderedAbilities);
-  }
-  timelinesWithPlayerStatus() {
-    return timelinesWithPlayerStatus(this.timelines, this.players);
-  }
-};
-var setupTimelines = (timelines, players, orderedAbilities) => {
-  let effectingOperations = [];
-  timelines.forEach((timeline) => {
-    effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
-    effectingOperations = setupOperations(timeline, effectingOperations, players, orderedAbilities, timelines);
-  });
-};
-var setupOperations = (timeline, effectingOperations, players, orderedAbilities, timelines) => {
-  const manualOperations = timeline.operations.filter((operation) => operation.manual);
-  effectingOperations = effectingOperations.concat(manualOperations);
-  orderedAbilities.forEach((ability) => {
-    const effectors = players.filter((player) => player.character.abilities.includes(ability.key));
-    effectors.forEach((effector) => {
-      const clearStatusPlayers = copyPlayers(players);
-      effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
-      effectingOperations.forEach((opertion) => {
-        effectManagedOperation(opertion, clearStatusPlayers, timelines);
-      });
-      const player = clearStatusPlayers.find((p) => p.position === effector.position);
-      const effectingTimelinesIdx = timelines.findIndex((t) => t.time === timeline.time && t.turn === timeline.turn);
-      const effectingTimelines = timelines.slice(0, effectingTimelinesIdx + 1);
-      const context = {
-        player,
-        players: clearStatusPlayers,
-        turn: timeline.turn,
-        time: timeline.time,
-        timelines: timelinesWithPlayerStatus(effectingTimelines, players)
-      };
-      if (ability.validate(context)) {
-        const operationIdx = timeline.operations.findIndex((operation2) => operation2.abilityKey === ability.key && operation2.effector === effector.position);
-        let operation;
-        if (operationIdx === -1) {
-          operation = {
-            abilityKey: ability.key,
-            effector: effector.position,
-            turn: timeline.turn,
-            time: timeline.time,
-            hasEffect: !!ability.effect
-          };
-          timeline.operations.push(operation);
-        } else {
-          operation = timeline.operations[operationIdx];
-        }
-        if (operation.hasEffect) {
-          effectingOperations.push(operation);
-          if (ability.autoPayload) {
-            operation.payload = ability.autoPayload(context);
-          }
-        }
-      } else {
-        timeline.operations = timeline.operations.filter((operation) => operation.abilityKey !== ability.key || operation.effector !== effector.position);
-      }
-    });
-  });
-  return effectingOperations;
-};
-var clearInvalidEffectingOperations = (effectingOperation, players, currentTimeline) => {
-  const ability = getAbility(effectingOperation.abilityKey);
-  if (ability?.effectCondition === "alive") {
-    const player = players[effectingOperation.effector];
-    if (isDeadPlayer(player)) {
-      return false;
-    }
-  }
-  if (ability?.effectDuration === "ntd") {
-    if (currentTimeline.turn != effectingOperation.turn) {
-      return false;
-    }
-  }
-  return true;
-};
-var effectManagedOperation = (effectingOperation, players, timelines) => {
-  const ability = getAbility(effectingOperation.abilityKey);
-  if (ability) {
-    ability.effect?.(effectingOperation, players, timelines);
-  }
-};
-var timelinesWithPlayerStatus = (timelines, players) => {
-  let effectingOperations = [];
-  const timelinesWithPlayerStatus2 = timelines.map((timeline) => {
-    let timelineInitPlayers = [];
-    const operations = timeline.operations.map((operation) => {
-      let clearStatusPlayers = copyPlayers(players);
-      effectingOperations = effectingOperations.filter((operation2) => clearInvalidEffectingOperations(operation2, clearStatusPlayers, timeline));
-      effectingOperations.forEach((opertion) => {
-        effectManagedOperation(opertion, clearStatusPlayers, timelines);
-      });
-      if (timelineInitPlayers.length) {
-        timelineInitPlayers = copyPlayers(clearStatusPlayers);
-      }
-      const initPlayers2 = copyPlayers(clearStatusPlayers);
-      if (operation.hasEffect) {
-        effectingOperations.push(operation);
-        effectManagedOperation(operation, clearStatusPlayers, timelines);
-        effectingOperations = effectingOperations.filter((operation2) => clearInvalidEffectingOperations(operation2, clearStatusPlayers, timeline));
-        clearStatusPlayers = copyPlayers(players);
-        effectingOperations.forEach((opertion) => {
-          effectManagedOperation(opertion, clearStatusPlayers, timelines);
-        });
-      }
-      const effectedPlayers2 = copyPlayers(clearStatusPlayers);
-      return {
-        ...operation,
-        initPlayers: initPlayers2,
-        effectedPlayers: effectedPlayers2
-      };
-    });
-    const firstOperation = operations[0];
-    const lastOperation = operations[operations.length - 1];
-    const initPlayers = firstOperation ? firstOperation.initPlayers : [];
-    const effectedPlayers = lastOperation ? lastOperation.effectedPlayers : [];
-    return {
-      ...timeline,
-      initPlayers,
-      effectedPlayers,
-      operations
-    };
-  });
-  return timelinesWithPlayerStatus2.reduce((acc, nextTimeline) => {
-    const lastTimeline = acc[acc.length - 1];
-    if (lastTimeline) {
-      nextTimeline.initPlayers = nextTimeline.initPlayers.length ? nextTimeline.initPlayers : lastTimeline.effectedPlayers;
-      nextTimeline.effectedPlayers = nextTimeline.effectedPlayers.length ? nextTimeline.effectedPlayers : nextTimeline.initPlayers;
-    }
-    acc.push({ ...nextTimeline });
-    return acc;
-  }, []);
-};
-var updateNomination = (timelines, players) => {
-  const timeline = timelines[timelines.length - 1];
-  if (!timeline || timeline.time !== "day") {
-    return;
-  }
-  const excuteOperation = timeline.operations.find((op) => op.abilityKey === Excute.key);
-  if (excuteOperation) {
-    return;
-  }
-  const statusTimelines = timelinesWithPlayerStatus(timelines, players);
-  const lastTimeline = statusTimelines[statusTimelines.length - 1];
-  const playersOnRack = lastTimeline.effectedPlayers.filter((p) => p.isOnGallows);
-  if (playersOnRack.length === 0) {
-    return;
-  }
-  let target = -1;
-  if (playersOnRack.length > 1) {
-    const nominations = timeline.operations.filter((op) => op.abilityKey === Nomination.key && Array.isArray(op.payload?.voters));
-    const voteCount = nominations.flatMap((op) => {
-      const voters = op.payload?.voters || [];
-      return Array.isArray(voters) ? voters.length : [];
-    });
-    const maxVoteCount = Math.max(...voteCount);
-    const matchNominations = nominations.filter((op) => op.payload?.voters.length === maxVoteCount);
-    if (matchNominations.length != 1) {
-      target = -1;
-    } else {
-      target = matchNominations[0].payload?.target;
-    }
-  } else {
-    target = playersOnRack[0].position;
-  }
-  if (target === -1) {
-    return;
-  }
-  timeline.operations.push({
-    abilityKey: ExcuteByRack.key,
-    effector: -1,
-    turn: timeline.turn,
-    time: timeline.time,
-    hasEffect: true,
-    manual: true,
-    payload: {
-      target
-    }
-  });
-};
-
 // src/characters.ts
 var Washerwoman = {
   key: "Washerwoman",
@@ -970,108 +747,212 @@ var All = [
   Vortox
 ];
 var CharacterForKey = (key) => All.find((c) => c.key === key);
-export {
-  All,
-  Artist,
-  Assassin,
-  Barber,
-  Baron,
-  BecomeDemon,
-  Butler,
-  Cerenovus,
-  Chambermaid,
-  CharacterForKey,
-  CheckImp,
-  Chef,
-  ChooseMaster,
-  Clockmaker,
-  Courtier,
-  Defense,
-  Devilsadvocate,
-  DigKnowCharacter,
-  Dreamer,
-  Drunk,
-  Empath,
-  Eviltwin,
-  Excute,
-  ExcuteByRack,
-  Exorcist,
-  Fanggu,
-  Flowergirl,
-  Fool,
-  FortuneTeller,
-  Gambler,
-  Game,
-  Godfather,
-  Goon,
-  Gossip,
-  Grandmother,
-  Guard,
-  Imp,
-  Innkeeper,
-  Investigator,
-  Juggler,
-  Kill,
-  Klutz,
-  KnowAbsent,
-  KnowEvilAround,
-  KnowMinions,
-  KnowOutsiders,
-  KnowSeat,
-  KnowTownsfolk,
-  Librarian,
-  Lunatic,
-  Mastermind,
-  Mathematician,
-  Mayor,
-  Minstrel,
-  Monk,
-  Moonchild,
-  Mutant,
-  Nodashii,
-  Nomination,
-  Oracle,
-  Pacifist,
-  Peep,
-  Philosopher,
-  Pithag,
-  Po,
-  Poison,
-  Poisoner,
-  Professor,
-  Pukka,
-  Ravenkeeper,
-  Recluse,
-  Sage,
-  Sailor,
-  Saint,
-  Savant,
-  Scapegoat,
-  ScarletWoman,
-  Seamstress,
-  Shabaloth,
-  Slay,
-  Slayer,
-  Snakecharmer,
-  Soldier,
-  Spy,
-  Sweetheart,
-  Tealady,
-  Tinker,
-  Towncrier,
-  Transform,
-  Undertaker,
-  Vigormortis,
-  Virgin,
-  Vortox,
-  WakenKnowCharacter,
-  Washerwoman,
-  Witch,
-  Zombuul,
-  copyPlayers,
-  getAbility,
-  hasRealAbility,
-  isAlivePlayer,
-  isDeadPlayer,
-  timelinesWithPlayerStatus
+
+// src/timeline.ts
+var nextTimeline = (players, timelines, abilityOrder) => {
+  let lastTimeline = timelines[timelines.length - 1];
+  const orderedAbilities = abilityOrder.flatMap((key) => getAbility(key) || []);
+  const timeline = lastTimeline ? {
+    turn: lastTimeline.time === "night" ? lastTimeline.turn : lastTimeline.turn + 1,
+    time: lastTimeline.time === "day" ? "night" : "day",
+    operations: []
+  } : {
+    turn: 1,
+    time: "night",
+    operations: []
+  };
+  updateNomination(timelines, players);
+  timelines.push(timeline);
+  setupTimelines(timelines, players, orderedAbilities);
 };
+var createOperation = (abilityKey, effector, payload, timeline) => {
+  timeline.operations.push({
+    abilityKey,
+    effector,
+    turn: timeline.turn,
+    time: timeline.time,
+    hasEffect: true,
+    payload,
+    manual: true
+  });
+};
+var updatePayload = (timeline, operationIdx, payload) => {
+  timeline.operations[operationIdx].payload = payload;
+};
+var timelinesWithPlayerStatus = (timelines, players) => {
+  let effectingOperations = [];
+  const timelinesWithPlayerStatus2 = timelines.map((timeline) => {
+    let timelineInitPlayers = [];
+    const operations = timeline.operations.map((operation) => {
+      let clearStatusPlayers = copyPlayers(players);
+      effectingOperations = effectingOperations.filter((operation2) => clearInvalidEffectingOperations(operation2, clearStatusPlayers, timeline));
+      effectingOperations.forEach((opertion) => {
+        effectManagedOperation(opertion, clearStatusPlayers, timelines);
+      });
+      if (timelineInitPlayers.length) {
+        timelineInitPlayers = copyPlayers(clearStatusPlayers);
+      }
+      const initPlayers2 = copyPlayers(clearStatusPlayers);
+      if (operation.hasEffect) {
+        effectingOperations.push(operation);
+        effectManagedOperation(operation, clearStatusPlayers, timelines);
+        effectingOperations = effectingOperations.filter((operation2) => clearInvalidEffectingOperations(operation2, clearStatusPlayers, timeline));
+        clearStatusPlayers = copyPlayers(players);
+        effectingOperations.forEach((opertion) => {
+          effectManagedOperation(opertion, clearStatusPlayers, timelines);
+        });
+      }
+      const effectedPlayers2 = copyPlayers(clearStatusPlayers);
+      return {
+        ...operation,
+        initPlayers: initPlayers2,
+        effectedPlayers: effectedPlayers2
+      };
+    });
+    const firstOperation = operations[0];
+    const lastOperation = operations[operations.length - 1];
+    const initPlayers = firstOperation ? firstOperation.initPlayers : [];
+    const effectedPlayers = lastOperation ? lastOperation.effectedPlayers : [];
+    return {
+      ...timeline,
+      initPlayers,
+      effectedPlayers,
+      operations
+    };
+  });
+  return timelinesWithPlayerStatus2.reduce((acc, nextTimeline2) => {
+    const lastTimeline = acc[acc.length - 1];
+    if (lastTimeline) {
+      nextTimeline2.initPlayers = nextTimeline2.initPlayers.length ? nextTimeline2.initPlayers : lastTimeline.effectedPlayers;
+      nextTimeline2.effectedPlayers = nextTimeline2.effectedPlayers.length ? nextTimeline2.effectedPlayers : nextTimeline2.initPlayers;
+    }
+    acc.push({ ...nextTimeline2 });
+    return acc;
+  }, []);
+};
+var setupTimelines = (timelines, players, orderedAbilities) => {
+  let effectingOperations = [];
+  timelines.forEach((timeline) => {
+    effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
+    effectingOperations = setupOperations(timeline, effectingOperations, players, orderedAbilities, timelines);
+  });
+};
+var setupOperations = (timeline, effectingOperations, players, orderedAbilities, timelines) => {
+  const manualOperations = timeline.operations.filter((operation) => operation.manual);
+  effectingOperations = effectingOperations.concat(manualOperations);
+  orderedAbilities.forEach((ability) => {
+    const effectors = players.filter((player) => player.character.abilities.includes(ability.key));
+    effectors.forEach((effector) => {
+      const clearStatusPlayers = copyPlayers(players);
+      effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
+      effectingOperations.forEach((opertion) => {
+        effectManagedOperation(opertion, clearStatusPlayers, timelines);
+      });
+      const player = clearStatusPlayers.find((p) => p.position === effector.position);
+      const effectingTimelinesIdx = timelines.findIndex((t) => t.time === timeline.time && t.turn === timeline.turn);
+      const effectingTimelines = timelines.slice(0, effectingTimelinesIdx + 1);
+      const context = {
+        player,
+        players: clearStatusPlayers,
+        turn: timeline.turn,
+        time: timeline.time,
+        timelines: timelinesWithPlayerStatus(effectingTimelines, players)
+      };
+      if (ability.validate(context)) {
+        const operationIdx = timeline.operations.findIndex((operation2) => operation2.abilityKey === ability.key && operation2.effector === effector.position);
+        let operation;
+        if (operationIdx === -1) {
+          operation = {
+            abilityKey: ability.key,
+            effector: effector.position,
+            turn: timeline.turn,
+            time: timeline.time,
+            hasEffect: !!ability.effect
+          };
+          timeline.operations.push(operation);
+        } else {
+          operation = timeline.operations[operationIdx];
+        }
+        if (operation.hasEffect) {
+          effectingOperations.push(operation);
+          if (ability.autoPayload) {
+            operation.payload = ability.autoPayload(context);
+          }
+        }
+      } else {
+        timeline.operations = timeline.operations.filter((operation) => operation.abilityKey !== ability.key || operation.effector !== effector.position);
+      }
+    });
+  });
+  return effectingOperations;
+};
+var clearInvalidEffectingOperations = (effectingOperation, players, currentTimeline) => {
+  const ability = getAbility(effectingOperation.abilityKey);
+  if (ability?.effectCondition === "alive") {
+    const player = players[effectingOperation.effector];
+    if (isDeadPlayer(player)) {
+      return false;
+    }
+  }
+  if (ability?.effectDuration === "ntd") {
+    if (currentTimeline.turn != effectingOperation.turn) {
+      return false;
+    }
+  }
+  return true;
+};
+var effectManagedOperation = (effectingOperation, players, timelines) => {
+  const ability = getAbility(effectingOperation.abilityKey);
+  if (ability) {
+    ability.effect?.(effectingOperation, players, timelines);
+  }
+};
+var updateNomination = (timelines, players) => {
+  const timeline = timelines[timelines.length - 1];
+  if (!timeline || timeline.time !== "day") {
+    return;
+  }
+  const excuteOperation = timeline.operations.find((op) => op.abilityKey === Excute.key);
+  if (excuteOperation) {
+    return;
+  }
+  const statusTimelines = timelinesWithPlayerStatus(timelines, players);
+  const lastTimeline = statusTimelines[statusTimelines.length - 1];
+  const playersOnRack = lastTimeline.effectedPlayers.filter((p) => p.isOnGallows);
+  if (playersOnRack.length === 0) {
+    return;
+  }
+  let target = -1;
+  if (playersOnRack.length > 1) {
+    const nominations = timeline.operations.filter((op) => op.abilityKey === Nomination.key && Array.isArray(op.payload?.voters));
+    const voteCount = nominations.flatMap((op) => {
+      const voters = op.payload?.voters || [];
+      return Array.isArray(voters) ? voters.length : [];
+    });
+    const maxVoteCount = Math.max(...voteCount);
+    const matchNominations = nominations.filter((op) => op.payload?.voters.length === maxVoteCount);
+    if (matchNominations.length != 1) {
+      target = -1;
+    } else {
+      target = matchNominations[0].payload?.target;
+    }
+  } else {
+    target = playersOnRack[0].position;
+  }
+  if (target === -1) {
+    return;
+  }
+  timeline.operations.push({
+    abilityKey: ExcuteByRack.key,
+    effector: -1,
+    turn: timeline.turn,
+    time: timeline.time,
+    hasEffect: true,
+    manual: true,
+    payload: {
+      target
+    }
+  });
+};
+
+export { All, Artist, Assassin, Barber, Baron, BecomeDemon, Butler, Cerenovus, Chambermaid, CharacterForKey, CheckImp, Chef, ChooseMaster, Clockmaker, Courtier, Defense, Devilsadvocate, DigKnowCharacter, Dreamer, Drunk, Empath, Eviltwin, Excute, ExcuteByRack, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, Guard, Imp, Innkeeper, Investigator, Juggler, Kill, Klutz, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Nomination, Oracle, Pacifist, Peep, Philosopher, Pithag, Po, Poison, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, Scapegoat, ScarletWoman, Seamstress, Shabaloth, Slay, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Transform, Undertaker, Vigormortis, Virgin, Vortox, WakenKnowCharacter, Washerwoman, Witch, Zombuul, copyPlayers, createOperation, getAbility, hasRealAbility, isAlivePlayer, isDeadPlayer, nextTimeline, timelinesWithPlayerStatus, updatePayload };
