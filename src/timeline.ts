@@ -16,7 +16,7 @@ export const nextTimeline = (players: BCT.TPlayer[], timelines: BCT.TTimeline[],
         operations: [],
     }
 
-    updateNomination(timelines, players)
+    updateNomination(timelines, players, options)
 
     timelines.push(timeline)
 
@@ -208,7 +208,7 @@ const effectManagedOperation = (effectingOperation: BCT.TOperation, players: BCT
 }
 
 
-const updateNomination = (timelines: BCT.TTimeline[], players: BCT.TPlayer[]) => {
+const updateNomination = (timelines: BCT.TTimeline[], players: BCT.TPlayer[], options?: { enemy?: string, drunk?: string }) => {
     const timeline = timelines[timelines.length - 1]
     if (!timeline || timeline.time !== "day") {
         return
@@ -217,7 +217,7 @@ const updateNomination = (timelines: BCT.TTimeline[], players: BCT.TPlayer[]) =>
     if (excuteOperation) {
         return;
     }
-    const statusTimelines = timelinesWithPlayerStatus(timelines, players)
+    const statusTimelines = timelinesWithPlayerStatus(timelines, players, options)
     const lastTimeline = statusTimelines[statusTimelines.length - 1]
     const playersOnRack = lastTimeline.effectedPlayers.filter(p => p.isOnGallows)
 

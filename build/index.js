@@ -797,7 +797,7 @@ var nextTimeline = (players, timelines, abilityOrder, options) => {
     time: "night",
     operations: []
   };
-  updateNomination(timelines, players);
+  updateNomination(timelines, players, options);
   timelines.push(timeline);
   setupTimelines(timelines, players, orderedAbilities, options);
 };
@@ -953,7 +953,7 @@ var effectManagedOperation = (effectingOperation, players, timelines) => {
     ability.effect?.(effectingOperation, players, timelines);
   }
 };
-var updateNomination = (timelines, players) => {
+var updateNomination = (timelines, players, options) => {
   const timeline = timelines[timelines.length - 1];
   if (!timeline || timeline.time !== "day") {
     return;
@@ -962,7 +962,7 @@ var updateNomination = (timelines, players) => {
   if (excuteOperation) {
     return;
   }
-  const statusTimelines = timelinesWithPlayerStatus(timelines, players);
+  const statusTimelines = timelinesWithPlayerStatus(timelines, players, options);
   const lastTimeline = statusTimelines[statusTimelines.length - 1];
   const playersOnRack = lastTimeline.effectedPlayers.filter((p) => p.isOnGallows);
   if (playersOnRack.length === 0) {
