@@ -40,7 +40,7 @@ declare global {
             /// 角色类型
             kind: EKind
             /// 角色能力
-            abilities: TAbility[]
+            abilities: string[]
         }
 
         type TOperation = {

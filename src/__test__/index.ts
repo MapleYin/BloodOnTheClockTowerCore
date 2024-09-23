@@ -1,4 +1,4 @@
-import { CharacterForKey } from '../characters';
+import { CharacterForKey, Imp } from '../characters';
 import { Game } from '../game';
 
 export const abilityOrder = [
@@ -27,7 +27,7 @@ export const simpleCharacterForKey = (key: BCT.ECharacterKey) => {
     return {
         key,
         kind: CharacterForKey(key).kind,
-        abilities: CharacterForKey(key).abilities.map(a => a.key)
+        abilities: CharacterForKey(key).abilities
     }
 }
 

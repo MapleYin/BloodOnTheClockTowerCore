@@ -13,7 +13,7 @@ export const Drunk: BCT.TAbility = {
             }
             player.character = {
                 ...player.character,
-                abilities: character.abilities.map(a => a.key)
+                abilities: character.abilities
             }
         }
     }

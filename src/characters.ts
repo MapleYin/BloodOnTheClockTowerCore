@@ -1,74 +1,68 @@
-import {
-    BecomeDemon, CheckImp, ChooseMaster, DigKnowCharacter, DrunkAbility, Excute, Guard, Kill,
-    KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Peep, Poison,
-    Scapegoat, Slay, Transform, WakenKnowCharacter
-} from './abilities';
-
 /// 洗衣妇
 export const Washerwoman: BCT.TCharacter = {
     key: "Washerwoman",
     kind: "Townsfolk",
-    abilities: [KnowTownsfolk]
+    abilities: ["KnowTownsfolk"]
 }
 /// 图书管理员
 export const Librarian: BCT.TCharacter = {
     key: "Librarian",
     kind: "Townsfolk",
-    abilities: [KnowOutsiders]
+    abilities: ["KnowOutsiders"]
 }
 /// 调查员
 export const Investigator: BCT.TCharacter = {
     key: "Investigator",
     kind: "Townsfolk",
-    abilities: [KnowMinions]
+    abilities: ["KnowMinions"]
 }
 /// 厨师
 export const Chef: BCT.TCharacter = {
     key: "Chef",
     kind: "Townsfolk",
-    abilities: [KnowSeat]
+    abilities: ["KnowSeat"]
 }
 /// 共情者
 export const Empath: BCT.TCharacter = {
     key: "Empath",
     kind: "Townsfolk",
-    abilities: [KnowEvilAround]
+    abilities: ["KnowEvilAround"]
 }
 /// 占卜师
 export const FortuneTeller: BCT.TCharacter = {
     key: "Fortuneteller",
     kind: "Townsfolk",
-    abilities: [CheckImp]
+    abilities: ["CheckImp"]
 }
 /// 掘墓人
 export const Undertaker: BCT.TCharacter = {
     key: "Undertaker",
     kind: "Townsfolk",
-    abilities: [DigKnowCharacter]
+    abilities: ["DigKnowCharacter"]
 }
 /// 僧侣
 export const Monk: BCT.TCharacter = {
     key: "Monk",
     kind: "Townsfolk",
-    abilities: [Guard]
+    abilities: ["Guard"]
 }
 /// 守鸦人
 export const Ravenkeeper: BCT.TCharacter = {
     key: "Ravenkeeper",
     kind: "Townsfolk",
-    abilities: [WakenKnowCharacter]
+    abilities: ["WakenKnowCharacter"]
 }
 /// 圣女
 export const Virgin: BCT.TCharacter = {
     key: "Virgin",
     kind: "Townsfolk",
-    abilities: [Excute]
+    abilities: ["Excute"]
 }
 /// 杀手
 export const Slayer: BCT.TCharacter = {
     key: "Slayer",
     kind: "Townsfolk",
-    abilities: [Slay]
+    abilities: ["Slay"]
 }
 /// 士兵
 export const Soldier: BCT.TCharacter = {
@@ -80,19 +74,19 @@ export const Soldier: BCT.TCharacter = {
 export const Mayor: BCT.TCharacter = {
     key: "Mayor",
     kind: "Townsfolk",
-    abilities: [Scapegoat]
+    abilities: ["Scapegoat"]
 }
 /// 管家
 export const Butler: BCT.TCharacter = {
     key: "Butler",
     kind: "Outsiders",
-    abilities: [ChooseMaster]
+    abilities: ["ChooseMaster"]
 }
 /// 酒鬼
 export const Drunk: BCT.TCharacter = {
     key: "Drunk",
     kind: "Outsiders",
-    abilities: [DrunkAbility]
+    abilities: []
 }
 /// 隐士
 export const Recluse: BCT.TCharacter = {
@@ -110,19 +104,19 @@ export const Saint: BCT.TCharacter = {
 export const Poisoner: BCT.TCharacter = {
     key: "Poisoner",
     kind: "Minions",
-    abilities: [Poison]
+    abilities: ["Poison"]
 }
 /// 间谍
 export const Spy: BCT.TCharacter = {
     key: "Spy",
     kind: "Minions",
-    abilities: [Peep]
+    abilities: ["Peep"]
 }
 /// 猩红女巫
 export const ScarletWoman: BCT.TCharacter = {
     key: "Scarletwoman",
     kind: "Minions",
-    abilities: [BecomeDemon]
+    abilities: ["BecomeDemon"]
 }
 /// 男爵
 export const Baron: BCT.TCharacter = {
@@ -134,7 +128,7 @@ export const Baron: BCT.TCharacter = {
 export const Imp: BCT.TCharacter = {
     key: "Imp",
     kind: "Demons",
-    abilities: [KnowAbsent, Kill, Transform]
+    abilities: ["KnowAbsent", "Kill", "Transform"]
 }
 
 /// 祖母

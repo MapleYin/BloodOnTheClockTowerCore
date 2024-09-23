@@ -84,57 +84,57 @@ var DigKnowCharacter = {
 var Washerwoman = {
   key: "Washerwoman",
   kind: "Townsfolk",
-  abilities: [KnowTownsfolk]
+  abilities: ["KnowTownsfolk"]
 };
 var Librarian = {
   key: "Librarian",
   kind: "Townsfolk",
-  abilities: [KnowOutsiders]
+  abilities: ["KnowOutsiders"]
 };
 var Investigator = {
   key: "Investigator",
   kind: "Townsfolk",
-  abilities: [KnowMinions]
+  abilities: ["KnowMinions"]
 };
 var Chef = {
   key: "Chef",
   kind: "Townsfolk",
-  abilities: [KnowSeat]
+  abilities: ["KnowSeat"]
 };
 var Empath = {
   key: "Empath",
   kind: "Townsfolk",
-  abilities: [KnowEvilAround]
+  abilities: ["KnowEvilAround"]
 };
 var FortuneTeller = {
   key: "Fortuneteller",
   kind: "Townsfolk",
-  abilities: [CheckImp]
+  abilities: ["CheckImp"]
 };
 var Undertaker = {
   key: "Undertaker",
   kind: "Townsfolk",
-  abilities: [DigKnowCharacter]
+  abilities: ["DigKnowCharacter"]
 };
 var Monk = {
   key: "Monk",
   kind: "Townsfolk",
-  abilities: [Guard]
+  abilities: ["Guard"]
 };
 var Ravenkeeper = {
   key: "Ravenkeeper",
   kind: "Townsfolk",
-  abilities: [WakenKnowCharacter]
+  abilities: ["WakenKnowCharacter"]
 };
 var Virgin = {
   key: "Virgin",
   kind: "Townsfolk",
-  abilities: [Excute]
+  abilities: ["Excute"]
 };
 var Slayer = {
   key: "Slayer",
   kind: "Townsfolk",
-  abilities: [Slay]
+  abilities: ["Slay"]
 };
 var Soldier = {
   key: "Soldier",
@@ -144,17 +144,17 @@ var Soldier = {
 var Mayor = {
   key: "Mayor",
   kind: "Townsfolk",
-  abilities: [Scapegoat]
+  abilities: ["Scapegoat"]
 };
 var Butler = {
   key: "Butler",
   kind: "Outsiders",
-  abilities: [ChooseMaster]
+  abilities: ["ChooseMaster"]
 };
-var Drunk2 = {
+var Drunk = {
   key: "Drunk",
   kind: "Outsiders",
-  abilities: [Drunk]
+  abilities: []
 };
 var Recluse = {
   key: "Recluse",
@@ -169,17 +169,17 @@ var Saint = {
 var Poisoner = {
   key: "Poisoner",
   kind: "Minions",
-  abilities: [Poison]
+  abilities: ["Poison"]
 };
 var Spy = {
   key: "Spy",
   kind: "Minions",
-  abilities: [Peep]
+  abilities: ["Peep"]
 };
 var ScarletWoman = {
   key: "Scarletwoman",
   kind: "Minions",
-  abilities: [BecomeDemon]
+  abilities: ["BecomeDemon"]
 };
 var Baron = {
   key: "Baron",
@@ -189,7 +189,7 @@ var Baron = {
 var Imp = {
   key: "Imp",
   kind: "Demons",
-  abilities: [KnowAbsent, Kill, Transform]
+  abilities: ["KnowAbsent", "Kill", "Transform"]
 };
 var Grandmother = {
   key: "Grandmother",
@@ -456,7 +456,7 @@ var All = [
   Soldier,
   Mayor,
   Butler,
-  Drunk2,
+  Drunk,
   Recluse,
   Saint,
   Poisoner,
@@ -518,7 +518,7 @@ var All = [
 var CharacterForKey = (key) => All.find((c) => c.key === key);
 
 // src/abilities/drunk/index.ts
-var Drunk = {
+var Drunk2 = {
   key: "Drunk",
   validate: () => true,
   effect: (operation, players) => {
@@ -531,7 +531,7 @@ var Drunk = {
       }
       player.character = {
         ...player.character,
-        abilities: character.abilities.map((a) => a.key)
+        abilities: character.abilities
       };
     }
   }
@@ -777,7 +777,7 @@ var abilities = [
   Excute,
   ExcuteByRack,
   Defense,
-  Drunk,
+  Drunk2,
   Enemy
 ];
 var getAbility = (key) => abilities.find((ability) => ability.key === key);
@@ -999,10 +999,10 @@ var updateNomination = (timelines, players) => {
   });
 };
 var setupOperationOnGameStart = (players, effectingOperations, options) => {
-  const drunkPlayerIdx = players.findIndex((p) => p.character.key === Drunk2.key);
+  const drunkPlayerIdx = players.findIndex((p) => p.character.key === Drunk.key);
   if (drunkPlayerIdx !== -1) {
     effectingOperations.push({
-      abilityKey: Drunk.key,
+      abilityKey: Drunk2.key,
       effector: -1,
       turn: 1,
       time: "night",
@@ -1030,4 +1030,4 @@ var setupOperationOnGameStart = (players, effectingOperations, options) => {
   }
 };
 
-export { All, Artist, Assassin, Barber, Baron, BecomeDemon, Butler, Cerenovus, Chambermaid, CharacterForKey, CheckImp, Chef, ChooseMaster, Clockmaker, Courtier, Defense, Devilsadvocate, DigKnowCharacter, Dreamer, Drunk2 as Drunk, Drunk as DrunkAbility, Empath, Enemy, Eviltwin, Excute, ExcuteByRack, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, Guard, Imp, Innkeeper, Investigator, Juggler, Kill, Klutz, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Nomination, Oracle, Pacifist, Peep, Philosopher, Pithag, Po, Poison, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, Scapegoat, ScarletWoman, Seamstress, Shabaloth, Slay, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Transform, Undertaker, Vigormortis, Virgin, Vortox, WakenKnowCharacter, Washerwoman, Witch, Zombuul, copyPlayers, createOperation, getAbility, hasRealAbility, isAlivePlayer, isDeadPlayer, nextTimeline, setupTimelines, timelinesWithPlayerStatus, updatePayload };
+export { All, Artist, Assassin, Barber, Baron, BecomeDemon, Butler, Cerenovus, Chambermaid, CharacterForKey, CheckImp, Chef, ChooseMaster, Clockmaker, Courtier, Defense, Devilsadvocate, DigKnowCharacter, Dreamer, Drunk, Drunk2 as DrunkAbility, Empath, Enemy, Eviltwin, Excute, ExcuteByRack, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, Guard, Imp, Innkeeper, Investigator, Juggler, Kill, Klutz, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Nomination, Oracle, Pacifist, Peep, Philosopher, Pithag, Po, Poison, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, Scapegoat, ScarletWoman, Seamstress, Shabaloth, Slay, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Transform, Undertaker, Vigormortis, Virgin, Vortox, WakenKnowCharacter, Washerwoman, Witch, Zombuul, copyPlayers, createOperation, getAbility, hasRealAbility, isAlivePlayer, isDeadPlayer, nextTimeline, setupTimelines, timelinesWithPlayerStatus, updatePayload };
