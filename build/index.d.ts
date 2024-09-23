@@ -111,6 +111,10 @@ declare const Defense: BCT.TAbility;
 
 declare const DigKnowCharacter: BCT.TAbility;
 
+declare const Drunk$1: BCT.TAbility;
+
+declare const Enemy: BCT.TAbility;
+
 declare const Excute: BCT.TAbility;
 
 declare const ExcuteByRack: BCT.TAbility;
@@ -227,7 +231,10 @@ declare const Vortox: BCT.TCharacter;
 declare const All: BCT.TCharacter[];
 declare const CharacterForKey: (key: BCT.ECharacterKey) => BCT.TCharacter;
 
-declare const nextTimeline: (players: BCT.TPlayer[], timelines: BCT.TTimeline[], abilityOrder: string[]) => void;
+declare const nextTimeline: (players: BCT.TPlayer[], timelines: BCT.TTimeline[], abilityOrder: string[], options?: {
+    enemy?: string;
+    drunk?: string;
+}) => void;
 declare const createOperation: (abilityKey: string, effector: number, payload: Record<string, any>, timeline: BCT.TTimeline) => void;
 /**
  * 更新操作的payload
@@ -242,7 +249,10 @@ declare const updatePayload: (timeline: BCT.TTimeline, operationIdx: number, pay
  * @param players 玩家
  * @returns 每个时间线以及相关操作的初始玩家和受影响的玩家
  */
-declare const timelinesWithPlayerStatus: (timelines: BCT.TTimeline[], players: BCT.TPlayer[]) => {
+declare const timelinesWithPlayerStatus: (timelines: BCT.TTimeline[], players: BCT.TPlayer[], options?: {
+    drunk?: string;
+    enemy?: string;
+}) => {
     initPlayers: BCT.TPlayer[];
     effectedPlayers: BCT.TPlayer[];
     operations: {
@@ -259,5 +269,9 @@ declare const timelinesWithPlayerStatus: (timelines: BCT.TTimeline[], players: B
     turn: number;
     time: "day" | "night";
 }[];
+declare const setupTimelines: (timelines: BCT.TTimeline[], players: BCT.TPlayer[], orderedAbilities: BCT.TAbility[], options?: {
+    enemy?: string;
+    drunk?: string;
+}) => void;
 
-export { All, Artist, Assassin, Barber, Baron, BecomeDemon, Butler, Cerenovus, Chambermaid, CharacterForKey, CheckImp, Chef, ChooseMaster, Clockmaker, Courtier, Defense, Devilsadvocate, DigKnowCharacter, Dreamer, Drunk, Empath, Eviltwin, Excute, ExcuteByRack, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, Guard, Imp, Innkeeper, Investigator, Juggler, Kill, Klutz, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Nomination, Oracle, Pacifist, Peep, Philosopher, Pithag, Po, Poison, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, Scapegoat, ScarletWoman, Seamstress, Shabaloth, Slay, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Transform, Undertaker, Vigormortis, Virgin, Vortox, WakenKnowCharacter, Washerwoman, Witch, Zombuul, copyPlayers, createOperation, getAbility, hasRealAbility, isAlivePlayer, isDeadPlayer, nextTimeline, timelinesWithPlayerStatus, updatePayload };
+export { All, Artist, Assassin, Barber, Baron, BecomeDemon, Butler, Cerenovus, Chambermaid, CharacterForKey, CheckImp, Chef, ChooseMaster, Clockmaker, Courtier, Defense, Devilsadvocate, DigKnowCharacter, Dreamer, Drunk, Drunk$1 as DrunkAbility, Empath, Enemy, Eviltwin, Excute, ExcuteByRack, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, Guard, Imp, Innkeeper, Investigator, Juggler, Kill, Klutz, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Nomination, Oracle, Pacifist, Peep, Philosopher, Pithag, Po, Poison, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, Scapegoat, ScarletWoman, Seamstress, Shabaloth, Slay, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Transform, Undertaker, Vigormortis, Virgin, Vortox, WakenKnowCharacter, Washerwoman, Witch, Zombuul, copyPlayers, createOperation, getAbility, hasRealAbility, isAlivePlayer, isDeadPlayer, nextTimeline, setupTimelines, timelinesWithPlayerStatus, updatePayload };

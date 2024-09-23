@@ -80,237 +80,6 @@ var DigKnowCharacter = {
   }
 };
 
-// src/abilities/excute/index.ts
-var Excute = {
-  key: "Excute",
-  validate: () => true,
-  effect: (operation, players) => {
-    const player = players[operation.payload?.target];
-    if (player) {
-      player.isExecuted = true;
-    }
-  }
-};
-
-// src/abilities/guard/index.ts
-var Guard = {
-  key: "Guard",
-  validate: (context) => AliveAtNight(context) && context.turn != 1,
-  effect: (operation, players) => {
-    const effectorPlayer = players[operation.effector];
-    const player = players.find((_, idx) => idx === operation.payload?.target);
-    if (hasRealAbility(effectorPlayer) && player) {
-      player.isGuarded = true;
-    }
-  },
-  effectDuration: "ntd"
-};
-
-// src/abilities/scapegoat/index.ts
-var Scapegoat = {
-  key: "Scapegoat",
-  validate: (context) => {
-    if (isDeadPlayer(context.player) || !hasRealAbility(context.player)) {
-      return false;
-    }
-    const lastTimeline = context.timelines[context.timelines.length - 1];
-    const killOperation = lastTimeline.operations.find((op) => op.abilityKey === Kill.key);
-    if (!killOperation || killOperation.payload?.target !== context.player.position) {
-      return false;
-    }
-    return true;
-  },
-  effect: (operation, players, timelines) => {
-    const killAbility = Kill;
-    const lastTimeline = timelines[timelines.length - 1];
-    const previewKillOperation = lastTimeline.operations.find((op) => op.abilityKey === Kill.key);
-    if (!previewKillOperation) {
-      return;
-    }
-    const killOperation = {
-      ...previewKillOperation,
-      payload: {
-        target: operation.payload?.target
-      }
-    };
-    killAbility.effect?.(killOperation, players, timelines);
-  }
-};
-
-// src/abilities/kill/index.ts
-var Kill = {
-  key: "Kill",
-  validate: (context) => AliveAtNight(context) && context.turn != 1,
-  effect: (operation, players) => {
-    const effectorPlayer = players[operation.effector];
-    const player = players[operation.payload?.target];
-    if (!hasRealAbility(effectorPlayer) || !player || player.isGuarded) {
-      return;
-    }
-    if ((player.character.abilities.includes(Defense.key) || player.character.abilities.includes(Scapegoat.key)) && hasRealAbility(player)) {
-      return;
-    }
-    player.isKilled = true;
-  }
-};
-
-// src/abilities/knowAbsent/index.ts
-var KnowAbsent = {
-  key: "KnowAbsent",
-  validate: (context) => FirstNight(context) && context.players.length >= 7
-};
-
-// src/abilities/knowEvilAround/index.ts
-var KnowEvilAround = {
-  key: "KnowEvilAround",
-  validate: AliveAtNight
-};
-
-// src/abilities/knowMinions/index.ts
-var KnowMinions = {
-  key: "KnowMinions",
-  validate: (context) => AliveAtNight(context) && context.turn === 1
-};
-
-// src/abilities/knowOutsiders/index.ts
-var KnowOutsiders = {
-  key: "KnowOutsiders",
-  validate: (context) => AliveAtNight(context) && context.turn === 1
-};
-
-// src/abilities/knowSeat/index.ts
-var KnowSeat = {
-  key: "KnowSeat",
-  validate: (context) => AliveAtNight(context) && context.turn === 1
-};
-
-// src/abilities/knowTownsfolk/index.ts
-var KnowTownsfolk = {
-  key: "KnowTownsfolk",
-  validate: (context) => AliveAtNight(context) && context.turn === 1
-};
-
-// src/abilities/nomination/index.ts
-var Nomination = {
-  key: "Nomination",
-  validate: () => true,
-  effect: (operation, players) => {
-    const effectorPlayer = players[operation.effector];
-    const player = players[operation.payload?.target];
-    const numberOfAlivePlayers = players.filter(isAlivePlayer).length;
-    if (!operation.payload || !Array.isArray(operation.payload?.voters) || !player || !effectorPlayer) {
-      return;
-    }
-    if (operation.payload.voters.length * 2 >= numberOfAlivePlayers) {
-      player.isOnGallows = true;
-    }
-  },
-  effectDuration: "ntd"
-};
-
-// src/abilities/peep/index.ts
-var Peep = {
-  key: "Peep",
-  validate: (context) => AliveAtNight(context)
-};
-
-// src/abilities/poison/index.ts
-var Poison = {
-  key: "Poison",
-  validate: (context) => AliveAtNight(context),
-  effect: (operation, players) => {
-    const player = players.find((_, idx) => idx === operation.payload?.target);
-    if (player) {
-      player.isPoisoned = true;
-    }
-  },
-  effectDuration: "ntd"
-};
-
-// src/abilities/slay/index.ts
-var Slay = {
-  key: "Slay",
-  validate: () => true,
-  effect: (operation, players) => {
-    const effectorPlayer = players[operation.effector];
-    const player = players[operation.payload?.target];
-    if (effectorPlayer.character.abilities.includes("Slay") && hasRealAbility(effectorPlayer) && player && player.character.kind === "Demons") {
-      player.isSlew = true;
-    }
-    if (effectorPlayer.character.abilities.includes("Slay")) {
-      effectorPlayer.character.abilities.splice(effectorPlayer.character.abilities.indexOf("Slay"), 1);
-    }
-  }
-};
-
-// src/abilities/transform/index.ts
-var Transform = {
-  key: "Transform",
-  validate: (context) => {
-    const demonDead = isDeadPlayer(context.player);
-    const lastTimeline = context.timelines[context.timelines.length - 1];
-    const killOp = lastTimeline.operations.find((op) => op.abilityKey === "Kill");
-    if (!demonDead || !killOp || killOp.payload?.target !== context.player.position || !killOp.payload?.result) {
-      return false;
-    }
-    const transformOp = lastTimeline.operations.find((op) => op.abilityKey === "BecomeDemon");
-    if (transformOp) {
-      return false;
-    }
-    return true;
-  },
-  effect: (operation, players) => {
-    const player = players[operation.payload?.target];
-    if (player) {
-      player.character = {
-        key: "Imp",
-        kind: "Demons",
-        abilities: ["Kill", "KnowAbsent", "Transform"]
-      };
-    }
-  }
-};
-
-// src/abilities/wakenKnowCharacter/index.ts
-var WakenKnowCharacter = {
-  key: "WakenKnowCharacter",
-  validate: (context) => {
-    if (context.time !== "night" || !isDeadPlayer(context.player)) return false;
-    const timeline = context.timelines.find((timeline2) => timeline2.turn === context.turn && timeline2.time === context.time);
-    const atBeginingOfTimeline = timeline?.initPlayers.find((p) => p.position === context.player.position);
-    if (!atBeginingOfTimeline) return false;
-    if (isDeadPlayer(atBeginingOfTimeline)) return false;
-    return true;
-  }
-};
-
-// src/abilities/index.ts
-var abilities = [
-  KnowAbsent,
-  Poison,
-  KnowTownsfolk,
-  KnowOutsiders,
-  KnowMinions,
-  KnowSeat,
-  Guard,
-  Kill,
-  BecomeDemon,
-  Scapegoat,
-  Transform,
-  DigKnowCharacter,
-  KnowEvilAround,
-  CheckImp,
-  ChooseMaster,
-  WakenKnowCharacter,
-  Peep,
-  Nomination,
-  Slay,
-  Excute,
-  ExcuteByRack,
-  Defense
-];
-var getAbility = (key) => abilities.find((ability) => ability.key === key);
-
 // src/characters.ts
 var Washerwoman = {
   key: "Washerwoman",
@@ -382,10 +151,10 @@ var Butler = {
   kind: "Outsiders",
   abilities: [ChooseMaster]
 };
-var Drunk = {
+var Drunk2 = {
   key: "Drunk",
   kind: "Outsiders",
-  abilities: []
+  abilities: [Drunk]
 };
 var Recluse = {
   key: "Recluse",
@@ -687,7 +456,7 @@ var All = [
   Soldier,
   Mayor,
   Butler,
-  Drunk,
+  Drunk2,
   Recluse,
   Saint,
   Poisoner,
@@ -748,8 +517,273 @@ var All = [
 ];
 var CharacterForKey = (key) => All.find((c) => c.key === key);
 
+// src/abilities/drunk/index.ts
+var Drunk = {
+  key: "Drunk",
+  validate: () => true,
+  effect: (operation, players) => {
+    const player = players[operation.payload?.target];
+    if (player) {
+      player.isDrunk = true;
+      const character = CharacterForKey(operation.payload?.character);
+      if (!character) {
+        throw new Error("Drunk character not found");
+      }
+      player.character = {
+        ...player.character,
+        abilities: character.abilities.map((a) => a.key)
+      };
+    }
+  }
+};
+
+// src/abilities/enemy/index.ts
+var Enemy = {
+  key: "Enemy",
+  validate: () => true,
+  effect: (operation, players) => {
+    const player = players[operation.payload?.target];
+    if (player) {
+      player.isEnemy = true;
+    }
+  }
+};
+
+// src/abilities/excute/index.ts
+var Excute = {
+  key: "Excute",
+  validate: () => true,
+  effect: (operation, players) => {
+    const player = players[operation.payload?.target];
+    if (player) {
+      player.isExecuted = true;
+    }
+  }
+};
+
+// src/abilities/guard/index.ts
+var Guard = {
+  key: "Guard",
+  validate: (context) => AliveAtNight(context) && context.turn != 1,
+  effect: (operation, players) => {
+    const effectorPlayer = players[operation.effector];
+    const player = players.find((_, idx) => idx === operation.payload?.target);
+    if (hasRealAbility(effectorPlayer) && player) {
+      player.isGuarded = true;
+    }
+  },
+  effectDuration: "ntd"
+};
+
+// src/abilities/scapegoat/index.ts
+var Scapegoat = {
+  key: "Scapegoat",
+  validate: (context) => {
+    if (isDeadPlayer(context.player) || !hasRealAbility(context.player)) {
+      return false;
+    }
+    const lastTimeline = context.timelines[context.timelines.length - 1];
+    const killOperation = lastTimeline.operations.find((op) => op.abilityKey === Kill.key);
+    if (!killOperation || killOperation.payload?.target !== context.player.position) {
+      return false;
+    }
+    return true;
+  },
+  effect: (operation, players, timelines) => {
+    const killAbility = Kill;
+    const lastTimeline = timelines[timelines.length - 1];
+    const previewKillOperation = lastTimeline.operations.find((op) => op.abilityKey === Kill.key);
+    if (!previewKillOperation) {
+      return;
+    }
+    const killOperation = {
+      ...previewKillOperation,
+      payload: {
+        target: operation.payload?.target
+      }
+    };
+    killAbility.effect?.(killOperation, players, timelines);
+  }
+};
+
+// src/abilities/kill/index.ts
+var Kill = {
+  key: "Kill",
+  validate: (context) => AliveAtNight(context) && context.turn != 1,
+  effect: (operation, players) => {
+    const effectorPlayer = players[operation.effector];
+    const player = players[operation.payload?.target];
+    if (!hasRealAbility(effectorPlayer) || !player || player.isGuarded) {
+      return;
+    }
+    if ((player.character.abilities.includes(Defense.key) || player.character.abilities.includes(Scapegoat.key)) && hasRealAbility(player)) {
+      return;
+    }
+    player.isKilled = true;
+  }
+};
+
+// src/abilities/knowAbsent/index.ts
+var KnowAbsent = {
+  key: "KnowAbsent",
+  validate: (context) => FirstNight(context) && context.players.length >= 7
+};
+
+// src/abilities/knowEvilAround/index.ts
+var KnowEvilAround = {
+  key: "KnowEvilAround",
+  validate: AliveAtNight
+};
+
+// src/abilities/knowMinions/index.ts
+var KnowMinions = {
+  key: "KnowMinions",
+  validate: (context) => AliveAtNight(context) && context.turn === 1
+};
+
+// src/abilities/knowOutsiders/index.ts
+var KnowOutsiders = {
+  key: "KnowOutsiders",
+  validate: (context) => AliveAtNight(context) && context.turn === 1
+};
+
+// src/abilities/knowSeat/index.ts
+var KnowSeat = {
+  key: "KnowSeat",
+  validate: (context) => AliveAtNight(context) && context.turn === 1
+};
+
+// src/abilities/knowTownsfolk/index.ts
+var KnowTownsfolk = {
+  key: "KnowTownsfolk",
+  validate: (context) => AliveAtNight(context) && context.turn === 1
+};
+
+// src/abilities/nomination/index.ts
+var Nomination = {
+  key: "Nomination",
+  validate: () => true,
+  effect: (operation, players) => {
+    const effectorPlayer = players[operation.effector];
+    const player = players[operation.payload?.target];
+    const numberOfAlivePlayers = players.filter(isAlivePlayer).length;
+    if (!operation.payload || !Array.isArray(operation.payload?.voters) || !player || !effectorPlayer) {
+      return;
+    }
+    if (operation.payload.voters.length * 2 >= numberOfAlivePlayers) {
+      player.isOnGallows = true;
+    }
+  },
+  effectDuration: "ntd"
+};
+
+// src/abilities/peep/index.ts
+var Peep = {
+  key: "Peep",
+  validate: (context) => AliveAtNight(context)
+};
+
+// src/abilities/poison/index.ts
+var Poison = {
+  key: "Poison",
+  validate: (context) => AliveAtNight(context),
+  effect: (operation, players) => {
+    const player = players.find((_, idx) => idx === operation.payload?.target);
+    if (player) {
+      player.isPoisoned = true;
+    }
+  },
+  effectDuration: "ntd"
+};
+
+// src/abilities/slay/index.ts
+var Slay = {
+  key: "Slay",
+  validate: () => true,
+  effect: (operation, players) => {
+    const effectorPlayer = players[operation.effector];
+    const player = players[operation.payload?.target];
+    if (effectorPlayer.character.abilities.includes("Slay") && hasRealAbility(effectorPlayer) && player && player.character.kind === "Demons") {
+      player.isSlew = true;
+    }
+    if (effectorPlayer.character.abilities.includes("Slay")) {
+      effectorPlayer.character.abilities.splice(effectorPlayer.character.abilities.indexOf("Slay"), 1);
+    }
+  }
+};
+
+// src/abilities/transform/index.ts
+var Transform = {
+  key: "Transform",
+  validate: (context) => {
+    const demonDead = isDeadPlayer(context.player);
+    const lastTimeline = context.timelines[context.timelines.length - 1];
+    const killOp = lastTimeline.operations.find((op) => op.abilityKey === "Kill");
+    if (!demonDead || !killOp || killOp.payload?.target !== context.player.position || !killOp.payload?.result) {
+      return false;
+    }
+    const transformOp = lastTimeline.operations.find((op) => op.abilityKey === "BecomeDemon");
+    if (transformOp) {
+      return false;
+    }
+    return true;
+  },
+  effect: (operation, players) => {
+    const player = players[operation.payload?.target];
+    if (player) {
+      player.character = {
+        key: "Imp",
+        kind: "Demons",
+        abilities: ["Kill", "KnowAbsent", "Transform"]
+      };
+    }
+  }
+};
+
+// src/abilities/wakenKnowCharacter/index.ts
+var WakenKnowCharacter = {
+  key: "WakenKnowCharacter",
+  validate: (context) => {
+    if (context.time !== "night" || !isDeadPlayer(context.player)) return false;
+    const timeline = context.timelines.find((timeline2) => timeline2.turn === context.turn && timeline2.time === context.time);
+    const atBeginingOfTimeline = timeline?.initPlayers.find((p) => p.position === context.player.position);
+    if (!atBeginingOfTimeline) return false;
+    if (isDeadPlayer(atBeginingOfTimeline)) return false;
+    return true;
+  }
+};
+
+// src/abilities/index.ts
+var abilities = [
+  KnowAbsent,
+  Poison,
+  KnowTownsfolk,
+  KnowOutsiders,
+  KnowMinions,
+  KnowSeat,
+  Guard,
+  Kill,
+  BecomeDemon,
+  Scapegoat,
+  Transform,
+  DigKnowCharacter,
+  KnowEvilAround,
+  CheckImp,
+  ChooseMaster,
+  WakenKnowCharacter,
+  Peep,
+  Nomination,
+  Slay,
+  Excute,
+  ExcuteByRack,
+  Defense,
+  Drunk,
+  Enemy
+];
+var getAbility = (key) => abilities.find((ability) => ability.key === key);
+
 // src/timeline.ts
-var nextTimeline = (players, timelines, abilityOrder) => {
+var nextTimeline = (players, timelines, abilityOrder, options) => {
   let lastTimeline = timelines[timelines.length - 1];
   const orderedAbilities = abilityOrder.flatMap((key) => getAbility(key) || []);
   const timeline = lastTimeline ? {
@@ -763,7 +797,7 @@ var nextTimeline = (players, timelines, abilityOrder) => {
   };
   updateNomination(timelines, players);
   timelines.push(timeline);
-  setupTimelines(timelines, players, orderedAbilities);
+  setupTimelines(timelines, players, orderedAbilities, options);
 };
 var createOperation = (abilityKey, effector, payload, timeline) => {
   timeline.operations.push({
@@ -779,12 +813,17 @@ var createOperation = (abilityKey, effector, payload, timeline) => {
 var updatePayload = (timeline, operationIdx, payload) => {
   timeline.operations[operationIdx].payload = payload;
 };
-var timelinesWithPlayerStatus = (timelines, players) => {
+var timelinesWithPlayerStatus = (timelines, players, options) => {
   let effectingOperations = [];
+  setupOperationOnGameStart(players, effectingOperations, options);
+  const waitOperationPlayers = copyPlayers(players);
+  effectingOperations.forEach((opertion) => {
+    effectManagedOperation(opertion, waitOperationPlayers, timelines);
+  });
   const timelinesWithPlayerStatus2 = timelines.map((timeline) => {
     let timelineInitPlayers = [];
     const operations = timeline.operations.map((operation) => {
-      let clearStatusPlayers = copyPlayers(players);
+      let clearStatusPlayers = copyPlayers(waitOperationPlayers);
       effectingOperations = effectingOperations.filter((operation2) => clearInvalidEffectingOperations(operation2, clearStatusPlayers, timeline));
       effectingOperations.forEach((opertion) => {
         effectManagedOperation(opertion, clearStatusPlayers, timelines);
@@ -797,7 +836,7 @@ var timelinesWithPlayerStatus = (timelines, players) => {
         effectingOperations.push(operation);
         effectManagedOperation(operation, clearStatusPlayers, timelines);
         effectingOperations = effectingOperations.filter((operation2) => clearInvalidEffectingOperations(operation2, clearStatusPlayers, timeline));
-        clearStatusPlayers = copyPlayers(players);
+        clearStatusPlayers = copyPlayers(waitOperationPlayers);
         effectingOperations.forEach((opertion) => {
           effectManagedOperation(opertion, clearStatusPlayers, timelines);
         });
@@ -830,20 +869,25 @@ var timelinesWithPlayerStatus = (timelines, players) => {
     return acc;
   }, []);
 };
-var setupTimelines = (timelines, players, orderedAbilities) => {
+var setupTimelines = (timelines, players, orderedAbilities, options) => {
   let effectingOperations = [];
+  setupOperationOnGameStart(players, effectingOperations, options);
   timelines.forEach((timeline) => {
     effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
-    effectingOperations = setupOperations(timeline, effectingOperations, players, orderedAbilities, timelines);
+    effectingOperations = setupOperations(timeline, effectingOperations, players, orderedAbilities, timelines, options);
   });
 };
-var setupOperations = (timeline, effectingOperations, players, orderedAbilities, timelines) => {
+var setupOperations = (timeline, effectingOperations, players, orderedAbilities, timelines, options) => {
   const manualOperations = timeline.operations.filter((operation) => operation.manual);
   effectingOperations = effectingOperations.concat(manualOperations);
+  const waitOperationPlayers = copyPlayers(players);
+  effectingOperations.forEach((opertion) => {
+    effectManagedOperation(opertion, waitOperationPlayers, timelines);
+  });
   orderedAbilities.forEach((ability) => {
-    const effectors = players.filter((player) => player.character.abilities.includes(ability.key));
+    const effectors = waitOperationPlayers.filter((player) => player.character.abilities.includes(ability.key));
     effectors.forEach((effector) => {
-      const clearStatusPlayers = copyPlayers(players);
+      const clearStatusPlayers = copyPlayers(waitOperationPlayers);
       effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
       effectingOperations.forEach((opertion) => {
         effectManagedOperation(opertion, clearStatusPlayers, timelines);
@@ -856,7 +900,7 @@ var setupOperations = (timeline, effectingOperations, players, orderedAbilities,
         players: clearStatusPlayers,
         turn: timeline.turn,
         time: timeline.time,
-        timelines: timelinesWithPlayerStatus(effectingTimelines, players)
+        timelines: timelinesWithPlayerStatus(effectingTimelines, players, options)
       };
       if (ability.validate(context)) {
         const operationIdx = timeline.operations.findIndex((operation2) => operation2.abilityKey === ability.key && operation2.effector === effector.position);
@@ -954,5 +998,36 @@ var updateNomination = (timelines, players) => {
     }
   });
 };
+var setupOperationOnGameStart = (players, effectingOperations, options) => {
+  const drunkPlayerIdx = players.findIndex((p) => p.character.key === Drunk2.key);
+  if (drunkPlayerIdx !== -1) {
+    effectingOperations.push({
+      abilityKey: Drunk.key,
+      effector: -1,
+      turn: 1,
+      time: "night",
+      hasEffect: true,
+      payload: {
+        target: drunkPlayerIdx,
+        character: options?.drunk
+      },
+      manual: true
+    });
+  }
+  const enemyPlayerIdx = players.findIndex((p) => p.character.key === options?.enemy);
+  if (enemyPlayerIdx !== -1) {
+    effectingOperations.push({
+      abilityKey: Enemy.key,
+      effector: -1,
+      turn: 1,
+      time: "night",
+      hasEffect: true,
+      manual: true,
+      payload: {
+        target: enemyPlayerIdx
+      }
+    });
+  }
+};
 
-export { All, Artist, Assassin, Barber, Baron, BecomeDemon, Butler, Cerenovus, Chambermaid, CharacterForKey, CheckImp, Chef, ChooseMaster, Clockmaker, Courtier, Defense, Devilsadvocate, DigKnowCharacter, Dreamer, Drunk, Empath, Eviltwin, Excute, ExcuteByRack, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, Guard, Imp, Innkeeper, Investigator, Juggler, Kill, Klutz, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Nomination, Oracle, Pacifist, Peep, Philosopher, Pithag, Po, Poison, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, Scapegoat, ScarletWoman, Seamstress, Shabaloth, Slay, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Transform, Undertaker, Vigormortis, Virgin, Vortox, WakenKnowCharacter, Washerwoman, Witch, Zombuul, copyPlayers, createOperation, getAbility, hasRealAbility, isAlivePlayer, isDeadPlayer, nextTimeline, timelinesWithPlayerStatus, updatePayload };
+export { All, Artist, Assassin, Barber, Baron, BecomeDemon, Butler, Cerenovus, Chambermaid, CharacterForKey, CheckImp, Chef, ChooseMaster, Clockmaker, Courtier, Defense, Devilsadvocate, DigKnowCharacter, Dreamer, Drunk2 as Drunk, Drunk as DrunkAbility, Empath, Enemy, Eviltwin, Excute, ExcuteByRack, Exorcist, Fanggu, Flowergirl, Fool, FortuneTeller, Gambler, Godfather, Goon, Gossip, Grandmother, Guard, Imp, Innkeeper, Investigator, Juggler, Kill, Klutz, KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Librarian, Lunatic, Mastermind, Mathematician, Mayor, Minstrel, Monk, Moonchild, Mutant, Nodashii, Nomination, Oracle, Pacifist, Peep, Philosopher, Pithag, Po, Poison, Poisoner, Professor, Pukka, Ravenkeeper, Recluse, Sage, Sailor, Saint, Savant, Scapegoat, ScarletWoman, Seamstress, Shabaloth, Slay, Slayer, Snakecharmer, Soldier, Spy, Sweetheart, Tealady, Tinker, Towncrier, Transform, Undertaker, Vigormortis, Virgin, Vortox, WakenKnowCharacter, Washerwoman, Witch, Zombuul, copyPlayers, createOperation, getAbility, hasRealAbility, isAlivePlayer, isDeadPlayer, nextTimeline, setupTimelines, timelinesWithPlayerStatus, updatePayload };

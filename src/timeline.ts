@@ -1,7 +1,8 @@
-import { Excute, ExcuteByRack, getAbility, Nomination } from './abilities';
+import { DrunkAbility, Enemy, Excute, ExcuteByRack, getAbility, Nomination } from './abilities';
+import { Drunk as DrunkCharacter } from './characters';
 import { copyPlayers, isDeadPlayer } from './common';
 
-export const nextTimeline = (players: BCT.TPlayer[], timelines: BCT.TTimeline[], abilityOrder: string[]) => {
+export const nextTimeline = (players: BCT.TPlayer[], timelines: BCT.TTimeline[], abilityOrder: string[], options?: { enemy?: string, drunk?: string }) => {
     let lastTimeline = timelines[timelines.length - 1]
     const orderedAbilities = abilityOrder.flatMap(key => getAbility(key) || [])
 
@@ -19,7 +20,7 @@ export const nextTimeline = (players: BCT.TPlayer[], timelines: BCT.TTimeline[],
 
     timelines.push(timeline)
 
-    setupTimelines(timelines, players, orderedAbilities)
+    setupTimelines(timelines, players, orderedAbilities, options)
 }
 
 /// need setupTimelines
@@ -51,12 +52,17 @@ export const updatePayload = (timeline: BCT.TTimeline, operationIdx: number, pay
  * @param players 玩家
  * @returns 每个时间线以及相关操作的初始玩家和受影响的玩家
  */
-export const timelinesWithPlayerStatus = (timelines: BCT.TTimeline[], players: BCT.TPlayer[]) => {
+export const timelinesWithPlayerStatus = (timelines: BCT.TTimeline[], players: BCT.TPlayer[], options?: { drunk?: string, enemy?: string }) => {
     let effectingOperations: BCT.TOperation[] = []
+    setupOperationOnGameStart(players, effectingOperations, options)
+    const waitOperationPlayers = copyPlayers(players)
+    effectingOperations.forEach(opertion => {
+        effectManagedOperation(opertion, waitOperationPlayers, timelines)
+    })
     const timelinesWithPlayerStatus = timelines.map(timeline => {
         let timelineInitPlayers: BCT.TPlayer[] = []
         const operations = timeline.operations.map(operation => {
-            let clearStatusPlayers = copyPlayers(players)
+            let clearStatusPlayers = copyPlayers(waitOperationPlayers)
             effectingOperations = effectingOperations.filter(operation => clearInvalidEffectingOperations(operation, clearStatusPlayers, timeline))
             effectingOperations.forEach(opertion => {
                 effectManagedOperation(opertion, clearStatusPlayers, timelines)
@@ -71,7 +77,7 @@ export const timelinesWithPlayerStatus = (timelines: BCT.TTimeline[], players: B
                 effectManagedOperation(operation, clearStatusPlayers, timelines)
                 effectingOperations = effectingOperations.filter(operation => clearInvalidEffectingOperations(operation, clearStatusPlayers, timeline))
 
-                clearStatusPlayers = copyPlayers(players)
+                clearStatusPlayers = copyPlayers(waitOperationPlayers)
                 effectingOperations.forEach(opertion => {
                     effectManagedOperation(opertion, clearStatusPlayers, timelines)
                 })
@@ -105,22 +111,27 @@ export const timelinesWithPlayerStatus = (timelines: BCT.TTimeline[], players: B
     }, [] as typeof timelinesWithPlayerStatus)
 }
 
-const setupTimelines = (timelines: BCT.TTimeline[], players: BCT.TPlayer[], orderedAbilities: BCT.TAbility[]) => {
+export const setupTimelines = (timelines: BCT.TTimeline[], players: BCT.TPlayer[], orderedAbilities: BCT.TAbility[], options?: { enemy?: string, drunk?: string }) => {
     let effectingOperations: BCT.TOperation[] = []
+    setupOperationOnGameStart(players, effectingOperations, options)
     timelines.forEach(timeline => {
         /// 设置操作
         effectingOperations = effectingOperations.filter(opertion => clearInvalidEffectingOperations(opertion, players, timeline))
-        effectingOperations = setupOperations(timeline, effectingOperations, players, orderedAbilities, timelines)
+        effectingOperations = setupOperations(timeline, effectingOperations, players, orderedAbilities, timelines, options)
     })
 }
 
-const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOperation[], players: BCT.TPlayer[], orderedAbilities: BCT.TAbility[], timelines: BCT.TTimeline[]) => {
+const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOperation[], players: BCT.TPlayer[], orderedAbilities: BCT.TAbility[], timelines: BCT.TTimeline[], options?: { enemy?: string, drunk?: string }) => {
     const manualOperations = timeline.operations.filter(operation => operation.manual)
     effectingOperations = effectingOperations.concat(manualOperations)
+    const waitOperationPlayers = copyPlayers(players)
+    effectingOperations.forEach(opertion => {
+        effectManagedOperation(opertion, waitOperationPlayers, timelines)
+    })
     orderedAbilities.forEach(ability => {
-        const effectors = players.filter(player => player.character.abilities.includes(ability.key))
+        const effectors = waitOperationPlayers.filter(player => player.character.abilities.includes(ability.key))
         effectors.forEach(effector => {
-            const clearStatusPlayers = copyPlayers(players)
+            const clearStatusPlayers = copyPlayers(waitOperationPlayers)
             effectingOperations = effectingOperations.filter(opertion => clearInvalidEffectingOperations(opertion, players, timeline))
             effectingOperations.forEach(opertion => {
                 effectManagedOperation(opertion, clearStatusPlayers, timelines)
@@ -135,7 +146,7 @@ const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOper
                 players: clearStatusPlayers,
                 turn: timeline.turn,
                 time: timeline.time,
-                timelines: timelinesWithPlayerStatus(effectingTimelines, players)
+                timelines: timelinesWithPlayerStatus(effectingTimelines, players, options)
             }
             /// test ability should be executed
             if (ability.validate(context)) {
@@ -248,5 +259,38 @@ const updateNomination = (timelines: BCT.TTimeline[], players: BCT.TPlayer[]) =>
             target
         },
     })
+}
 
+const setupOperationOnGameStart = (players: BCT.TPlayer[], effectingOperations: BCT.TOperation[], options?: { enemy?: string, drunk?: string }) => {
+    const drunkPlayerIdx = players.findIndex(p => p.character.key === DrunkCharacter.key)
+    if (drunkPlayerIdx !== -1) {
+        effectingOperations.push({
+            abilityKey: DrunkAbility.key,
+            effector: -1,
+            turn: 1,
+            time: "night",
+            hasEffect: true,
+            payload: {
+                target: drunkPlayerIdx,
+                character: options?.drunk
+            },
+            manual: true
+        })
+    }
+
+    const enemyPlayerIdx = players.findIndex(p => p.character.key === options?.enemy)
+    if (enemyPlayerIdx !== -1) {
+        effectingOperations.push({
+            abilityKey: Enemy.key,
+            effector: -1,
+            turn: 1,
+            time: "night",
+            hasEffect: true,
+            manual: true,
+            payload: {
+                target: enemyPlayerIdx
+            },
+        })
+    }
+    
 }

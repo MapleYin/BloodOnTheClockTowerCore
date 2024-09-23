@@ -3,6 +3,8 @@ import { CheckImp } from './checkImp';
 import { ChooseMaster } from './chooseMaster';
 import { Defense } from './defense';
 import { DigKnowCharacter } from './digKnowCharacter';
+import { Drunk as DrunkAbility } from './drunk';
+import { Enemy } from './enemy';
 import { Excute } from './excute';
 import { ExcuteByRack } from './excuteByRack';
 import { Guard } from './guard';
@@ -43,7 +45,9 @@ export {
     Slay,
     Excute,
     ExcuteByRack,
-    Defense
+    Defense,
+    DrunkAbility,
+    Enemy
 }
 
 const abilities: BCT.TAbility[] = [
@@ -68,7 +72,9 @@ const abilities: BCT.TAbility[] = [
     Slay,
     Excute,
     ExcuteByRack,
-    Defense
+    Defense,
+    DrunkAbility,
+    Enemy
 ]
 
 export const getAbility = (key: string) => abilities.find(ability => ability.key === key)

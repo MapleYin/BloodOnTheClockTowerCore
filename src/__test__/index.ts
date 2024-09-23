@@ -31,6 +31,6 @@ export const simpleCharacterForKey = (key: BCT.ECharacterKey) => {
     }
 }
 
-export const CreateGame = (characters: BCT.ECharacterKey[]) => {
-    return new Game(characters.map((character, idx) => ({ character: simpleCharacterForKey(character), position: idx })), abilityOrder);
+export const CreateGame = (characters: BCT.ECharacterKey[], options?: { enemy?: string, drunk?: string }) => {
+    return new Game(characters.map((character, idx) => ({ character: simpleCharacterForKey(character), position: idx })), abilityOrder, options);
 }

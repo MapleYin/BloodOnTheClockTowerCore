@@ -1,7 +1,7 @@
 import {
-    BecomeDemon, CheckImp, ChooseMaster, DigKnowCharacter, Excute, Guard, Kill, KnowAbsent,
-    KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Peep, Poison, Scapegoat,
-    Slay, Transform, WakenKnowCharacter
+    BecomeDemon, CheckImp, ChooseMaster, DigKnowCharacter, DrunkAbility, Excute, Guard, Kill,
+    KnowAbsent, KnowEvilAround, KnowMinions, KnowOutsiders, KnowSeat, KnowTownsfolk, Peep, Poison,
+    Scapegoat, Slay, Transform, WakenKnowCharacter
 } from './abilities';
 
 /// 洗衣妇
@@ -92,7 +92,7 @@ export const Butler: BCT.TCharacter = {
 export const Drunk: BCT.TCharacter = {
     key: "Drunk",
     kind: "Outsiders",
-    abilities: []
+    abilities: [DrunkAbility]
 }
 /// 隐士
 export const Recluse: BCT.TCharacter = {

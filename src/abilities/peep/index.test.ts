@@ -1,7 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { abilityOrder, CreateGame, simpleCharacterForKey } from '../../__test__';
-import { Game } from '../../game';
+import { CreateGame } from '../../__test__';
 
 describe("Peep", () => {
     const game = CreateGame(["Washerwoman", "Librarian", "Investigator", "Chef", "Monk", "Spy", "Imp", "Poisoner"]);
@@ -22,7 +21,7 @@ describe("Peep", () => {
         const thirdNightTimeline = game.nextTimeline(); // Third night
         const opIndex = thirdNightTimeline.operations.findIndex(op => op.abilityKey === "Kill")
 
-        game.updatePayload(4, opIndex, { target: 5, result: true })
+        game.updatePayload(4, opIndex, { target: 5})
 
         expect(thirdNightTimeline.operations.map(o => o.abilityKey).includes("Peep")).toBeFalsy();
     });

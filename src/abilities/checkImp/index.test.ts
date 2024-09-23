@@ -23,7 +23,7 @@ describe("CheckImp", () => {
         const thirdNightTimeline = game.nextTimeline(); // Third night
         const opIndex = thirdNightTimeline.operations.findIndex(op => op.abilityKey === "Kill")
 
-        game.updatePayload(4, opIndex, { target: 2, result: true })
+        game.updatePayload(4, opIndex, { target: 2})
 
         expect(thirdNightTimeline.operations.map(o => o.abilityKey).includes("CheckImp")).toBeFalsy();
     });
