@@ -529,6 +529,7 @@ var Drunk2 = {
       if (!character) {
         throw new Error("Drunk character not found");
       }
+      player.illusion = character.key;
       player.character = {
         ...player.character,
         abilities: character.abilities

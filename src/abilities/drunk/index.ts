@@ -11,6 +11,7 @@ export const Drunk: BCT.TAbility = {
             if (!character) {
                 throw new Error("Drunk character not found")
             }
+            player.illusion = character.key
             player.character = {
                 ...player.character,
                 abilities: character.abilities
