@@ -269,7 +269,7 @@ declare const timelinesWithPlayerStatus: (timelines: BCT.TTimeline[], players: B
     turn: number;
     time: "day" | "night";
 }[];
-declare const setupTimelines: (timelines: BCT.TTimeline[], players: BCT.TPlayer[], orderedAbilities: BCT.TAbility[], options?: {
+declare const setupTimelines: (timelines: BCT.TTimeline[], players: BCT.TPlayer[], abilityOrder: string[], options?: {
     enemy?: string;
     drunk?: string;
 }) => void;

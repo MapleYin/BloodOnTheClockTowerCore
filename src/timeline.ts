@@ -4,7 +4,6 @@ import { copyPlayers, isDeadPlayer } from './common';
 
 export const nextTimeline = (players: BCT.TPlayer[], timelines: BCT.TTimeline[], abilityOrder: string[], options?: { enemy?: string, drunk?: string }) => {
     let lastTimeline = timelines[timelines.length - 1]
-    const orderedAbilities = abilityOrder.flatMap(key => getAbility(key) || [])
 
     const timeline: BCT.TTimeline = lastTimeline ? {
         turn: lastTimeline.time === "night" ? lastTimeline.turn : lastTimeline.turn + 1,
@@ -20,7 +19,7 @@ export const nextTimeline = (players: BCT.TPlayer[], timelines: BCT.TTimeline[],
 
     timelines.push(timeline)
 
-    setupTimelines(timelines, players, orderedAbilities, options)
+    setupTimelines(timelines, players, abilityOrder, options)
 }
 
 /// need setupTimelines
@@ -111,7 +110,8 @@ export const timelinesWithPlayerStatus = (timelines: BCT.TTimeline[], players: B
     }, [] as typeof timelinesWithPlayerStatus)
 }
 
-export const setupTimelines = (timelines: BCT.TTimeline[], players: BCT.TPlayer[], orderedAbilities: BCT.TAbility[], options?: { enemy?: string, drunk?: string }) => {
+export const setupTimelines = (timelines: BCT.TTimeline[], players: BCT.TPlayer[], abilityOrder: string[], options?: { enemy?: string, drunk?: string }) => {
+    const orderedAbilities = abilityOrder.flatMap(key => getAbility(key) || [])
     let effectingOperations: BCT.TOperation[] = []
     setupOperationOnGameStart(players, effectingOperations, options)
     timelines.forEach(timeline => {

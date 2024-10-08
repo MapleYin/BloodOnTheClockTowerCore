@@ -788,7 +788,6 @@ var getAbility = (key) => abilities.find((ability) => ability.key === key);
 // src/timeline.ts
 var nextTimeline = (players, timelines, abilityOrder, options) => {
   let lastTimeline = timelines[timelines.length - 1];
-  const orderedAbilities = abilityOrder.flatMap((key) => getAbility(key) || []);
   const timeline = lastTimeline ? {
     turn: lastTimeline.time === "night" ? lastTimeline.turn : lastTimeline.turn + 1,
     time: lastTimeline.time === "day" ? "night" : "day",
@@ -800,7 +799,7 @@ var nextTimeline = (players, timelines, abilityOrder, options) => {
   };
   updateNomination(timelines, players, options);
   timelines.push(timeline);
-  setupTimelines(timelines, players, orderedAbilities, options);
+  setupTimelines(timelines, players, abilityOrder, options);
 };
 var createOperation = (abilityKey, effector, payload, timeline) => {
   timeline.operations.push({
@@ -872,7 +871,8 @@ var timelinesWithPlayerStatus = (timelines, players, options) => {
     return acc;
   }, []);
 };
-var setupTimelines = (timelines, players, orderedAbilities, options) => {
+var setupTimelines = (timelines, players, abilityOrder, options) => {
+  const orderedAbilities = abilityOrder.flatMap((key) => getAbility(key) || []);
   let effectingOperations = [];
   setupOperationOnGameStart(players, effectingOperations, options);
   timelines.forEach((timeline) => {
