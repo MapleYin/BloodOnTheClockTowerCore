@@ -4,10 +4,12 @@ import { AliveAtNight } from '../helper';
 export const DigKnowCharacter: BCT.TAbility = {
     key: "DigKnowCharacter",
     validate: context => {
-        if (context.timelines.length < 2) {
+        const currentTimelineIdx = context.timelines.findIndex(timeline => timeline.time === context.time && timeline.turn === context.turn)
+        const lastTimeline = context.timelines[currentTimelineIdx - 1]
+
+        if (!lastTimeline) {
             return false
         }
-        const lastTimeline = context.timelines[context.timelines.length - 2]
         
         return AliveAtNight(context) && lastTimeline.operations.some(op => op.abilityKey === ExcuteByRack.key)
     }

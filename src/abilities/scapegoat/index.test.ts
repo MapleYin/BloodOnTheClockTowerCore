@@ -28,6 +28,47 @@ describe("Scapegoat", () => {
         expect(isDeadPlayer(lastTimeline.effectedPlayers[1])).toBeTruthy()
     });
 
+    it("should be kill when not change target", () => {
+        const game = CreateGame(["Washerwoman", "Librarian", "Mayor", "Chef", "Monk", "Spy", "Imp", "Poisoner", "Fortuneteller"]);
+
+        game.nextTimeline();
+        game.nextTimeline();
+        const secondNightTimeline = game.nextTimeline();
+
+        const killIndex = secondNightTimeline.operations.findIndex(op => op.abilityKey === "Kill")
+        game.updatePayload(2, killIndex, { target: 2 })
+
+        const scapegoatIndex = secondNightTimeline.operations.findIndex(op => op.abilityKey === "Scapegoat")
+        game.updatePayload(2, scapegoatIndex, { target: 2 })
+
+        const timelines = game.timelinesWithPlayerStatus()
+        const lastTimeline = timelines[timelines.length - 1];
+
+        expect(isDeadPlayer(lastTimeline.effectedPlayers[2])).toBeTruthy()
+    });
+
+    it("should be kill when not change target", () => {
+        const game = CreateGame(["Washerwoman", "Librarian", "Mayor", "Chef", "Monk", "Spy", "Imp", "Poisoner", "Fortuneteller"]);
+
+        game.nextTimeline();
+        game.nextTimeline();
+        const secondNightTimeline = game.nextTimeline();
+
+        const killIndex = secondNightTimeline.operations.findIndex(op => op.abilityKey === "Kill")
+        game.updatePayload(2, killIndex, { target: 2 })
+
+        const scapegoatIndex = secondNightTimeline.operations.findIndex(op => op.abilityKey === "Scapegoat")
+        game.updatePayload(2, scapegoatIndex, { target: 2 })
+
+        game.nextTimeline();
+
+        const timelines = game.timelinesWithPlayerStatus()
+        const lastTimeline = timelines[timelines.length - 1];
+
+        expect(isDeadPlayer(lastTimeline.effectedPlayers[2])).toBeTruthy()
+
+    });
+
     it("do not show when been poisoned or been drunk", () => {
         const game = CreateGame(["Washerwoman", "Librarian", "Mayor", "Chef", "Monk", "Spy", "Imp", "Poisoner"]);
 

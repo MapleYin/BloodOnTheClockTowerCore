@@ -16,10 +16,10 @@ var BecomeDemon = {
     }
   },
   autoPayload: (context) => {
-    const lastTimeline = context.timelines[context.timelines.length - 1];
-    const aliveDemons = lastTimeline.initPlayers.filter((p) => !isDeadPlayer(p) && p.character?.kind == "Demons");
+    const lastTimeline = context.timelines.find((timeline) => timeline.time === context.time && timeline.turn === context.turn);
+    const aliveDemons = lastTimeline?.initPlayers.filter((p) => !isDeadPlayer(p) && p.character?.kind == "Demons");
     const deadDemons = context.players.filter((p) => isDeadPlayer(p) && p.character?.kind == "Demons");
-    const target = deadDemons.find((deadDemon) => aliveDemons.findIndex((aliveDemon) => aliveDemon.position) != -1);
+    const target = deadDemons.find((deadDemon) => aliveDemons?.findIndex((aliveDemon) => aliveDemon.position) != -1);
     return {
       character: target?.character
     };
@@ -72,10 +72,11 @@ var ExcuteByRack = {
 var DigKnowCharacter = {
   key: "DigKnowCharacter",
   validate: (context) => {
-    if (context.timelines.length < 2) {
+    const currentTimelineIdx = context.timelines.findIndex((timeline) => timeline.time === context.time && timeline.turn === context.turn);
+    const lastTimeline = context.timelines[currentTimelineIdx - 1];
+    if (!lastTimeline) {
       return false;
     }
-    const lastTimeline = context.timelines[context.timelines.length - 2];
     return AliveAtNight(context) && lastTimeline.operations.some((op) => op.abilityKey === ExcuteByRack.key);
   }
 };
@@ -583,8 +584,8 @@ var Scapegoat = {
     if (isDeadPlayer(context.player) || !hasRealAbility(context.player)) {
       return false;
     }
-    const lastTimeline = context.timelines[context.timelines.length - 1];
-    const killOperation = lastTimeline.operations.find((op) => op.abilityKey === Kill.key);
+    const lastTimeline = context.timelines.find((timeline) => timeline.time === context.time && timeline.turn === context.turn);
+    const killOperation = lastTimeline?.operations.find((op) => op.abilityKey === Kill.key);
     if (!killOperation || killOperation.payload?.target !== context.player.position) {
       return false;
     }
@@ -592,8 +593,8 @@ var Scapegoat = {
   },
   effect: (operation, players, timelines) => {
     const killAbility = Kill;
-    const lastTimeline = timelines[timelines.length - 1];
-    const previewKillOperation = lastTimeline.operations.find((op) => op.abilityKey === Kill.key);
+    const lastTimeline = timelines.find((timeline) => timeline.time === operation.time && timeline.turn === operation.turn);
+    const previewKillOperation = lastTimeline?.operations.find((op) => op.abilityKey === Kill.key);
     if (!previewKillOperation) {
       return;
     }
@@ -601,7 +602,7 @@ var Scapegoat = {
       ...previewKillOperation,
       payload: {
         target: operation.payload?.target,
-        ignoreScapegoat: true
+        ignoreScapegoat: operation.payload?.target === operation.effector
       }
     };
     killAbility.effect?.(killOperation, players, timelines);
@@ -719,12 +720,12 @@ var Transform = {
   key: "Transform",
   validate: (context) => {
     const demonDead = isDeadPlayer(context.player);
-    const lastTimeline = context.timelines[context.timelines.length - 1];
-    const killOp = lastTimeline.operations.find((op) => op.abilityKey === "Kill");
+    const lastTimeline = context.timelines.find((timeline) => timeline.time === context.time && timeline.turn === context.turn);
+    const killOp = lastTimeline?.operations.find((op) => op.abilityKey === "Kill");
     if (!demonDead || !killOp || killOp.payload?.target !== context.player.position || !killOp.payload?.result) {
       return false;
     }
-    const transformOp = lastTimeline.operations.find((op) => op.abilityKey === "BecomeDemon");
+    const transformOp = lastTimeline?.operations.find((op) => op.abilityKey === "BecomeDemon");
     if (transformOp) {
       return false;
     }

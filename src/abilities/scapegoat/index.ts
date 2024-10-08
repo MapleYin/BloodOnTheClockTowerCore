@@ -7,8 +7,8 @@ export const Scapegoat: BCT.TAbility = {
         if (isDeadPlayer(context.player) || !hasRealAbility(context.player)) {
             return false
         }
-        const lastTimeline = context.timelines[context.timelines.length - 1]
-        const killOperation = lastTimeline.operations.find(op => op.abilityKey === Kill.key)
+        const lastTimeline = context.timelines.find(timeline => timeline.time === context.time && timeline.turn === context.turn)
+        const killOperation = lastTimeline?.operations.find(op => op.abilityKey === Kill.key)
         if (!killOperation || killOperation.payload?.target !== context.player.position) {
             return false
         }
@@ -16,8 +16,8 @@ export const Scapegoat: BCT.TAbility = {
     },
     effect: (operation, players, timelines) => {
         const killAbility = Kill
-        const lastTimeline = timelines[timelines.length - 1]
-        const previewKillOperation = lastTimeline.operations.find(op => op.abilityKey === Kill.key)
+        const lastTimeline = timelines.find(timeline => timeline.time === operation.time && timeline.turn === operation.turn)
+        const previewKillOperation = lastTimeline?.operations.find(op => op.abilityKey === Kill.key)
         if (!previewKillOperation) {
             return
         }
@@ -25,7 +25,7 @@ export const Scapegoat: BCT.TAbility = {
             ...previewKillOperation,
             payload: {
                 target: operation.payload?.target,
-                ignoreScapegoat: true
+                ignoreScapegoat: operation.payload?.target === operation.effector
             }
         }
         killAbility.effect?.(killOperation, players, timelines)

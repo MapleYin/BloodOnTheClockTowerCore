@@ -12,10 +12,10 @@ export const BecomeDemon: BCT.TAbility = {
         }
     },
     autoPayload: (context) => {
-        const lastTimeline = context.timelines[context.timelines.length - 1]
-        const aliveDemons = lastTimeline.initPlayers.filter(p => !isDeadPlayer(p) && p.character?.kind == "Demons")
+        const lastTimeline = context.timelines.find(timeline => timeline.time === context.time && timeline.turn === context.turn)
+        const aliveDemons = lastTimeline?.initPlayers.filter(p => !isDeadPlayer(p) && p.character?.kind == "Demons")
         const deadDemons = context.players.filter(p => isDeadPlayer(p) && p.character?.kind == "Demons")
-        const target = deadDemons.find(deadDemon => aliveDemons.findIndex(aliveDemon => aliveDemon.position) != -1)
+        const target = deadDemons.find(deadDemon => aliveDemons?.findIndex(aliveDemon => aliveDemon.position) != -1)
         return {
             character: target?.character
         }
