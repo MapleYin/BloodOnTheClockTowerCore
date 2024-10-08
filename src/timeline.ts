@@ -161,8 +161,8 @@ const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOper
                         hasEffect: !!ability.effect,
                     }
                     const order = orderedAbilities.map(a => a.key)
-                    const idx = timeline.operations.findIndex(operation => {
-                        order.indexOf(operation.abilityKey) > order.indexOf(operation.abilityKey)
+                    const idx = timeline.operations.findIndex(op => {
+                        order.indexOf(op.abilityKey) > order.indexOf(operation.abilityKey)
                     })
                     if (idx === -1) {
                         timeline.operations.push(operation)

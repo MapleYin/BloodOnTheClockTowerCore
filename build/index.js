@@ -917,8 +917,8 @@ var setupOperations = (timeline, effectingOperations, players, orderedAbilities,
             hasEffect: !!ability.effect
           };
           const order = orderedAbilities.map((a) => a.key);
-          const idx = timeline.operations.findIndex((operation2) => {
-            order.indexOf(operation2.abilityKey) > order.indexOf(operation2.abilityKey);
+          const idx = timeline.operations.findIndex((op) => {
+            order.indexOf(op.abilityKey) > order.indexOf(operation.abilityKey);
           });
           if (idx === -1) {
             timeline.operations.push(operation);
