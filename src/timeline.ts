@@ -160,7 +160,15 @@ const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOper
                         time: timeline.time,
                         hasEffect: !!ability.effect,
                     }
-                    timeline.operations.push(operation)
+                    const order = orderedAbilities.map(a => a.key)
+                    const idx = timeline.operations.findIndex(operation => {
+                        order.indexOf(operation.abilityKey) > order.indexOf(operation.abilityKey)
+                    })
+                    if (idx === -1) {
+                        timeline.operations.push(operation)
+                    } else {
+                        timeline.operations.splice(idx, 0, operation)
+                    }
                 } else {
                     operation = timeline.operations[operationIdx]
                 }
@@ -292,5 +300,5 @@ const setupOperationOnGameStart = (players: BCT.TPlayer[], effectingOperations: 
             },
         })
     }
-    
+
 }
