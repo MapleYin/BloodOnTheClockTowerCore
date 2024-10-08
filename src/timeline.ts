@@ -128,7 +128,7 @@ const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOper
     effectingOperations.forEach(opertion => {
         effectManagedOperation(opertion, waitOperationPlayers, timelines)
     })
-    orderedAbilities.forEach(ability => {
+    orderedAbilities.forEach((ability, idx) => {
         const effectors = waitOperationPlayers.filter(player => player.character.abilities.includes(ability.key))
         effectors.forEach(effector => {
             const clearStatusPlayers = copyPlayers(waitOperationPlayers)
@@ -161,13 +161,13 @@ const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOper
                         hasEffect: !!ability.effect,
                     }
                     const order = orderedAbilities.map(a => a.key)
-                    const idx = timeline.operations.findIndex(op => {
-                        order.indexOf(op.abilityKey) > order.indexOf(operation.abilityKey)
+                    const targetIndex = timeline.operations.findIndex(op => {
+                        return order.indexOf(op.abilityKey) > idx
                     })
-                    if (idx === -1) {
+                    if (targetIndex === -1) {
                         timeline.operations.push(operation)
                     } else {
-                        timeline.operations.splice(idx, 0, operation)
+                        timeline.operations.splice(targetIndex, 0, operation)
                     }
                 } else {
                     operation = timeline.operations[operationIdx]

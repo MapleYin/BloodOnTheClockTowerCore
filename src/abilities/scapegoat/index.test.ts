@@ -6,7 +6,7 @@ import { isDeadPlayer } from '../../common';
 describe("Scapegoat", () => {
 
     it("need show when become demon kill target", () => {
-        const game = CreateGame(["Washerwoman", "Librarian", "Mayor", "Chef", "Monk", "Spy", "Imp", "Poisoner"]);
+        const game = CreateGame(["Washerwoman", "Librarian", "Mayor", "Chef", "Monk", "Spy", "Imp", "Poisoner", "Fortuneteller"]);
 
         game.nextTimeline();
         game.nextTimeline();
@@ -18,12 +18,14 @@ describe("Scapegoat", () => {
         const scapegoatIndex = secondNightTimeline.operations.findIndex(op => op.abilityKey === "Scapegoat")
         game.updatePayload(2, scapegoatIndex, { target: 1 })
 
+        expect(scapegoatIndex).toBe(killIndex + 1);
+
         const timelines = game.timelinesWithPlayerStatus()
         const lastTimeline = timelines[timelines.length - 1];
 
         expect(isDeadPlayer(lastTimeline.effectedPlayers[2])).toBeFalsy()
         expect(scapegoatIndex).not.toBe(-1);
-        expect(isDeadPlayer(lastTimeline.effectedPlayers[1])).toBeTruthy()        
+        expect(isDeadPlayer(lastTimeline.effectedPlayers[1])).toBeTruthy()
     });
 
     it("do not show when been poisoned or been drunk", () => {
@@ -44,7 +46,7 @@ describe("Scapegoat", () => {
         const timelines = game.timelinesWithPlayerStatus()
         const lastTimeline = timelines[timelines.length - 1];
 
-        expect(isDeadPlayer(lastTimeline.effectedPlayers[2])).toBeTruthy()  
+        expect(isDeadPlayer(lastTimeline.effectedPlayers[2])).toBeTruthy()
     });
 
 });
