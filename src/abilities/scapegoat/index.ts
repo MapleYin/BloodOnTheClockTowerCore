@@ -24,7 +24,8 @@ export const Scapegoat: BCT.TAbility = {
         const killOperation: BCT.TOperation = {
             ...previewKillOperation,
             payload: {
-                target: operation.payload?.target
+                target: operation.payload?.target,
+                ignoreScapegoat: true
             }
         }
         killAbility.effect?.(killOperation, players, timelines)

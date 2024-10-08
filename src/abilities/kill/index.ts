@@ -15,7 +15,7 @@ export const Kill: BCT.TAbility = {
 
         if (
             (player.character.abilities.includes(Defense.key) ||
-                player.character.abilities.includes(Scapegoat.key))
+                (player.character.abilities.includes(Scapegoat.key) && !operation.payload?.ignoreScapegoat))
             && hasRealAbility(player)
         ) {
             return

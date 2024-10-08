@@ -602,7 +602,8 @@ var Scapegoat = {
     const killOperation = {
       ...previewKillOperation,
       payload: {
-        target: operation.payload?.target
+        target: operation.payload?.target,
+        ignoreScapegoat: true
       }
     };
     killAbility.effect?.(killOperation, players, timelines);
@@ -619,7 +620,7 @@ var Kill = {
     if (!hasRealAbility(effectorPlayer) || !player || player.isGuarded) {
       return;
     }
-    if ((player.character.abilities.includes(Defense.key) || player.character.abilities.includes(Scapegoat.key)) && hasRealAbility(player)) {
+    if ((player.character.abilities.includes(Defense.key) || player.character.abilities.includes(Scapegoat.key) && !operation.payload?.ignoreScapegoat) && hasRealAbility(player)) {
       return;
     }
     player.isKilled = true;
