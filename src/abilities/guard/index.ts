@@ -8,7 +8,7 @@ export const Guard: BCT.TAbility = {
         context.turn != 1,
     effect: (operation, players) => {
         const effectorPlayer = players[operation.effector]
-        const player = players.find((_, idx) => idx === operation.payload?.target)
+        const player = players[operation.payload?.target]
         if (hasRealAbility(effectorPlayer) && player) {
             player.isGuarded = true
         }

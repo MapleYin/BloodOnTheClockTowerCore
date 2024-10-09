@@ -571,7 +571,7 @@ var Guard = {
   validate: (context) => AliveAtNight(context) && context.turn != 1,
   effect: (operation, players) => {
     const effectorPlayer = players[operation.effector];
-    const player = players.find((_, idx) => idx === operation.payload?.target);
+    const player = players[operation.payload?.target];
     if (hasRealAbility(effectorPlayer) && player) {
       player.isGuarded = true;
     }
@@ -588,7 +588,7 @@ var Scapegoat = {
     }
     const lastTimeline = context.timelines.find((timeline) => timeline.time === context.time && timeline.turn === context.turn);
     const killOperation = lastTimeline?.operations.find((op) => op.abilityKey === Kill.key);
-    if (!killOperation || killOperation.payload?.target !== context.player.position) {
+    if (!killOperation || killOperation.payload?.target !== context.player.position || context.player.isGuarded) {
       return false;
     }
     return true;

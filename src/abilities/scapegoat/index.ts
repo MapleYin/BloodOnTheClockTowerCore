@@ -9,7 +9,7 @@ export const Scapegoat: BCT.TAbility = {
         }
         const lastTimeline = context.timelines.find(timeline => timeline.time === context.time && timeline.turn === context.turn)
         const killOperation = lastTimeline?.operations.find(op => op.abilityKey === Kill.key)
-        if (!killOperation || killOperation.payload?.target !== context.player.position) {
+        if (!killOperation || killOperation.payload?.target !== context.player.position || context.player.isGuarded) {
             return false
         }
         return true
