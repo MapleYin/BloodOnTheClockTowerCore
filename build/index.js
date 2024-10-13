@@ -615,10 +615,18 @@ var Scapegoat = {
 var Kill = {
   key: "Kill",
   validate: (context) => AliveAtNight(context) && context.turn != 1,
-  effect: (operation, players) => {
+  effect: (operation, players, timelines) => {
     const effectorPlayer = players[operation.effector];
     const player = players[operation.payload?.target];
-    if (!hasRealAbility(effectorPlayer) || !player || player.isGuarded) {
+    if (!hasRealAbility(effectorPlayer) || !player) {
+      return;
+    }
+    const currentTimeline = timelines.find((timeline) => timeline.turn == operation.turn && timeline.time == operation.time);
+    if (!currentTimeline) {
+      return;
+    }
+    const guard = currentTimeline.operations.find((operation2) => operation2.abilityKey === Guard.key);
+    if (guard && hasRealAbility(players[guard.effector]) && guard.payload?.target === operation.payload?.target) {
       return;
     }
     if ((player.character.abilities.includes(Defense.key) || player.character.abilities.includes(Scapegoat.key) && !operation.payload?.ignoreScapegoat) && hasRealAbility(player)) {
