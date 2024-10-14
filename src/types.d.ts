@@ -32,6 +32,8 @@ declare global {
             effectKind?: "buff"
             /// 持续时间
             effectDuration?: "ntd"
+            /// 生效
+            effecting?: (operation: TOperation, players: TPlayer[], timelines: TTimeline[]) => boolean
         }
 
         type TCharacter = {

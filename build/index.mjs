@@ -613,24 +613,31 @@ var Scapegoat = {
 var Kill = {
   key: "Kill",
   validate: (context) => AliveAtNight(context) && context.turn != 1,
-  effect: (operation, players, timelines) => {
-    const effectorPlayer = players[operation.effector];
+  effect: (operation, players) => {
     const player = players[operation.payload?.target];
-    if (!hasRealAbility(effectorPlayer) || !player) {
-      return;
-    }
-    const currentTimeline = timelines.find((timeline) => timeline.turn == operation.turn && timeline.time == operation.time);
-    if (!currentTimeline) {
-      return;
-    }
-    const guard = currentTimeline.operations.find((operation2) => operation2.abilityKey === Guard.key);
-    if (guard && hasRealAbility(players[guard.effector]) && guard.payload?.target === operation.payload?.target) {
-      return;
-    }
-    if ((player.character.abilities.includes(Defense.key) || player.character.abilities.includes(Scapegoat.key) && !operation.payload?.ignoreScapegoat) && hasRealAbility(player)) {
+    if (!player) {
       return;
     }
     player.isKilled = true;
+  },
+  effecting(operation, players, timelines) {
+    const effectorPlayer = players[operation.effector];
+    const player = players[operation.payload?.target];
+    if (!hasRealAbility(effectorPlayer) || !player) {
+      return false;
+    }
+    const currentTimeline = timelines.find((timeline) => timeline.turn == operation.turn && timeline.time == operation.time);
+    if (!currentTimeline) {
+      return false;
+    }
+    const guard = currentTimeline.operations.find((operation2) => operation2.abilityKey === Guard.key);
+    if (guard && hasRealAbility(players[guard.effector]) && guard.payload?.target === operation.payload?.target) {
+      return false;
+    }
+    if ((player.character.abilities.includes(Defense.key) || player.character.abilities.includes(Scapegoat.key) && !operation.payload?.ignoreScapegoat) && hasRealAbility(player)) {
+      return false;
+    }
+    return true;
   }
 };
 
@@ -843,8 +850,11 @@ var timelinesWithPlayerStatus = (timelines, players, options) => {
       }
       const initPlayers2 = copyPlayers(clearStatusPlayers);
       if (operation.hasEffect) {
-        effectingOperations.push(operation);
-        effectManagedOperation(operation, clearStatusPlayers, timelines);
+        const ability = getAbility(operation.abilityKey);
+        if (ability && (!ability.effecting || ability.effecting(operation, clearStatusPlayers, timelines))) {
+          effectingOperations.push(operation);
+          effectManagedOperation(operation, clearStatusPlayers, timelines);
+        }
         effectingOperations = effectingOperations.filter((operation2) => clearInvalidEffectingOperations(operation2, clearStatusPlayers, timeline));
         clearStatusPlayers = copyPlayers(waitOperationPlayers);
         effectingOperations.forEach((opertion) => {
@@ -937,9 +947,11 @@ var setupOperations = (timeline, effectingOperations, players, orderedAbilities,
           operation = timeline.operations[operationIdx];
         }
         if (operation.hasEffect) {
-          effectingOperations.push(operation);
           if (ability.autoPayload) {
             operation.payload = ability.autoPayload(context);
+          }
+          if (!ability.effecting || ability.effecting?.(operation, players, timelines)) {
+            effectingOperations.push(operation);
           }
         }
       } else {

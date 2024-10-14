@@ -90,4 +90,29 @@ describe("Scapegoat", () => {
         expect(isDeadPlayer(lastTimeline.effectedPlayers[2])).toBeTruthy()
     });
 
+
+    it("die when mayor been poisoned", () => {
+        const game = CreateGame(["Washerwoman", "Librarian", "Mayor", "Chef", "Monk", "Spy", "Imp", "Poisoner"]);
+
+        game.nextTimeline();
+        game.nextTimeline();
+        const secondNightTimeline = game.nextTimeline();
+
+        const poisonIndex = secondNightTimeline.operations.findIndex(op => op.abilityKey === "Poison")
+        game.updatePayload(2, poisonIndex, { target: 2 })
+        const killIndex = secondNightTimeline.operations.findIndex(op => op.abilityKey === "Kill")
+        game.updatePayload(2, killIndex, { target: 2 })
+
+        const scapegoatIndex = secondNightTimeline.operations.findIndex(op => op.abilityKey === "Scapegoat")
+        expect(scapegoatIndex).toBe(-1);
+
+        game.nextTimeline();
+        game.nextTimeline();
+
+        const timelines = game.timelinesWithPlayerStatus()
+        const lastTimeline = timelines[timelines.length - 1];
+
+        expect(isDeadPlayer(lastTimeline.effectedPlayers[2])).toBeTruthy()
+
+    })
 });

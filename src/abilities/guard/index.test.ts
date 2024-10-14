@@ -5,7 +5,7 @@ import { isDeadPlayer } from '../../common';
 import { Game } from '../../game';
 
 describe("Guard", () => {
-    const characters: BCT.ECharacterKey[] = ["Washerwoman", "Librarian", "Investigator", "Chef", "Monk", "Fortuneteller", "Imp", "Poisoner", "Monk"];
+    const characters: BCT.ECharacterKey[] = ["Washerwoman", "Librarian", "Investigator", "Chef", "Monk", "Fortuneteller", "Imp", "Poisoner"];
     const game = new Game(characters.map((character, idx) => ({ character: simpleCharacterForKey(character), position: idx })), abilityOrder);
 
     it("no show in first night", () => {

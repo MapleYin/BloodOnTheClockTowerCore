@@ -71,9 +71,13 @@ export const timelinesWithPlayerStatus = (timelines: BCT.TTimeline[], players: B
             }
             const initPlayers = copyPlayers(clearStatusPlayers)
             if (operation.hasEffect) {
-                effectingOperations.push(operation)
+                const ability = getAbility(operation.abilityKey)
 
-                effectManagedOperation(operation, clearStatusPlayers, timelines)
+                if (ability && (!ability.effecting || ability.effecting(operation, clearStatusPlayers, timelines))) {
+                    effectingOperations.push(operation)
+                    effectManagedOperation(operation, clearStatusPlayers, timelines)
+                }
+
                 effectingOperations = effectingOperations.filter(operation => clearInvalidEffectingOperations(operation, clearStatusPlayers, timeline))
 
                 clearStatusPlayers = copyPlayers(waitOperationPlayers)
@@ -173,9 +177,11 @@ const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOper
                     operation = timeline.operations[operationIdx]
                 }
                 if (operation.hasEffect) {
-                    effectingOperations.push(operation)
                     if (ability.autoPayload) {
                         operation.payload = ability.autoPayload(context)
+                    }
+                    if (!ability.effecting || ability.effecting?.(operation, players, timelines)) {
+                        effectingOperations.push(operation)
                     }
                 }
             } else {

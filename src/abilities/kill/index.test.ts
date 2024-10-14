@@ -43,4 +43,8 @@ describe("Kill", () => {
         expect(lastTimeline.initPlayers[2].isKilled).toBeTruthy()
         
     });
+
+
+    /// TODO
+    /// 士兵/市长 配合毒的状态
 });
