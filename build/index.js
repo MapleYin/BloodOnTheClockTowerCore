@@ -3,7 +3,7 @@
 // src/common.ts
 var isDeadPlayer = (player) => player.isKilled || player.isSlew || player.isExecuted;
 var isAlivePlayer = (player) => !isDeadPlayer(player);
-var hasRealAbility = (player) => !(player.isDrunken || player.isPoisoned);
+var hasRealAbility = (player) => !(player.isDrunk || player.isPoisoned);
 var copyPlayers = (players) => players.map((p) => ({ ...p, character: { ...p.character, abilities: [...p.character.abilities] } }));
 
 // src/abilities/becomeDemon/index.ts
