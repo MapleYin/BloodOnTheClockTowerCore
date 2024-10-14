@@ -40,7 +40,7 @@ export const Kill: BCT.TAbility = {
         ) && hasRealAbility(player)) {
             return false
         }
-        
+
         return true
     },
 }

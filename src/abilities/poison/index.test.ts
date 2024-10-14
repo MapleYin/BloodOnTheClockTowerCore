@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { abilityOrder, simpleCharacterForKey } from '../../__test__';
+import { abilityOrder, CreateGame, simpleCharacterForKey } from '../../__test__';
 import { Game } from '../../game';
 
 describe("Poison", () => {
@@ -49,4 +49,5 @@ describe("Poison", () => {
         const lastTimeline = timelines[timelines.length - 1]
         expect(lastTimeline.initPlayers[2].isPoisoned).toBeFalsy()
     });
+
 });

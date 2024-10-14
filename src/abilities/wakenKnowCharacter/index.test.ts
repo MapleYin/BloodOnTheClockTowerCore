@@ -1,11 +1,11 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { abilityOrder, simpleCharacterForKey } from '../../__test__';
+import { abilityOrder, CreateGame, simpleCharacterForKey } from '../../__test__';
+import { isDeadPlayer } from '../../common';
 import { Game } from '../../game';
 
 describe("WakenKnowCharacter", () => {
-    const characters: BCT.ECharacterKey[] = ["Washerwoman", "Librarian", "Empath", "Chef", "Monk", "Fortuneteller", "Imp", "Ravenkeeper"];
-    const game = new Game(characters.map((character, idx) => ({ character: simpleCharacterForKey(character), position: idx })), abilityOrder);
+    const game = CreateGame(["Washerwoman", "Librarian", "Empath", "Chef", "Monk", "Fortuneteller", "Imp", "Ravenkeeper"])
 
     it("not show in night", () => {
         const firstTimeline = game.nextTimeline();
@@ -35,4 +35,40 @@ describe("WakenKnowCharacter", () => {
 
         expect(thirdNightTimeline.operations.map(o => o.abilityKey).includes("WakenKnowCharacter")).toBeFalsy();
     });
+
+    it("wakenKnowCharacter should be show in second night", () => {
+        const game = CreateGame(["Washerwoman", "Librarian", "Undertaker", "Chef", "Monk", "Fortuneteller", "Imp", "Poisoner", "Butler", "Ravenkeeper"])
+        game.nextTimeline()
+        game.nextTimeline()
+        game.nextTimeline()
+        const timelineIdx = game.timelines.length - 1
+        const lastTimeline = game.timelines[timelineIdx]
+        const poisonIdx = lastTimeline.operations.findIndex(op => op.abilityKey === "Poison")
+
+        game.updatePayload(timelineIdx, poisonIdx, { target: 4 })
+
+        const guardIdx = lastTimeline.operations.findIndex(op => op.abilityKey === "Guard")
+
+        game.updatePayload(timelineIdx, guardIdx, { target: 9 })
+
+        const killIdx = lastTimeline.operations.findIndex(op => op.abilityKey === "Kill")
+
+        game.updatePayload(timelineIdx, killIdx, { target: 9 })
+
+        const timelines = game.timelinesWithPlayerStatus()
+
+        const lastStatusTimeline = timelines[timelineIdx]
+
+        const wakenIdx = lastStatusTimeline.operations.findIndex(op => op.abilityKey === "WakenKnowCharacter")
+
+        
+
+        expect(lastStatusTimeline.effectedPlayers[4].isPoisoned).toBeTruthy()
+
+        expect(lastStatusTimeline.effectedPlayers[9].isGuarded).toBeFalsy()
+        
+        expect(isDeadPlayer(lastStatusTimeline.effectedPlayers[9])).toBeTruthy()
+
+        expect(wakenIdx).not.toEqual(-1)
+    })
 });

@@ -570,11 +570,15 @@ var Guard = {
   key: "Guard",
   validate: (context) => AliveAtNight(context) && context.turn != 1,
   effect: (operation, players) => {
-    const effectorPlayer = players[operation.effector];
     const player = players[operation.payload?.target];
-    if (hasRealAbility(effectorPlayer) && player) {
-      player.isGuarded = true;
+    if (!player) {
+      return;
     }
+    player.isGuarded = true;
+  },
+  effecting(operation, players, timelines) {
+    const effectorPlayer = players[operation.effector];
+    return hasRealAbility(effectorPlayer);
   },
   effectDuration: "ntd"
 };
@@ -952,7 +956,7 @@ var setupOperations = (timeline, effectingOperations, players, orderedAbilities,
           if (ability.autoPayload) {
             operation.payload = ability.autoPayload(context);
           }
-          if (!ability.effecting || ability.effecting?.(operation, players, timelines)) {
+          if (!ability.effecting || ability.effecting?.(operation, clearStatusPlayers, timelines)) {
             effectingOperations.push(operation);
           }
         }

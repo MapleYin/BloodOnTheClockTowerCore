@@ -180,7 +180,7 @@ const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOper
                     if (ability.autoPayload) {
                         operation.payload = ability.autoPayload(context)
                     }
-                    if (!ability.effecting || ability.effecting?.(operation, players, timelines)) {
+                    if (!ability.effecting || ability.effecting?.(operation, clearStatusPlayers, timelines)) {
                         effectingOperations.push(operation)
                     }
                 }

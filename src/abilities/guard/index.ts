@@ -7,11 +7,15 @@ export const Guard: BCT.TAbility = {
         AliveAtNight(context) &&
         context.turn != 1,
     effect: (operation, players) => {
-        const effectorPlayer = players[operation.effector]
         const player = players[operation.payload?.target]
-        if (hasRealAbility(effectorPlayer) && player) {
-            player.isGuarded = true
+        if (!player) {
+            return
         }
+        player.isGuarded = true
+    },
+    effecting(operation, players, timelines) {
+        const effectorPlayer = players[operation.effector]
+        return hasRealAbility(effectorPlayer)
     },
     effectDuration: "ntd"
 }
