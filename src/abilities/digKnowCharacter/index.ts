@@ -1,3 +1,4 @@
+import { Excute } from '../excute';
 import { ExcuteByRack } from '../excuteByRack';
 import { AliveAtNight } from '../helper';
 
@@ -11,6 +12,6 @@ export const DigKnowCharacter: BCT.TAbility = {
             return false
         }
         
-        return AliveAtNight(context) && lastTimeline.operations.some(op => op.abilityKey === ExcuteByRack.key)
+        return AliveAtNight(context) && lastTimeline.operations.some(op => op.abilityKey === ExcuteByRack.key || op.abilityKey === Excute.key)
     }
 }

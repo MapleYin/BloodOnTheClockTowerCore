@@ -58,6 +58,18 @@ var Defense = {
   validate: () => true
 };
 
+// src/abilities/excute/index.ts
+var Excute = {
+  key: "Excute",
+  validate: () => true,
+  effect: (operation, players) => {
+    const player = players[operation.payload?.target];
+    if (player) {
+      player.isExecuted = true;
+    }
+  }
+};
+
 // src/abilities/excuteByRack/index.ts
 var ExcuteByRack = {
   key: "ExcuteByRack",
@@ -79,7 +91,7 @@ var DigKnowCharacter = {
     if (!lastTimeline) {
       return false;
     }
-    return AliveAtNight(context) && lastTimeline.operations.some((op) => op.abilityKey === ExcuteByRack.key);
+    return AliveAtNight(context) && lastTimeline.operations.some((op) => op.abilityKey === ExcuteByRack.key || op.abilityKey === Excute.key);
   }
 };
 
@@ -549,18 +561,6 @@ var Enemy = {
     const player = players[operation.payload?.target];
     if (player) {
       player.isEnemy = true;
-    }
-  }
-};
-
-// src/abilities/excute/index.ts
-var Excute = {
-  key: "Excute",
-  validate: () => true,
-  effect: (operation, players) => {
-    const player = players[operation.payload?.target];
-    if (player) {
-      player.isExecuted = true;
     }
   }
 };
