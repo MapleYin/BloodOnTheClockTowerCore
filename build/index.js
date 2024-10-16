@@ -903,63 +903,63 @@ var setupTimelines = (timelines, players, abilityOrder, options) => {
 var setupOperations = (timeline, effectingOperations, players, orderedAbilities, timelines, options) => {
   const manualOperations = timeline.operations.filter((operation) => operation.manual);
   effectingOperations = effectingOperations.concat(manualOperations);
-  const waitOperationPlayers = copyPlayers(players);
-  effectingOperations.forEach((opertion) => {
-    effectManagedOperation(opertion, waitOperationPlayers, timelines);
-  });
   orderedAbilities.forEach((ability, idx) => {
-    const clearStatusPlayers = copyPlayers(waitOperationPlayers);
+    const clearStatusPlayers = copyPlayers(players);
     effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
     effectingOperations.forEach((opertion) => {
       effectManagedOperation(opertion, clearStatusPlayers, timelines);
     });
     const effectors = clearStatusPlayers.filter((player) => player.character.abilities.includes(ability.key));
-    effectors.forEach((effector) => {
-      const player = clearStatusPlayers.find((p) => p.position === effector.position);
-      const effectingTimelinesIdx = timelines.findIndex((t) => t.time === timeline.time && t.turn === timeline.turn);
-      const effectingTimelines = timelines.slice(0, effectingTimelinesIdx + 1);
-      const context = {
-        player,
-        players: clearStatusPlayers,
-        turn: timeline.turn,
-        time: timeline.time,
-        timelines: timelinesWithPlayerStatus(effectingTimelines, players, options)
-      };
-      if (ability.validate(context)) {
-        const operationIdx = timeline.operations.findIndex((operation2) => operation2.abilityKey === ability.key && operation2.effector === effector.position);
-        let operation;
-        if (operationIdx === -1) {
-          operation = {
-            abilityKey: ability.key,
-            effector: effector.position,
-            turn: timeline.turn,
-            time: timeline.time,
-            hasEffect: !!ability.effect
-          };
-          const order = orderedAbilities.map((a) => a.key);
-          const targetIndex = timeline.operations.findIndex((op) => {
-            return order.indexOf(op.abilityKey) > idx;
-          });
-          if (targetIndex === -1) {
-            timeline.operations.push(operation);
+    if (effectors.length) {
+      effectors.forEach((effector) => {
+        const player = clearStatusPlayers.find((p) => p.position === effector.position);
+        const effectingTimelinesIdx = timelines.findIndex((t) => t.time === timeline.time && t.turn === timeline.turn);
+        const effectingTimelines = timelines.slice(0, effectingTimelinesIdx + 1);
+        const context = {
+          player,
+          players: clearStatusPlayers,
+          turn: timeline.turn,
+          time: timeline.time,
+          timelines: timelinesWithPlayerStatus(effectingTimelines, players, options)
+        };
+        if (ability.validate(context)) {
+          const operationIdx = timeline.operations.findIndex((operation2) => operation2.abilityKey === ability.key && operation2.effector === effector.position);
+          let operation;
+          if (operationIdx === -1) {
+            operation = {
+              abilityKey: ability.key,
+              effector: effector.position,
+              turn: timeline.turn,
+              time: timeline.time,
+              hasEffect: !!ability.effect
+            };
+            const order = orderedAbilities.map((a) => a.key);
+            const targetIndex = timeline.operations.findIndex((op) => {
+              return order.indexOf(op.abilityKey) > idx;
+            });
+            if (targetIndex === -1) {
+              timeline.operations.push(operation);
+            } else {
+              timeline.operations.splice(targetIndex, 0, operation);
+            }
           } else {
-            timeline.operations.splice(targetIndex, 0, operation);
+            operation = timeline.operations[operationIdx];
+          }
+          if (operation.hasEffect) {
+            if (ability.autoPayload) {
+              operation.payload = ability.autoPayload(context);
+            }
+            if (!ability.effecting || ability.effecting?.(operation, clearStatusPlayers, timelines)) {
+              effectingOperations.push(operation);
+            }
           }
         } else {
-          operation = timeline.operations[operationIdx];
+          timeline.operations = timeline.operations.filter((operation) => operation.abilityKey !== ability.key || operation.effector !== effector.position);
         }
-        if (operation.hasEffect) {
-          if (ability.autoPayload) {
-            operation.payload = ability.autoPayload(context);
-          }
-          if (!ability.effecting || ability.effecting?.(operation, clearStatusPlayers, timelines)) {
-            effectingOperations.push(operation);
-          }
-        }
-      } else {
-        timeline.operations = timeline.operations.filter((operation) => operation.abilityKey !== ability.key || operation.effector !== effector.position);
-      }
-    });
+      });
+    } else {
+      timeline.operations = timeline.operations.filter((operation) => operation.abilityKey !== ability.key);
+    }
   });
   return effectingOperations;
 };
