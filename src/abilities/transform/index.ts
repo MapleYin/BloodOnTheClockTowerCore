@@ -8,7 +8,7 @@ export const Transform: BCT.TAbility = {
         const demonDead = isDeadPlayer(context.player)
         const lastTimeline = context.timelines.find(timeline => timeline.time === context.time && timeline.turn === context.turn)
         const killOp = lastTimeline?.operations.find(op => op.abilityKey === "Kill")
-        if (!demonDead || !killOp || killOp.payload?.target !== context.player.position) {
+        if (!demonDead || !killOp || killOp.effector != context.player.position || killOp.payload?.target !== context.player.position) {
             return false
         }
         const transformOp = lastTimeline?.operations.find(op => op.abilityKey === "BecomeDemon")
