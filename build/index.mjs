@@ -906,13 +906,13 @@ var setupOperations = (timeline, effectingOperations, players, orderedAbilities,
     effectManagedOperation(opertion, waitOperationPlayers, timelines);
   });
   orderedAbilities.forEach((ability, idx) => {
-    const effectors = waitOperationPlayers.filter((player) => player.character.abilities.includes(ability.key));
+    const clearStatusPlayers = copyPlayers(waitOperationPlayers);
+    effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
+    effectingOperations.forEach((opertion) => {
+      effectManagedOperation(opertion, clearStatusPlayers, timelines);
+    });
+    const effectors = clearStatusPlayers.filter((player) => player.character.abilities.includes(ability.key));
     effectors.forEach((effector) => {
-      const clearStatusPlayers = copyPlayers(waitOperationPlayers);
-      effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
-      effectingOperations.forEach((opertion) => {
-        effectManagedOperation(opertion, clearStatusPlayers, timelines);
-      });
       const player = clearStatusPlayers.find((p) => p.position === effector.position);
       const effectingTimelinesIdx = timelines.findIndex((t) => t.time === timeline.time && t.turn === timeline.turn);
       const effectingTimelines = timelines.slice(0, effectingTimelinesIdx + 1);
