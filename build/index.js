@@ -989,6 +989,7 @@ var updateNomination = (timelines, players, options) => {
   if (!timeline || timeline.time !== "day") {
     return;
   }
+  timeline.operations = timeline.operations.filter((op) => op.abilityKey != ExcuteByRack.key);
   const excuteOperation = timeline.operations.find((op) => op.abilityKey === Excute.key);
   if (excuteOperation) {
     return;

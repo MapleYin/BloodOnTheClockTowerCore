@@ -229,6 +229,7 @@ const updateNomination = (timelines: BCT.TTimeline[], players: BCT.TPlayer[], op
     if (!timeline || timeline.time !== "day") {
         return
     }
+    timeline.operations = timeline.operations.filter(op => op.abilityKey != ExcuteByRack.key)
     const excuteOperation = timeline.operations.find(op => op.abilityKey === Excute.key)
     if (excuteOperation) {
         return;
@@ -263,7 +264,6 @@ const updateNomination = (timelines: BCT.TTimeline[], players: BCT.TPlayer[], op
     if (target === -1) {
         return;
     }
-
     timeline.operations.push({
         abilityKey: ExcuteByRack.key,
         effector: -1,
