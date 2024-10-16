@@ -1,3 +1,4 @@
+import { CharacterForKey } from '../../characters';
 import { isDeadPlayer } from '../../common';
 
 export const Transform: BCT.TAbility = {
@@ -7,7 +8,7 @@ export const Transform: BCT.TAbility = {
         const demonDead = isDeadPlayer(context.player)
         const lastTimeline = context.timelines.find(timeline => timeline.time === context.time && timeline.turn === context.turn)
         const killOp = lastTimeline?.operations.find(op => op.abilityKey === "Kill")
-        if (!demonDead || !killOp || killOp.payload?.target !== context.player.position || !killOp.payload?.result) {
+        if (!demonDead || !killOp || killOp.payload?.target !== context.player.position) {
             return false
         }
         const transformOp = lastTimeline?.operations.find(op => op.abilityKey === "BecomeDemon")
@@ -19,11 +20,7 @@ export const Transform: BCT.TAbility = {
     effect: (operation, players) => {
         const player = players[operation.payload?.target]
         if (player) {
-            player.character = {
-                key: "Imp",
-                kind: "Demons",
-                abilities: ["Kill", "KnowAbsent", "Transform"]
-            }
+            player.character = CharacterForKey("Imp")
         }
     }
 }

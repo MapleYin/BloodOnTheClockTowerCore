@@ -75,7 +75,7 @@ describe("Transform", () => {
 
             expect(becomeDemonOpIndex).not.toBe(-1);
 
-            expect(secondNightTimeline.operations[becomeDemonOpIndex].payload?.character.key).toBe("Imp");
+            expect(secondNightTimeline.operations[becomeDemonOpIndex].payload?.character[0]).toBe("Imp");
 
             const transformOpIndex = secondNightTimeline.operations.findIndex(op => op.abilityKey === "Transform")
 

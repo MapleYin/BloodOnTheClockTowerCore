@@ -743,7 +743,7 @@ var Transform = {
     const demonDead = isDeadPlayer(context.player);
     const lastTimeline = context.timelines.find((timeline) => timeline.time === context.time && timeline.turn === context.turn);
     const killOp = lastTimeline?.operations.find((op) => op.abilityKey === "Kill");
-    if (!demonDead || !killOp || killOp.payload?.target !== context.player.position || !killOp.payload?.result) {
+    if (!demonDead || !killOp || killOp.payload?.target !== context.player.position) {
       return false;
     }
     const transformOp = lastTimeline?.operations.find((op) => op.abilityKey === "BecomeDemon");
@@ -755,11 +755,7 @@ var Transform = {
   effect: (operation, players) => {
     const player = players[operation.payload?.target];
     if (player) {
-      player.character = {
-        key: "Imp",
-        kind: "Demons",
-        abilities: ["Kill", "KnowAbsent", "Transform"]
-      };
+      player.character = CharacterForKey("Imp");
     }
   }
 };
