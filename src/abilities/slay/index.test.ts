@@ -60,7 +60,7 @@ describe("Slay", () => {
     });
 
     it("effector is slayer slay target is demon effect only once", () => {
-        const characters: BCT.ECharacterKey[] = ["Washerwoman", "Librarian", "Slayer", "Chef", "Monk", "Spy", "Imp", "Poisoner"];
+        const characters: BCT.ECharacterKey[] = ["Washerwoman", "Librarian", "Slayer", "Chef", "Monk", "Spy", "Imp", "Poisoner", "Scarletwoman"];
         const game = new Game(characters.map((character, idx) => ({ character: simpleCharacterForKey(character), position: idx })), abilityOrder);
 
         game.nextTimeline();
@@ -74,5 +74,6 @@ describe("Slay", () => {
 
         expect(lastTimeline?.effectedPlayers[5].isSlew).toBeFalsy();
         expect(lastTimeline?.effectedPlayers[6].isSlew).toBeFalsy();
+        expect(lastTimeline?.effectedPlayers[8].character.key).not.toEqual("Imp");
     });
 });

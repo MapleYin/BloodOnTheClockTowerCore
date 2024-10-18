@@ -446,9 +446,10 @@ var copyPlayers = (players) => players.map((p) => ({ ...p, character: { ...p.cha
 // src/abilities/becomeDemon/index.ts
 var BecomeDemon = {
   key: "BecomeDemon",
-  validate: (context) => isAlivePlayer(context.player) && context.players.filter(isAlivePlayer).length >= 4 && /// 人数大于4人
-  context.players.findIndex((p) => isAlivePlayer(p) && p.character.kind == "Demons") == -1,
-  /// 没有存活的恶魔
+  validate: (context) => {
+    return isAlivePlayer(context.player) && context.players.filter(isAlivePlayer).length >= 4 && /// 人数大于4人
+    context.players.findIndex((p) => isAlivePlayer(p) && p.character.kind == "Demons") == -1;
+  },
   effect: (operation, players) => {
     if (operation.payload?.character?.[0]) {
       players[operation.effector].character = CharacterForKey(operation.payload?.character?.[0]);
@@ -767,7 +768,7 @@ var Transform = {
   effect: (operation, players) => {
     const player = players[operation.payload?.target];
     if (player) {
-      player.character = CharacterForKey("Imp");
+      player.character = Imp;
     }
   }
 };
@@ -914,7 +915,10 @@ var setupTimelines = (timelines, players, abilityOrder, options) => {
 };
 var setupOperations = (timeline, effectingOperations, players, orderedAbilities, timelines, options) => {
   const manualOperations = timeline.operations.filter((operation) => operation.manual);
-  effectingOperations = effectingOperations.concat(manualOperations);
+  effectingOperations = effectingOperations.concat(manualOperations.filter((op) => {
+    const ability = getAbility(op.abilityKey);
+    return ability && (!ability.effecting || ability?.effecting(op, players, timelines));
+  }));
   orderedAbilities.forEach((ability, idx) => {
     const clearStatusPlayers = copyPlayers(players);
     effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));

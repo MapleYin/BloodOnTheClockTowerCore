@@ -127,7 +127,10 @@ export const setupTimelines = (timelines: BCT.TTimeline[], players: BCT.TPlayer[
 
 const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOperation[], players: BCT.TPlayer[], orderedAbilities: BCT.TAbility[], timelines: BCT.TTimeline[], options?: { enemy?: string, drunk?: string }) => {
     const manualOperations = timeline.operations.filter(operation => operation.manual)
-    effectingOperations = effectingOperations.concat(manualOperations)
+    effectingOperations = effectingOperations.concat(manualOperations.filter(op => {
+        const ability = getAbility(op.abilityKey)
+        return ability && (!ability.effecting || ability?.effecting(op, players, timelines))
+    }))
     orderedAbilities.forEach((ability, idx) => {
         const clearStatusPlayers = copyPlayers(players)
         effectingOperations = effectingOperations.filter(opertion => clearInvalidEffectingOperations(opertion, players, timeline))

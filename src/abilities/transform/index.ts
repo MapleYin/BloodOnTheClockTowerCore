@@ -1,4 +1,4 @@
-import { CharacterForKey } from '../../characters';
+import { Imp } from '../../characters';
 import { isDeadPlayer } from '../../common';
 
 export const Transform: BCT.TAbility = {
@@ -20,7 +20,7 @@ export const Transform: BCT.TAbility = {
     effect: (operation, players) => {
         const player = players[operation.payload?.target]
         if (player) {
-            player.character = CharacterForKey("Imp")
+            player.character = Imp
         }
     }
 }

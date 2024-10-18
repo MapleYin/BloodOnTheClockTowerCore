@@ -3,10 +3,11 @@ import { isAlivePlayer, isDeadPlayer } from '../../common';
 
 export const BecomeDemon: BCT.TAbility = {
     key: "BecomeDemon",
-    validate: context =>
-        isAlivePlayer(context.player) &&
+    validate: context =>{
+        return isAlivePlayer(context.player) &&
         context.players.filter(isAlivePlayer).length >= 4 && /// 人数大于4人
-        context.players.findIndex(p => isAlivePlayer(p) && p.character.kind == "Demons") == -1, /// 没有存活的恶魔
+        context.players.findIndex(p => isAlivePlayer(p) && p.character.kind == "Demons") == -1 /// 没有存活的恶魔
+    }, 
     effect: (operation, players) => {
         if (operation.payload?.character?.[0]) {
             players[operation.effector].character = CharacterForKey(operation.payload?.character?.[0])
