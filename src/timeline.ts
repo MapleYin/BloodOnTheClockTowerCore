@@ -127,10 +127,30 @@ export const setupTimelines = (timelines: BCT.TTimeline[], players: BCT.TPlayer[
 
 const setupOperations = (timeline: BCT.TTimeline, effectingOperations: BCT.TOperation[], players: BCT.TPlayer[], orderedAbilities: BCT.TAbility[], timelines: BCT.TTimeline[], options?: { enemy?: string, drunk?: string }) => {
     const manualOperations = timeline.operations.filter(operation => operation.manual)
-    effectingOperations = effectingOperations.concat(manualOperations.filter(op => {
-        const ability = getAbility(op.abilityKey)
-        return ability && (!ability.effecting || ability?.effecting(op, players, timelines))
-    }))
+
+    manualOperations.forEach(operation => {
+        let clearStatusPlayers = copyPlayers(players)
+        effectingOperations = effectingOperations.filter(op => clearInvalidEffectingOperations(op, clearStatusPlayers, timeline))
+        effectingOperations.forEach(op => {
+            effectManagedOperation(op, clearStatusPlayers, timelines)
+        })
+        if (!operation.hasEffect) {
+            return;
+        }
+        const ability = getAbility(operation.abilityKey)
+
+        if (ability && (!ability.effecting || ability.effecting(operation, clearStatusPlayers, timelines))) {
+            effectingOperations.push(operation)
+            effectManagedOperation(operation, clearStatusPlayers, timelines)
+        }
+
+        effectingOperations = effectingOperations.filter(operation => clearInvalidEffectingOperations(operation, clearStatusPlayers, timeline))
+
+        clearStatusPlayers = copyPlayers(players)
+        effectingOperations.forEach(opertion => {
+            effectManagedOperation(opertion, clearStatusPlayers, timelines)
+        })
+    })
     orderedAbilities.forEach((ability, idx) => {
         const clearStatusPlayers = copyPlayers(players)
         effectingOperations = effectingOperations.filter(opertion => clearInvalidEffectingOperations(opertion, players, timeline))

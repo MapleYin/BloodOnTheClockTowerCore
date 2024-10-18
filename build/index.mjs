@@ -723,23 +723,30 @@ var Poison = {
 var Slay = {
   key: "Slay",
   validate: () => true,
-  effect: (operation, players, timelines) => {
+  effect: (operation, players) => {
     const player = players[operation.payload?.target];
-    const effectorPlayer = players[operation.effector];
     if (!player) {
       return;
     }
-    if (!hasRealAbility(effectorPlayer) || !effectorPlayer.character.abilities.includes("Slay") || !player || player.character.kind !== "Demons") {
-      return;
+    player.isSlew = true;
+  },
+  effecting: (operation, players, timelines) => {
+    const effectorPlayer = players[operation.effector];
+    const player = players[operation.payload?.target];
+    if (!effectorPlayer.character.abilities.includes("Slay")) {
+      return false;
+    }
+    if (!hasRealAbility(effectorPlayer) || !player || player.character.kind !== "Demons") {
+      return false;
     }
     if (timelines.findIndex((t) => {
       return t.operations.findIndex((op) => {
         return op != operation && op.abilityKey === "Slay" && op.effector === operation.effector;
       }) != -1;
     }) != -1) {
-      return;
+      return false;
     }
-    player.isSlew = true;
+    return true;
   }
 };
 
@@ -909,10 +916,26 @@ var setupTimelines = (timelines, players, abilityOrder, options) => {
 };
 var setupOperations = (timeline, effectingOperations, players, orderedAbilities, timelines, options) => {
   const manualOperations = timeline.operations.filter((operation) => operation.manual);
-  effectingOperations = effectingOperations.concat(manualOperations.filter((op) => {
-    const ability = getAbility(op.abilityKey);
-    return ability && (!ability.effecting || ability?.effecting(op, players, timelines));
-  }));
+  manualOperations.forEach((operation) => {
+    let clearStatusPlayers = copyPlayers(players);
+    effectingOperations = effectingOperations.filter((op) => clearInvalidEffectingOperations(op, clearStatusPlayers, timeline));
+    effectingOperations.forEach((op) => {
+      effectManagedOperation(op, clearStatusPlayers, timelines);
+    });
+    if (!operation.hasEffect) {
+      return;
+    }
+    const ability = getAbility(operation.abilityKey);
+    if (ability && (!ability.effecting || ability.effecting(operation, clearStatusPlayers, timelines))) {
+      effectingOperations.push(operation);
+      effectManagedOperation(operation, clearStatusPlayers, timelines);
+    }
+    effectingOperations = effectingOperations.filter((operation2) => clearInvalidEffectingOperations(operation2, clearStatusPlayers, timeline));
+    clearStatusPlayers = copyPlayers(players);
+    effectingOperations.forEach((opertion) => {
+      effectManagedOperation(opertion, clearStatusPlayers, timelines);
+    });
+  });
   orderedAbilities.forEach((ability, idx) => {
     const clearStatusPlayers = copyPlayers(players);
     effectingOperations = effectingOperations.filter((opertion) => clearInvalidEffectingOperations(opertion, players, timeline));
