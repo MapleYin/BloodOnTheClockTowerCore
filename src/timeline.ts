@@ -62,9 +62,9 @@ export const timelinesWithPlayerStatus = (timelines: BCT.TTimeline[], players: B
         let timelineInitPlayers: BCT.TPlayer[] = []
         const operations = timeline.operations.map(operation => {
             let clearStatusPlayers = copyPlayers(waitOperationPlayers)
-            effectingOperations = effectingOperations.filter(operation => clearInvalidEffectingOperations(operation, clearStatusPlayers, timeline))
-            effectingOperations.forEach(opertion => {
-                effectManagedOperation(opertion, clearStatusPlayers, timelines)
+            effectingOperations = effectingOperations.filter(op => clearInvalidEffectingOperations(op, clearStatusPlayers, timeline))
+            effectingOperations.forEach(op => {
+                effectManagedOperation(op, clearStatusPlayers, timelines)
             })
             if (timelineInitPlayers.length) {
                 timelineInitPlayers = copyPlayers(clearStatusPlayers)

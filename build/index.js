@@ -725,27 +725,23 @@ var Poison = {
 var Slay = {
   key: "Slay",
   validate: () => true,
-  effect: (operation, players) => {
+  effect: (operation, players, timelines) => {
     const player = players[operation.payload?.target];
+    const effectorPlayer = players[operation.effector];
     if (!player) {
       return;
     }
-    player.isSlew = true;
-  },
-  effecting: (operation, players, timelines) => {
-    const effectorPlayer = players[operation.effector];
-    const player = players[operation.payload?.target];
     if (!hasRealAbility(effectorPlayer) || !effectorPlayer.character.abilities.includes("Slay") || !player || player.character.kind !== "Demons") {
-      return false;
+      return;
     }
     if (timelines.findIndex((t) => {
       return t.operations.findIndex((op) => {
         return op != operation && op.abilityKey === "Slay" && op.effector === operation.effector;
       }) != -1;
     }) != -1) {
-      return false;
+      return;
     }
-    return true;
+    player.isSlew = true;
   }
 };
 
@@ -856,9 +852,9 @@ var timelinesWithPlayerStatus = (timelines, players, options) => {
     let timelineInitPlayers = [];
     const operations = timeline.operations.map((operation) => {
       let clearStatusPlayers = copyPlayers(waitOperationPlayers);
-      effectingOperations = effectingOperations.filter((operation2) => clearInvalidEffectingOperations(operation2, clearStatusPlayers, timeline));
-      effectingOperations.forEach((opertion) => {
-        effectManagedOperation(opertion, clearStatusPlayers, timelines);
+      effectingOperations = effectingOperations.filter((op) => clearInvalidEffectingOperations(op, clearStatusPlayers, timeline));
+      effectingOperations.forEach((op) => {
+        effectManagedOperation(op, clearStatusPlayers, timelines);
       });
       if (timelineInitPlayers.length) {
         timelineInitPlayers = copyPlayers(clearStatusPlayers);

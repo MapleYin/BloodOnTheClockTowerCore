@@ -73,4 +73,28 @@ describe("BecomeDemon", () => {
         })
     })
 
+    describe("Scarletwoman was dead can not become demon", () => {
+        const game = CreateGame(["Slayer", "Librarian", "Scarletwoman", "Empath", "Chef", "Monk", "Imp", "Poisoner"]);
+        it("shows in thirdTimeline", () => {
+            const firstTimeline = game.nextTimeline();
+            const poisonIdx = firstTimeline.operations.findIndex(o => o.abilityKey == "Poison")
+
+            game.updatePayload(0, poisonIdx, { target: 0 })
+
+            const secondTimeline = game.nextTimeline();
+
+            game.createOperation("Slay", 0, { target: 6 })
+
+            const timelines = game.timelinesWithPlayerStatus();
+            const lastTimeline = timelines[timelines.length - 1];
+
+            expect(lastTimeline.effectedPlayers[2].character.key).toBe("Scarletwoman");
+
+            const aliveDemons = lastTimeline.effectedPlayers.filter(p => p.character.kind === "Demons" && isAlivePlayer(p))
+            expect(aliveDemons.length).toBe(1);
+        })
+    })
+    
+    
+
 });
