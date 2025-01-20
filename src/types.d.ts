@@ -13,27 +13,15 @@ declare global {
             player: TPlayer
             /// 当前玩家状态
             players: TPlayer[]
-
-            timelines: TTimelinesWithPlayerStatus[]
         }
 
         type TAbility = {
             /// 能力名
             key: string
             /// 验证是否可以执行
-            validate: (content: TContext) => boolean
+            validate?: (content: TContext) => boolean
             /// 执行
             effect?: (operation: TOperation, players: TPlayer[], timelines: TTimeline[]) => void
-            /// 自动填充payload
-            autoPayload?: (content: TContext) => Record<string, any>
-            /// 执行条件
-            effectCondition?: "alive"
-            /// 效果类型
-            effectKind?: "buff"
-            /// 持续时间
-            effectDuration?: "ntd"
-            /// 生效
-            effecting?: (operation: TOperation, players: TPlayer[], timelines: TTimeline[]) => boolean
         }
 
         type TCharacter = {
@@ -49,21 +37,13 @@ declare global {
             /// 能力名
             abilityKey: string
             /// 执行者
-            effector: number
+            effector?: number
             /// 执行参数
             payload?: Record<string, any>
-
             /// 轮次
             turn: number
-
             /// 时间
             time: "day" | "night"
-
-            /// 是否生效
-            hasEffect: boolean
-
-            /// manual
-            manual?: boolean
         }
 
         type TPlayer = {
