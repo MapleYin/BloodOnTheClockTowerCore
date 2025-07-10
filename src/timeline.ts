@@ -292,8 +292,6 @@ const updateNomination = (timelines: BCT.TTimeline[], players: BCT.TPlayer[], op
         effector: -1,
         turn: timeline.turn,
         time: timeline.time,
-        hasEffect: true,
-        manual: true,
         payload: {
             target
         },
@@ -324,8 +322,6 @@ const setupOperationOnGameStart = (players: BCT.TPlayer[], effectingOperations: 
             effector: -1,
             turn: 1,
             time: "night",
-            hasEffect: true,
-            manual: true,
             payload: {
                 target: enemyPlayerIdx
             },
